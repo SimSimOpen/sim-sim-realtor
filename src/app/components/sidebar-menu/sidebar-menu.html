@@ -1,0 +1,264 @@
+<nav class="sidebar-component">
+  <section class="header">
+    <span class="logo bg-blue-600 p-2 rounded-sm">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-building2 lucide-building-2 h-5 w-5 text-white"
+        aria-hidden="true"
+        data-id="element-33"
+      >
+        <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+        <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+        <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
+        <path d="M10 6h4"></path>
+        <path d="M10 10h4"></path>
+        <path d="M10 14h4"></path>
+        <path d="M10 18h4"></path>
+      </svg>
+    </span>
+    <span class="text-xl font-bold">SimSim</span>
+  </section>
+  <section class="seperator flex">
+    <span class="bottom-line"></span>
+  </section>
+
+  <section>
+    <h2 class="text-sm mb-4">MAIN MENU</h2>
+    <ul class="sidebar-menu">
+      <li
+        class="menu-item"
+        [class.active]="activeMenuItem === '/dashboard'"
+        (click)="setActiveMenuItem('/dashboard'); common.navigeteTo('/dashboard')"
+      >
+        <span class="p-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-layout-dashboard h-5 w-5"
+            aria-hidden="true"
+            data-id="element-38"
+          >
+            <rect width="7" height="9" x="3" y="3" rx="1"></rect>
+            <rect width="7" height="5" x="14" y="3" rx="1"></rect>
+            <rect width="7" height="9" x="14" y="12" rx="1"></rect>
+            <rect width="7" height="5" x="3" y="16" rx="1"></rect>
+          </svg>
+        </span>
+        <span>Dashboard</span>
+      </li>
+      <li
+        class="menu-item"
+        [class.active]="activeMenuItem === '/properties'"
+        (click)="setActiveMenuItem('/properties'); common.navigeteTo('/properties')"
+      >
+        <span class="p-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-building2 lucide-building-2 h-5 w-5"
+            aria-hidden="true"
+            data-id="element-38"
+          >
+            <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+            <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
+            <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
+            <path d="M10 6h4"></path>
+            <path d="M10 10h4"></path>
+            <path d="M10 14h4"></path>
+            <path d="M10 18h4"></path>
+          </svg> </span
+        ><span>Properties</span>
+      </li>
+      <li
+        class="menu-item"
+        [class.active]="activeMenuItem === '/agents'"
+        (click)="setActiveMenuItem('/agents'); common.navigeteTo('/agents')"
+      >
+        <span class="p-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-users h-5 w-5"
+          >
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+            <path d="M6 21v-2a4 4 0 0 1 4 -4h2.5" />
+            <path d="M17.001 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+            <path d="M19.001 15.5v1.5" />
+            <path d="M19.001 21v1.5" />
+            <path d="M22.032 17.25l-1.299 .75" />
+            <path d="M17.27 20l-1.3 .75" />
+            <path d="M15.97 17.25l1.3 .75" />
+            <path d="M20.733 20l1.3 .75" />
+          </svg>
+        </span>
+        <span>Agents</span>
+      </li>
+      <li
+        class="menu-item"
+        [class.active]="activeMenuItem === '/users'"
+        (click)="setActiveMenuItem('/users'); common.navigeteTo('/users')"
+      >
+        <span class="p-2"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-users h-5 w-5"
+            aria-hidden="true"
+            data-id="element-38"
+          >
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <path d="M16 3.128a4 4 0 0 1 0 7.744"></path>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <circle cx="9" cy="7" r="4"></circle></svg></span
+        ><span>Users</span>
+      </li>
+      <li
+        class="menu-item"
+        [class.active]="activeMenuItem === '/reports'"
+        (click)="setActiveMenuItem('/reports'); common.navigeteTo('/reports')"
+      >
+        <span class="p-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-file-text h-5 w-5"
+            aria-hidden="true"
+            data-id="element-38"
+          >
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path>
+            <path d="M14 2v4a2 2 0 0 0 2 2h4"></path>
+            <path d="M10 9H8"></path>
+            <path d="M16 13H8"></path>
+            <path d="M16 17H8"></path>
+          </svg> </span
+        ><span>Reports</span>
+      </li>
+      <li
+        class="menu-item"
+        [class.active]="activeMenuItem === '/analytics'"
+        (click)="setActiveMenuItem('/analytics'); common.navigeteTo('/analytics')"
+      >
+        <span class="p-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-chart-column h-5 w-5"
+            aria-hidden="true"
+            data-id="element-38"
+          >
+            <path d="M3 3v16a2 2 0 0 0 2 2h16"></path>
+            <path d="M18 17V9"></path>
+            <path d="M13 17V5"></path>
+            <path d="M8 17v-3"></path>
+          </svg> </span
+        ><span>Analytics</span>
+      </li>
+      <li
+        class="menu-item"
+        [class.active]="activeMenuItem === '/settings'"
+        (click)="setActiveMenuItem('/settings'); common.navigeteTo('/settings')"
+      >
+        <span class="p-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-settings h-5 w-5"
+            aria-hidden="true"
+            data-id="element-38"
+          >
+            <path
+              d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+            ></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg> </span
+        ><span>Settings</span>
+      </li>
+    </ul>
+  </section>
+  <section class="bottom-seperator flex">
+    <span class="bottom-line"></span>
+  </section>
+  <section class="sign-out" (click)="common.navigeteTo('/')">
+    <div>
+      <span class="p-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-log-out h-5 w-5"
+          aria-hidden="true"
+          data-id="element-41"
+        >
+          <path d="m16 17 5-5-5-5"></path>
+          <path d="M21 12H9"></path>
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        </svg>
+      </span>
+      <span>Sign Out</span>
+    </div>
+  </section>
+</nav>

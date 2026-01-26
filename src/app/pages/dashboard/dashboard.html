@@ -1,1 +1,230 @@
-<p>dashboard works!</p>
+<div class="dashboard-page">
+  <section class="title flex justify-between">
+    <div>
+      <h1 class="text-2xl text-black font-bold">Dashboard Overview</h1>
+      <span>Welcome back, here's what's happening today.</span>
+    </div>
+    <div class="flex space-x-2 items-center">
+      <button
+        class="bg-white border-gray-500 shadow-sm p-1 font-semibold text-xs flex items-center space-x-1 hover:shadow-md hover:bg-gray-100"
+      >
+        <span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-download h-4 w-4"
+            aria-hidden="true"
+            data-id="element-114"
+          >
+            <path d="M12 15V3"></path>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <path d="m7 10 5 5 5-5"></path>
+          </svg>
+        </span>
+        <span>Export Report</span>
+      </button>
+      <button
+        class="bg-blue-700 text-white shadow-sm p-1 font-semibold text-xs hover:shadow-md hover:bg-blue-800 flex items-center space-x-1"
+      >
+        + Add Property
+      </button>
+    </div>
+  </section>
+
+  <section class="header-cards">
+    <div class="card total-revenue">
+      <div class="card-header flex justify-between items-center">
+        <div class="p-2 rounded-lg bg-blue-50 text-blue-600">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-dollar-sign h-5 w-5"
+            aria-hidden="true"
+          >
+            <line x1="12" x2="12" y1="2" y2="22"></line>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+          </svg>
+        </div>
+        <span class="flex items-center text-xs font-medium text-green-600">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-arrow-up-right h-3 w-3 mr-1"
+            aria-hidden="true"
+            data-id="element-142"
+          >
+            <path d="M7 7h10v10"></path>
+            <path d="M7 17 17 7"></path>
+          </svg>
+          +12.5%
+        </span>
+      </div>
+      <div class="mt-5">Total Revenue</div>
+      <div class="text-2xl text-black font-bold">$45,230.00</div>
+    </div>
+    <div class="card active-properties">
+      <div class="card-header flex justify-between items-center">
+        <div class="p-2 rounded-lg bg-indigo-50 text-indigo-600" data-id="element-139">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-building h-5 w-5"
+            aria-hidden="true"
+          >
+            <rect width="16" height="20" x="4" y="2" rx="2" ry="2"></rect>
+            <path d="M9 22v-4h6v4"></path>
+            <path d="M8 6h.01"></path>
+            <path d="M16 6h.01"></path>
+            <path d="M12 6h.01"></path>
+            <path d="M12 10h.01"></path>
+            <path d="M12 14h.01"></path>
+            <path d="M16 10h.01"></path>
+            <path d="M16 14h.01"></path>
+            <path d="M8 10h.01"></path>
+            <path d="M8 14h.01"></path>
+          </svg>
+        </div>
+        <span class="flex items-center text-xs font-medium text-green-600">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-arrow-up-right h-3 w-3 mr-1"
+            aria-hidden="true"
+          >
+            <path d="M7 7h10v10"></path>
+            <path d="M7 17 17 7"></path>
+          </svg>
+          +4
+        </span>
+      </div>
+
+      <div class="mt-5">Active Properties</div>
+      <div class="text-2xl text-black font-bold">128</div>
+    </div>
+    <div class="card occupancy-rate">
+      <div class="card-header flex justify-between items-center">
+        <div class="p-2 rounded-lg bg-green-50 text-green-600">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-users h-5 w-5"
+            aria-hidden="true"
+          >
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <path d="M16 3.128a4 4 0 0 1 0 7.744"></path>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <span class="flex items-center text-xs font-medium text-red-600">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-arrow-down-right h-3 w-3 mr-1"
+            aria-hidden="true"
+          >
+            <path d="m7 7 10 10"></path>
+            <path d="M17 7v10H7"></path>
+          </svg>
+          -1.2%
+        </span>
+      </div>
+      <div class="mt-5">Occupance Rate</div>
+      <div class="text-2xl text-black font-bold">85.4%</div>
+    </div>
+
+    <div class="card pending-deals">
+      <div class="card-header flex justify-between items-center">
+        <div class="p-2 rounded-lg bg-orange-50 text-orange-600">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-trending-up h-5 w-5"
+            aria-hidden="true"
+            data-id="element-140"
+          >
+            <path d="M16 7h6v6"></path>
+            <path d="m22 7-8.5 8.5-5-5L2 17"></path>
+          </svg>
+        </div>
+        <span class="flex items-center text-xs font-medium text-green-600"
+          ><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-arrow-up-right h-3 w-3 mr-1"
+            aria-hidden="true"
+          >
+            <path d="M7 7h10v10"></path>
+            <path d="M7 17 17 7"></path>
+          </svg>
+          +2</span
+        >
+      </div>
+      <div class="mt-5">Pending Deals</div>
+      <div class="text-2xl text-black font-bold">24</div>
+    </div>
+  </section>
+</div>

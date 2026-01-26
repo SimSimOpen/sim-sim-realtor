@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { flatMap } from 'rxjs';
+import { Login } from '../../components/login/login';
 
 @Component({
   selector: 'app-auth',
-  imports: [],
+  imports: [Login],
   templateUrl: './auth.html',
   styleUrl: './auth.scss',
 })
-export class Auth {
-  showPassword: boolean = false;
-}
+export class Auth {}

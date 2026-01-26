@@ -1,0 +1,29 @@
+.dashboard-page {
+  --space-x: 3rem;
+  padding: 0 3rem;
+}
+
+.title {
+  margin-block: var(--space-x);
+  button {
+    outline: none;
+    border-radius: 5px;
+    height: max-content;
+    padding: 8px;
+    cursor: pointer;
+  }
+}
+
+.header-cards {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  .card {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    width: 25%;
+  }
+}

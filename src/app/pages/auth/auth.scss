@@ -5,120 +5,16 @@
 }
 
 .auth-page {
-  --border-radius: 20px;
-  --font-size: 24px;
   --first-color: #14b8a6; // from-brand-teal
   --second-color: #a855f7; // via-brand-purple
   --third-color: #ff6b6b; // to-brand-coral
-  --font-color: #7c7c7c;
-  --font-color-muted: #7c7c7cb6;
-  --space-x: 60px;
-  --space-y: 40px;
-  --main-section-color: #fffffff9;
   position: relative;
   width: 100%;
   height: 100%;
   background: linear-gradient(
     to bottom right,
     var(--first-color),
-    // from-brand-teal
     var(--second-color),
-    // via-brand-purple
-    var(--third-color) // to-brand-coral
+    var(--third-color)
   );
-
-  .main-section {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    width: max-content;
-    max-width: 100%;
-    height: fit-content;
-    padding: var(--space-y) var(--space-x);
-    background: var(--main-section-color);
-    border-radius: calc(var(--border-radius) * 2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    .top-section-text {
-      text-align: center;
-      margin-bottom: 20px;
-      width: max-content;
-      span {
-        font-size: 1.1rem;
-        color: var(--font-color);
-      }
-    }
-    h1 {
-      font-size: calc(var(--font-size) + 5px);
-      font-weight: 800;
-    }
-    .top-icon {
-      padding: 15px;
-      border-radius: var(--border-radius);
-      background: linear-gradient(
-        to bottom right,
-        var(--first-color),
-        // from-brand-teal
-        var(--second-color)
-      );
-    }
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex: auto;
-    width: 100%;
-    min-width: 100%;
-    input {
-      border: none;
-      outline: none;
-      flex: auto;
-      width: 100%;
-      font-size: 18px;
-    }
-
-    .input-group {
-      margin-top: 15px;
-      font-weight: 500;
-      div {
-        background-color: #fff;
-        border-radius: calc(var(--border-radius) * 1.5);
-        display: flex;
-        align-items: center;
-        border: 1px solid var(--font-color-muted);
-        padding: 12px;
-        span {
-          color: var(--font-color-muted);
-        }
-      }
-    }
-    button {
-      margin-top: 12px;
-      color: #fff;
-      width: 100%;
-      background: var(--second-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-      border-radius: calc(var(--border-radius) * 1.5);
-      font-size: calc(var(--font-size) - 4px);
-      font-weight: 600;
-      gap: 10px;
-      transition: all 0.2s ease;
-
-      &:hover {
-        background: #8f2bed;
-        scale: 1.05;
-      }
-    }
-  }
-  .footer {
-    margin-top: var(--space-y);
-  }
 }
