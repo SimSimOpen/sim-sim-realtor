@@ -35,8 +35,8 @@
     <ul class="sidebar-menu">
       <li
         class="menu-item"
-        [class.active]="activeMenuItem === '/dashboard'"
-        (click)="setActiveMenuItem('/dashboard'); common.navigeteTo('/dashboard')"
+        [class.active]="common.activeMenuItem === '/dashboard'"
+        (click)="common.setActiveMenuItem('/dashboard'); common.navigateTo('/dashboard')"
       >
         <span class="p-2">
           <svg
@@ -63,8 +63,8 @@
       </li>
       <li
         class="menu-item"
-        [class.active]="activeMenuItem === '/properties'"
-        (click)="setActiveMenuItem('/properties'); common.navigeteTo('/properties')"
+        [class.active]="common.activeMenuItem === '/properties'"
+        (click)="common.setActiveMenuItem('/properties'); common.navigateTo('/properties')"
       >
         <span class="p-2">
           <svg
@@ -93,8 +93,8 @@
       </li>
       <li
         class="menu-item"
-        [class.active]="activeMenuItem === '/agents'"
-        (click)="setActiveMenuItem('/agents'); common.navigeteTo('/agents')"
+        [class.active]="common.activeMenuItem === '/agents'"
+        (click)="common.setActiveMenuItem('/agents'); common.navigateTo('/agents')"
       >
         <span class="p-2">
           <svg
@@ -125,8 +125,8 @@
       </li>
       <li
         class="menu-item"
-        [class.active]="activeMenuItem === '/users'"
-        (click)="setActiveMenuItem('/users'); common.navigeteTo('/users')"
+        [class.active]="common.activeMenuItem === '/users'"
+        (click)="common.setActiveMenuItem('/users'); common.navigateTo('/users')"
       >
         <span class="p-2"
           ><svg
@@ -151,8 +151,8 @@
       </li>
       <li
         class="menu-item"
-        [class.active]="activeMenuItem === '/reports'"
-        (click)="setActiveMenuItem('/reports'); common.navigeteTo('/reports')"
+        [class.active]="common.activeMenuItem === '/reports'"
+        (click)="common.setActiveMenuItem('/reports'); common.navigateTo('/reports')"
       >
         <span class="p-2">
           <svg
@@ -179,8 +179,8 @@
       </li>
       <li
         class="menu-item"
-        [class.active]="activeMenuItem === '/analytics'"
-        (click)="setActiveMenuItem('/analytics'); common.navigeteTo('/analytics')"
+        [class.active]="common.activeMenuItem === '/analytics'"
+        (click)="common.setActiveMenuItem('/analytics'); common.navigateTo('/analytics')"
       >
         <span class="p-2">
           <svg
@@ -206,8 +206,8 @@
       </li>
       <li
         class="menu-item"
-        [class.active]="activeMenuItem === '/settings'"
-        (click)="setActiveMenuItem('/settings'); common.navigeteTo('/settings')"
+        [class.active]="common.activeMenuItem === '/settings'"
+        (click)="common.setActiveMenuItem('/settings'); common.navigateTo('/settings')"
       >
         <span class="p-2">
           <svg
@@ -236,7 +236,7 @@
   <section class="bottom-seperator flex">
     <span class="bottom-line"></span>
   </section>
-  <section class="sign-out" (click)="common.navigeteTo('/')">
+  <section class="sign-out" (click)="common.navigateTo('/')">
     <div>
       <span class="p-2">
         <svg

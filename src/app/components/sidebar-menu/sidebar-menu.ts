@@ -9,15 +9,10 @@ import { Router } from '@angular/router';
   styleUrl: './sidebar-menu.scss',
 })
 export class SidebarMenu {
-  activeMenuItem: string = '';
   constructor(
     public common: Common,
     private router: Router,
   ) {
-    this.activeMenuItem = this.router.url;
-  }
-
-  setActiveMenuItem(menuItem: string) {
-    this.activeMenuItem = menuItem;
+    this.common.activeMenuItem = this.router.url;
   }
 }

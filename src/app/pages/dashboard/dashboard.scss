@@ -1,6 +1,7 @@
 .dashboard-page {
-  --space-x: 3rem;
-  padding: 0 3rem;
+  --space-x: 2rem;
+  --border-radius: 0.75rem;
+  padding: 0 var(--space-x);
 }
 
 .title {
@@ -16,14 +17,55 @@
 
 .header-cards {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: var(--space-x);
+  margin-bottom: var(--space-x);
   .card {
     background-color: #ffffff;
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
-    margin-bottom: 2rem;
     width: 25%;
+  }
+}
+
+.graph-recent-activities {
+  display: flex;
+  width: 100%;
+  gap: var(--space-x);
+  > div {
+    background-color: #ffffff;
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: 400px;
+    &:first-child {
+      width: 67%;
+    }
+
+    &:last-child {
+      width: 33%;
+    }
+  }
+}
+.dot {
+  height: 10px;
+  width: 10px;
+  background-color: #3451d3;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.properties-table {
+  background: #ffffff;
+  border-radius: var(--border-radius);
+  margin-block: var(--space-x);
+  table {
+    th,
+    tbody td {
+      padding: 15px 20px;
+    }
+    th {
+      background: #f5f5f5;
+      text-transform: uppercase;
+    }
   }
 }

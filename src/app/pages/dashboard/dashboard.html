@@ -2,7 +2,7 @@
   <section class="title flex justify-between">
     <div>
       <h1 class="text-2xl text-black font-bold">Dashboard Overview</h1>
-      <span>Welcome back, here's what's happening today.</span>
+      <span class="text-gray-500">Welcome back, here's what's happening today.</span>
     </div>
     <div class="flex space-x-2 items-center">
       <button
@@ -225,6 +225,124 @@
       </div>
       <div class="mt-5">Pending Deals</div>
       <div class="text-2xl text-black font-bold">24</div>
+    </div>
+  </section>
+
+  <section class="graph-recent-activities">
+    <div class="flex justify-center items-center">Graph is here</div>
+    <div>
+      <div class="border-b border-gray-300">
+        <div class="p-5">
+          <div class="font-semibold">Recent Activity</div>
+          <span class="text-sm text-gray-500">Latest System Updates</span>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex pb-5">
+          <div class="mr-5">
+            <span class="inline-block w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
+          </div>
+          <div>
+            <h6 class="text-sm">New User Signed</h6>
+            <span class="text-xs text-gray-500">New Comment <span>•</span>2 hours ago</span>
+          </div>
+        </div>
+        <div class="flex pb-5">
+          <div class="mr-5">
+            <span class="inline-block w-2.5 h-2.5 bg-red-600 rounded-full"></span>
+          </div>
+          <div>
+            <h6 class="text-sm">New Property Visit</h6>
+            <span class="text-xs text-gray-500">New Comment <span>•</span>2 hours ago</span>
+          </div>
+        </div>
+        <div class="flex pb-5">
+          <div class="mr-5">
+            <span class="inline-block w-2.5 h-2.5 bg-yellow-600 rounded-full"></span>
+          </div>
+          <div>
+            <h6 class="text-sm">New Comment</h6>
+            <span class="text-xs text-gray-500">New Comment <span>•</span>2 hours ago</span>
+          </div>
+        </div>
+      </div>
+      <div class="p-5 text-center hover:bg-gray-50 text-sm cursor-pointer">View All Activities</div>
+    </div>
+  </section>
+
+  <section class="properties-table shadow-sm">
+    <div class="flex justify-between p-5 border-b border-gray-300 mb-5">
+      <div>
+        <h2 class="font-bold">Recently Added Properties</h2>
+        <span class="text-gray-600 text-sm"
+          >Here are the most recent properties added to your listings.</span
+        >
+      </div>
+      <div>
+        <button
+          class="border rounded border-gray-300 text-sm px-3 py-1 cursor-pointer hover:bg-gray-100 hover:shadow-sm transition-shadow"
+          (click)="common.setActiveMenuItem('/properties'); common.navigateTo('/properties')"
+        >
+          View All
+        </button>
+      </div>
+    </div>
+    <div class="px-5 pb-5 overflow-x-auto">
+      <table class="w-full">
+        <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
+          <tr class="text-left">
+            <th>Property</th>
+            <th>Type</th>
+            <th>Details</th>
+            <th>Rent/Month</th>
+            <th>Status</th>
+            <th>Views</th>
+            <th>Date Listed</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (property of recentProperties; track $index) {
+            <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-pointer">
+              <td>
+                <span>{{ property.title }}</span>
+              </td>
+              <td>{{ property.type }}</td>
+              <td>{{ property.bedrooms }}-{{ property.bathrooms }}-{{ property.area }}</td>
+              <td>${{ property.price }}</td>
+              <td>{{ property.status }}</td>
+              <td>{{ property.views }}</td>
+              <td>{{ property.dateListed }}</td>
+              <td class="flex gap-1">
+                <button
+                  class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                  data-id="element-255"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-eye h-4 w-4"
+                    aria-hidden="true"
+                    data-id="element-256"
+                  >
+                    <path
+                      d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                    ></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
     </div>
   </section>
 </div>

@@ -5,9 +5,15 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class Common {
+  activeMenuItem: string = '';
+
   constructor(private router: Router) {}
 
-  navigeteTo(url: string): void {
+  navigateTo(url: string): void {
     this.router.navigate([url]);
+  }
+
+  setActiveMenuItem(menuItem: string) {
+    this.activeMenuItem = menuItem;
   }
 }

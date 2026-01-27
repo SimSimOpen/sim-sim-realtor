@@ -1,3 +1,196 @@
 <div class="properties-page">
-  <h1 class="text-3xl text-black">Properties Page</h1>
+  <section class="title flex justify-between">
+    <div>
+      <h1 class="text-2xl text-black font-bold">My Properties</h1>
+      <span>Manage your rental property listings.</span>
+    </div>
+    <div class="flex items-center">
+      <button
+        class="bg-blue-700 text-white shadow-sm py-2 px-5 font-semibold hover:shadow-md hover:bg-blue-800 flex items-center space-x-1"
+      >
+        + Add Property
+      </button>
+    </div>
+  </section>
+  <section class="header-cards">
+    <div class="card">
+      <div>Total Listings</div>
+      <div class="text-2xl font-bold">12</div>
+    </div>
+    <div class="card">
+      <div>Active</div>
+      <div class="text-2xl font-bold text-green-500">8</div>
+    </div>
+    <div class="card">
+      <div>Rented</div>
+      <div class="text-2xl font-bold text-blue-500">2</div>
+    </div>
+    <div class="card">
+      <div>Draft</div>
+      <div class="text-2xl font-bold">2</div>
+    </div>
+  </section>
+
+  <section class="search-filter p-5 flex justify-between items-center">
+    <div class="search-bar flex items-center">
+      <form class="w-full">
+        <div class="search-group">
+          <input
+            type="text"
+            id="search"
+            name="search"
+            placeholder="Search by address, title or city..."
+          />
+        </div>
+      </form>
+    </div>
+    <div class="filter-dropdown">
+      <select name="Status" id="filter-status">
+        <option value="all" selected>All Status</option>
+        <option value="active">Active</option>
+        <option value="rented">Rented</option>
+        <option value="draft">Draft</option>
+      </select>
+      <select name="Type" id="filter-type">
+        <option value="all" selected>All Types</option>
+        <option value="apartment">Apartment</option>
+        <option value="house">House</option>
+        <option value="condo">Condo</option>
+      </select>
+      <span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-funnel h-4 w-4"
+          aria-hidden="true"
+          data-id="element-210"
+        >
+          <path
+            d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"
+          ></path>
+        </svg>
+      </span>
+    </div>
+  </section>
+
+  <section class="properties-table shadow-sm">
+    <table class="w-full">
+      <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
+        <tr class="text-left">
+          <th>Property</th>
+          <th>Type</th>
+          <th>Details</th>
+          <th>Rent/<br />Month</th>
+          <th>Status</th>
+          <th>Views</th>
+          <th>Date <br />Listed</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (property of propertiesList; track $index) {
+          <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-pointer">
+            <td>
+              <span>{{ property.title }}</span>
+            </td>
+            <td>{{ property.type }}</td>
+            <td>{{ property.bedrooms }}-{{ property.bathrooms }}-{{ property.area }}</td>
+            <td>${{ property.price }}</td>
+            <td>{{ property.status }}</td>
+            <td>{{ property.views }}</td>
+            <td>{{ property.dateListed }}</td>
+            <td class="flex gap-1">
+              <button
+                class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                data-id="element-255"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-eye h-4 w-4"
+                  aria-hidden="true"
+                  data-id="element-256"
+                >
+                  <path
+                    d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                  ></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+              <button
+                class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                data-id="element-257"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-pen h-4 w-4"
+                  aria-hidden="true"
+                  data-id="element-258"
+                >
+                  <path
+                    d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                data-id="element-259"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-trash2 lucide-trash-2 h-4 w-4"
+                  aria-hidden="true"
+                  data-id="element-260"
+                >
+                  <path d="M3 6h18"></path>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                  <line x1="10" x2="10" y1="11" y2="17"></line>
+                  <line x1="14" x2="14" y1="11" y2="17"></line>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <section class="pagination shadow-sm flex justify-between items-center text-gray-600">
+    <span>Showing 1 to 10 of 50 properties</span>
+    <div class="flex gap-2">
+      <button class="border rounded px-2 py-1 cursor-pointer border-gray-300">Prev</button>
+      <button class="border rounded px-2 py-1 cursor-pointer border-gray-300">Next</button>
+    </div>
+  </section>
 </div>
