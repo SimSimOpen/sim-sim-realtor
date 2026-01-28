@@ -1,0 +1,9 @@
+.add-property-component {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

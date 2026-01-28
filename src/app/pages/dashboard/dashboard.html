@@ -32,6 +32,7 @@
       </button>
       <button
         class="bg-blue-700 text-white shadow-sm p-1 font-semibold text-xs hover:shadow-md hover:bg-blue-800 flex items-center space-x-1"
+        (click)="openModal()"
       >
         + Add Property
       </button>
@@ -178,7 +179,7 @@
           -1.2%
         </span>
       </div>
-      <div class="mt-5">Occupance Rate</div>
+      <div class="mt-5">Occupancy Rate</div>
       <div class="text-2xl text-black font-bold">85.4%</div>
     </div>
 
@@ -346,3 +347,10 @@
     </div>
   </section>
 </div>
+<app-modal
+  [isVisible]="isAddPropertyModalVisible"
+  (close)="closeModal()"
+  [closeOnBackdropClick]="true"
+>
+  <app-add-property (closeModal)="closeModal()"></app-add-property>
+</app-modal>
