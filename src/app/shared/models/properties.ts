@@ -13,6 +13,12 @@ export interface Property {
   bedrooms: number;
   bathrooms: number;
   area: number; // in square feet
-  imageUrl: string;
+  medias: PropertyMedia[];
   dateListed: string;
+}
+
+export interface PropertyMedia {
+  id: number;
+  mediaUrl: string;
+  type: string;
 }

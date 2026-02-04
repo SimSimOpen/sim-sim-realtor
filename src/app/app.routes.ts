@@ -34,4 +34,17 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'mobile',
+    loadComponent: () => import('./layouts/mobile/mobile').then((m) => m.Mobile),
+    children: [
+      {
+        path: 'camera',
+        loadComponent: () =>
+          import('./components/mobile-camera-upload/mobile-camera-upload').then(
+            (m) => m.MobileCameraUpload,
+          ),
+      },
+    ],
+  },
 ];

@@ -36,7 +36,7 @@
     </section>
 
     <section class="w-full">
-      <form>
+      <form [formGroup]="loginForm" class="flex flex-col gap-4">
         <div class="input-group">
           <label for="email">Email Address</label>
           <div class="flex gap-2">
@@ -60,7 +60,14 @@
                 <path d="M3 7l9 6l9 -6" />
               </svg>
             </span>
-            <input type="email" id="email" name="email" required placeholder="agent@simsim.com" />
+            <input
+              type="email"
+              formControlName="username"
+              id="email"
+              name="email"
+              required
+              placeholder="agent@simsim.com"
+            />
           </div>
         </div>
         <div class="input-group">
@@ -114,6 +121,7 @@
 
             <input
               [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
               id="password"
               name="password"
               required
@@ -125,7 +133,7 @@
           <span>Forgot password?</span>
         </div>
         <div>
-          <button type="submit" (click)="common.navigateTo('/dashboard')">
+          <button type="submit" (click)="login()" class="submit-button">
             Sign In
             <span>
               <svg

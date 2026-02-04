@@ -4,6 +4,7 @@ import { SelectMethod } from '../select-method';
 import { UploadFromMobile } from '../upload-from-mobile';
 import { CommonModule } from '@angular/common';
 import { amenitiesList } from '../../../shared/common-functions';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-add-property',
@@ -18,9 +19,28 @@ export class AddProperty {
   steps: 1 | 2 = 1;
   amenities = amenitiesList;
 
+  propertyForm: FormGroup;
+  constructor(private fb: FormBuilder) {
+    this.propertyForm = this.fb.group({
+      id: [null],
+      title: [''],
+      description: [''],
+      price: [''],
+      address: [''],
+      bedrooms: [''],
+      bathrooms: [''],
+      area: [''],
+      amenities: [[]],
+    });
+  }
+
   changeMethod(method: 'computer' | 'mobile' | '') {
     this.selectMethod = method;
     this.enableContinueDetails();
+  }
+
+  updatePropertyId(id: number) {
+    this.propertyForm.patchValue({ id });
   }
 
   onClose() {

@@ -1,0 +1,19 @@
+<div class="mobile-camera-page">
+  <video #video autoplay playsinline class="screen rounded"></video>
+
+  @if (stream && !previewUrl) {
+    <div class="buttons flex gap-2 mt-3">
+      <button (click)="takePhoto()" class="capture-button"></button>
+    </div>
+  }
+
+  @if (previewUrl && previewBlob) {
+    <div class="blur-bakcground"></div>
+    <img [src]="previewUrl" class="mt-3 previews border border-blue-500 rounded" />
+
+    <div class="previews flex gap-2 mt-2">
+      <button (click)="uploadCapturedPhoto()">Use & Upload</button>
+      <button (click)="discard()">Retake</button>
+    </div>
+  }
+</div>

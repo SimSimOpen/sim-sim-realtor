@@ -22,7 +22,7 @@ export const propertiesList: Property[] = [
     bedrooms: 2,
     bathrooms: 1,
     area: 850,
-    imageUrl: 'assets/images/property1.jpg',
+    medias: [],
     dateListed: '2024-06-15',
   },
   {
@@ -40,7 +40,7 @@ export const propertiesList: Property[] = [
     bedrooms: 4,
     bathrooms: 3,
     area: 2200,
-    imageUrl: 'assets/images/property2.jpg',
+    medias: [],
     dateListed: '2024-05-20',
   },
   {
@@ -58,7 +58,7 @@ export const propertiesList: Property[] = [
     bedrooms: 1,
     bathrooms: 1,
     area: 600,
-    imageUrl: 'assets/images/property3.jpg',
+    medias: [],
     dateListed: '2024-06-10',
   },
 ];

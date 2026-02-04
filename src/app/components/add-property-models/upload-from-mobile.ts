@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-upload-from-mobile',
   standalone: true,
+  imports: [QRCodeComponent],
   template: `<div>
     <section>
       <header class="flex items-center justify-between mb-4 w-2xl">
@@ -20,7 +22,11 @@ import { Component, EventEmitter, Output } from '@angular/core';
             class="w-48 h-48 bg-white border-2 border-gray-300 rounded-lg mx-auto flex items-center justify-center"
           >
             <div class="text-center">
-              <div class="w-32 h-32 bg-gray-200 rounded mx-auto mb-2"></div>
+              <qrcode
+                [qrdata]="'https://192.168.100.4:4200/mobile/camera'"
+                [width]="128"
+                [errorCorrectionLevel]="'M'"
+              ></qrcode>
               <p class="text-xs text-gray-500">QR Code</p>
             </div>
           </div>
@@ -91,4 +97,10 @@ import { Component, EventEmitter, Output } from '@angular/core';
 export class UploadFromMobile {
   @Output() changeMethod = new EventEmitter<'computer' | 'mobile' | ''>();
   @Output() disableContinueDetails = new EventEmitter<void>();
+
+  @Output() propertyIdUpdate = new EventEmitter<number>();
+
+  constructor() {}
+
+  property_id!: number;
 }
