@@ -1,0 +1,7 @@
+services:
+  sim-sim-realtor:
+    image: ghcr.io/simsimopen/sim-sim-realtor:latest
+    container_name: sim-sim-realtor
+    restart: always
+    ports:
+      - 4200:80

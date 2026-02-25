@@ -1,5 +1,9 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
 import { QRCodeComponent } from 'angularx-qrcode';
+import { MediaService } from '../../shared/services/media.service';
+import { ProductService } from '../../shared/services/product.service';
+import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '../../account/auth.service';
 
 @Component({
   selector: 'app-upload-from-mobile',
@@ -22,11 +26,7 @@ import { QRCodeComponent } from 'angularx-qrcode';
             class="w-48 h-48 bg-white border-2 border-gray-300 rounded-lg mx-auto flex items-center justify-center"
           >
             <div class="text-center">
-              <qrcode
-                [qrdata]="'https://192.168.100.4:4200/mobile/camera'"
-                [width]="128"
-                [errorCorrectionLevel]="'M'"
-              ></qrcode>
+              <qrcode [qrdata]="qrData" [width]="128" [errorCorrectionLevel]="'M'"></qrcode>
               <p class="text-xs text-gray-500">QR Code</p>
             </div>
           </div>
@@ -100,7 +100,45 @@ export class UploadFromMobile {
 
   @Output() propertyIdUpdate = new EventEmitter<number>();
 
-  constructor() {}
-
+  sessionId!: string;
   property_id!: number;
+  userId!: number;
+  expiresAt!: string;
+  qrData!: string;
+  constructor(
+    private mediaService: MediaService,
+    private cdr: ChangeDetectorRef,
+    private productService: ProductService,
+    private toast: ToastrService,
+    private authService: AuthService,
+  ) {}
+
+  ngAfterViewInit() {
+    this.productService.createDraft().subscribe({
+      next: (property) => {
+        this.property_id = property.id as number;
+        this.propertyIdUpdate.emit(this.property_id);
+        this.createMediaSession();
+      },
+      error: (err) => {
+        console.error('Error creating draft property:', err);
+        this.toast.error('Failed to create property draft');
+      },
+    });
+  }
+
+  createMediaSession() {
+    this.mediaService.createMediaSession().subscribe({
+      next: (session) => {
+        this.sessionId = session.sessionId;
+        this.userId = session.userId;
+        this.expiresAt = session.expiresAt;
+        this.qrData = `https://192.168.1.108:4200/mobile/camera?session_id=${this.sessionId}&property_id=${this.property_id}&token=${this.authService.getToken()}`;
+        this.cdr.detectChanges(); // force re-render
+      },
+      error: (error) => {
+        console.error('Error creating media session:', error);
+      },
+    });
+  }
 }

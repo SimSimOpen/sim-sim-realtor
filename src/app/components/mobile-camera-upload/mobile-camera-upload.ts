@@ -9,6 +9,10 @@ import {
 } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MediaService } from '../../shared/services/media.service';
+import { ActivatedRoute } from '@angular/router';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { MEDIA_SERVICE_URL } from '../../shared/constants/urls';
+import { Property } from '../../shared/models/properties';
 
 @Component({
   selector: 'app-mobile-camera-upload',
@@ -22,6 +26,9 @@ export class MobileCameraUpload implements AfterViewInit {
   previewBlob?: Blob;
   property_id!: number;
   property: any;
+  sessionId!: string;
+  sessionStatus: 'Active' | 'Expired' | 'Completed' = 'Active';
+  token!: string;
 
   @Output() propertyIdUpdate = new EventEmitter<number>();
   @ViewChild('video', { static: true }) videoRef!: ElementRef<HTMLVideoElement>;
@@ -30,6 +37,8 @@ export class MobileCameraUpload implements AfterViewInit {
     private mediaService: MediaService,
     private toast: ToastrService,
     private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
+    private http: HttpClient,
   ) {}
 
   async startCamera() {
@@ -99,20 +108,51 @@ export class MobileCameraUpload implements AfterViewInit {
     const file = new File([this.previewBlob], `photo-${Date.now()}.jpg`, {
       type: 'image/jpeg',
     });
+    const formData = new FormData();
+    formData.append('files', file);
 
-    this.mediaService.uploadImage(this.property_id, [file]).subscribe({
-      next: (response) => {
-        this.toast.success('Image uploaded successfully, property ID: ' + response.id);
-        this.property = response;
-        this.propertyIdUpdate.emit(this.property.id!);
-        this.discard();
+    const params = new HttpParams().append('property_id', this.property_id?.toString() || '');
+
+    this.http
+      .post<Property>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, {
+        params,
+        headers: { Authorization: `Bearer ${this.token}` },
+      })
+      .subscribe({
+        next: (response) => {
+          this.toast.success('Image uploaded successfully, property ID: ' + response.id);
+          this.property = response;
+          this.propertyIdUpdate.emit(this.property.id!);
+          this.discard();
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          this.toast.error('Error uploading image', error.message || error, { timeOut: 15000 });
+        },
+      });
+  }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((params) => {
+      this.sessionId = params['session_id'];
+      this.property_id = +params['property_id']; // + converts string to number
+      this.token = params['token'];
+    });
+
+    this.mediaService.checkSessionStatus(this.sessionId).subscribe({
+      next: () => {
+        this.sessionStatus = 'Active';
         this.cdr.detectChanges();
       },
       error: (error) => {
-        this.toast.error('Error uploading image');
+        console.error('Error checking session status:', error);
+        this.toast.error('Failed to check session status');
+        this.sessionStatus = 'Expired';
+        this.cdr.detectChanges();
       },
     });
   }
+
   ngAfterViewInit() {
     this.startCamera();
   }

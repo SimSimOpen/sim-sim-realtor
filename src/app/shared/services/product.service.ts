@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PRODUCT_URL } from '../constants/urls';
+import { Property } from '../models/properties';
 
 @Injectable({
   providedIn: 'root',
@@ -16,5 +17,9 @@ export class ProductService {
     });
     const params = new HttpParams().append('property_id', property_id.toString());
     return this.http.post<string>(`${PRODUCT_URL}/v1/property/add/images`, formData, { params });
+  }
+
+  createDraft(): Observable<Property> {
+    return this.http.post<Property>(`${PRODUCT_URL}/v1/property/create-draft`, {});
   }
 }
