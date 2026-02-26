@@ -23,7 +23,9 @@ export class MediaService {
   createMediaSession(): Observable<MediaSession> {
     return this.http.post<MediaSession>(`${MEDIA_SERVICE_URL}/v1/session`, {});
   }
-  checkSessionStatus(sessionId: string): Observable<any> {
-    return this.http.get(`${MEDIA_SERVICE_URL}/v1/session/${sessionId}/status`);
+  checkSessionStatus(sessionId: string, token: string): Observable<any> {
+    return this.http.get(`${MEDIA_SERVICE_URL}/v1/session/${sessionId}/status`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   }
 }

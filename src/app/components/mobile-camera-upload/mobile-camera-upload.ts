@@ -27,7 +27,7 @@ export class MobileCameraUpload implements AfterViewInit {
   property_id!: number;
   property: any;
   sessionId!: string;
-  sessionStatus: 'Active' | 'Expired' | 'Completed' = 'Active';
+  sessionStatus: 'Active' | 'Expired' | 'Completed' | 'Loading' = 'Loading';
   token!: string;
 
   @Output() propertyIdUpdate = new EventEmitter<number>();
@@ -42,6 +42,10 @@ export class MobileCameraUpload implements AfterViewInit {
   ) {}
 
   async startCamera() {
+    if (!this.videoRef?.nativeElement) {
+      console.warn('Video element not available');
+      return;
+    }
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: 'environment' } },
@@ -132,28 +136,39 @@ export class MobileCameraUpload implements AfterViewInit {
       });
   }
 
+  stopCamera() {
+    this.stream?.getTracks().forEach((track) => track.stop());
+    this.stream = undefined;
+  }
+
   ngOnInit() {
     this.route.queryParams.subscribe((params) => {
       this.sessionId = params['session_id'];
-      this.property_id = +params['property_id']; // + converts string to number
+      this.property_id = +params['property_id'];
       this.token = params['token'];
-    });
 
-    this.mediaService.checkSessionStatus(this.sessionId).subscribe({
-      next: () => {
-        this.sessionStatus = 'Active';
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error checking session status:', error);
-        this.toast.error('Failed to check session status');
-        this.sessionStatus = 'Expired';
-        this.cdr.detectChanges();
-      },
+      // Move checkSessionStatus INSIDE queryParams callback
+      // so sessionId/token are guaranteed to be set
+      this.mediaService.checkSessionStatus(this.sessionId, this.token).subscribe({
+        next: () => {
+          this.sessionStatus = 'Active';
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error checking session status:', error);
+          this.toast.error('Failed to check session status');
+          this.sessionStatus = 'Expired';
+          this.stopCamera(); // stop stream if running
+          this.cdr.detectChanges();
+        },
+      });
     });
   }
 
   ngAfterViewInit() {
-    this.startCamera();
+    // Guard: only start if view ref exists and session isn't expired
+    if (this.videoRef?.nativeElement) {
+      this.startCamera();
+    }
   }
 }
