@@ -133,7 +133,7 @@ export class UploadFromMobile {
         this.sessionId = session.sessionId;
         this.userId = session.userId;
         this.expiresAt = session.expiresAt;
-        this.qrData = `https://192.168.1.108:4200/mobile/camera?session_id=${this.sessionId}&property_id=${this.property_id}&token=${this.authService.getToken()}`;
+        this.qrData = `https://www.simsim.fit/mobile/camera?session_id=${this.sessionId}&property_id=${this.property_id}&token=${this.authService.getToken()}`;
         this.cdr.detectChanges(); // force re-render
       },
       error: (error) => {
