@@ -20,7 +20,7 @@ import { Property } from '../../shared/models/properties';
   templateUrl: './mobile-camera-upload.html',
   styleUrl: './mobile-camera-upload.scss',
 })
-export class MobileCameraUpload implements AfterViewInit {
+export class MobileCameraUpload {
   stream?: MediaStream;
   previewUrl?: string;
   previewBlob?: Blob;
@@ -142,33 +142,28 @@ export class MobileCameraUpload implements AfterViewInit {
   }
 
   ngOnInit() {
+    this.sessionStatus = 'Loading';
+
     this.route.queryParams.subscribe((params) => {
       this.sessionId = params['session_id'];
       this.property_id = +params['property_id'];
       this.token = params['token'];
 
-      // Move checkSessionStatus INSIDE queryParams callback
-      // so sessionId/token are guaranteed to be set
+      console.log('Params loaded:', this.sessionId, this.property_id); // debug
+
       this.mediaService.checkSessionStatus(this.sessionId, this.token).subscribe({
         next: () => {
           this.sessionStatus = 'Active';
           this.cdr.detectChanges();
+          // Start camera AFTER session confirmed & view is Active
+          setTimeout(() => this.startCamera(), 0);
         },
         error: (error) => {
-          console.error('Error checking session status:', error);
-          this.toast.error('Failed to check session status');
+          console.error('Session check failed:', error);
           this.sessionStatus = 'Expired';
-          this.stopCamera(); // stop stream if running
           this.cdr.detectChanges();
         },
       });
     });
-  }
-
-  ngAfterViewInit() {
-    // Guard: only start if view ref exists and session isn't expired
-    if (this.videoRef?.nativeElement) {
-      this.startCamera();
-    }
   }
 }

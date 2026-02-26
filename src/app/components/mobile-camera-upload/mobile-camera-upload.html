@@ -1,7 +1,7 @@
 <div class="mobile-camera-page">
   @if (sessionStatus === 'Loading') {
     <div class="flex items-center justify-center h-screen">
-      <p class="text-white text-lg">Checking session...</p>
+      <p class="text-red-500 text-lg">Checking session...</p>
     </div>
   } @else if (sessionStatus === 'Expired') {
     <div class="expired-message">
