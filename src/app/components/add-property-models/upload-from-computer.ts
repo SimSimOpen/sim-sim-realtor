@@ -84,7 +84,7 @@ export class UploadFromComputer {
   @Output() disableContinueDetails = new EventEmitter<void>();
   @Output() propertyIdUpdate = new EventEmitter<number>();
 
-  property_id = 96;
+  property_id!: number;
   property!: Property;
 
   constructor(

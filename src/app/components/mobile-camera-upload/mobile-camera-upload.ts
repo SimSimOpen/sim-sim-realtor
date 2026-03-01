@@ -31,7 +31,7 @@ export class MobileCameraUpload {
   token!: string;
 
   @Output() propertyIdUpdate = new EventEmitter<number>();
-  @ViewChild('video', { static: true }) videoRef!: ElementRef<HTMLVideoElement>;
+  @ViewChild('video', { static: false }) videoRef!: ElementRef<HTMLVideoElement>;
 
   constructor(
     private mediaService: MediaService,

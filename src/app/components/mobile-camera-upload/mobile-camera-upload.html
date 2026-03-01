@@ -8,7 +8,15 @@
       <p class="text-red-500 text-lg">Session has expired. Please try again.</p>
     </div>
   } @else {
-    <video #video autoplay playsinline class="screen rounded"></video>
+    <!-- Move video OUTSIDE any nested @if so ViewChild can always find it -->
+    <video
+      #video
+      autoplay
+      playsinline
+      class="screen rounded"
+      [style.display]="stream ? 'block' : 'none'"
+    ></video>
+
     @if (stream && !previewUrl) {
       <div class="buttons flex gap-2 mt-3">
         <button (click)="takePhoto()" class="capture-button"></button>
