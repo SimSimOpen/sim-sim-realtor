@@ -1,5 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { PropertyMedia } from '../../shared/models/properties';
+import { ProductService } from '../../shared/services/product.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-uploaded-files',
@@ -16,6 +18,7 @@ import { PropertyMedia } from '../../shared/models/properties';
       </div>
       <button
         class="absolute top-3 right-3 p-2 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+        (click)="deleteImage(medias[0].id)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -44,6 +47,7 @@ import { PropertyMedia } from '../../shared/models/properties';
           <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
           <button
             class="absolute top-1.5 right-1.5 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+            (click)="deleteImage(media.id)"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -71,31 +75,70 @@ import { PropertyMedia } from '../../shared/models/properties';
           </div>
         </div>
       }
-      <label
-        class="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
-      >
-        <input type="file" multiple="" accept="image/*" class="hidden" data-id="element-72" /><svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="lucide lucide-upload h-5 w-5 text-gray-400 mb-1"
-          aria-hidden="true"
+      @if (hasAddMoreMediasListener) {
+        <label
+          class="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
         >
-          <path d="M12 3v12"></path>
-          <path d="m17 8-5-5-5 5"></path>
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        </svg>
-        <span class="text-xs text-gray-500">Add</span></label
-      >
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            class="hidden"
+            data-id="element-72"
+            (change)="addMoreMedias.emit($event)"
+            #fileInput
+          /><svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-upload h-5 w-5 text-gray-400 mb-1"
+            aria-hidden="true"
+          >
+            <path d="M12 3v12"></path>
+            <path d="m17 8-5-5-5 5"></path>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          </svg>
+          <span class="text-xs text-gray-500">Add</span>
+        </label>
+      }
     </div>
   </div>`,
 })
 export class UploadedFiles {
   @Input() medias: PropertyMedia[] = [];
+  @Output() addMoreMedias = new EventEmitter<Event>();
+
+  constructor(
+    private productService: ProductService,
+    private toast: ToastrService,
+    private ctr: ChangeDetectorRef,
+  ) {}
+
+  deleteImage(image_id: number) {
+    this.productService.deleteImage(image_id).subscribe({
+      next: (res) => {
+        this.medias = this.medias.filter((media) => media.id !== image_id);
+        console.log('Delete response:', res);
+        this.toast.info('Image deleted successfully');
+        this.ctr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error deleting image:', error);
+        this.toast.error('Failed to delete image');
+      },
+    });
+  }
+  addMore() {
+    this.addMoreMedias.emit();
+  }
+
+  get hasAddMoreMediasListener(): boolean {
+    return this.addMoreMedias.observed;
+  }
 }

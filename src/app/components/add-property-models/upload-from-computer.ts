@@ -32,7 +32,7 @@ import { UploadedFiles } from './uploaded-files';
               (change)="uploadFile($event)"
               multiple
             />
-            Uploaded Files 4
+            Uploaded Files 0
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -58,7 +58,7 @@ import { UploadedFiles } from './uploaded-files';
         <section class="space-y-4">
           <div class="flex items-center justify-between">
             <p class="text-sm font-medium text-gray-700">
-              Uploaded Files {{ property.medias.length }}
+              Uploaded Files {{ property.medias?.length }}
             </p>
             <label class="cursor-pointer">
               <input
@@ -73,7 +73,12 @@ import { UploadedFiles } from './uploaded-files';
               </span>
             </label>
           </div>
-          <app-uploaded-files [medias]="property.medias"></app-uploaded-files>
+          @if (property.medias && property.medias.length > 0) {
+            <app-uploaded-files
+              [medias]="property.medias"
+              (addMoreMedias)="uploadFile($event)"
+            ></app-uploaded-files>
+          }
         </section>
       }
     </section>
@@ -96,7 +101,8 @@ export class UploadFromComputer {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const files = input.files;
-      this.mediaService.uploadImage(this.property_id, Array.from(files)).subscribe({
+      let property_id = this.property_id ? this.property_id : (this.property?.id as number);
+      this.mediaService.uploadImage(property_id, Array.from(files)).subscribe({
         next: (response) => {
           this.toast.success('Image uploaded successfully, property ID: ' + response.id);
           this.property = response;

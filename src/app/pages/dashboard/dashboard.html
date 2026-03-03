@@ -306,10 +306,23 @@
           @for (property of recentProperties; track $index) {
             <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-pointer">
               <td>
-                <span>{{ property.title }}</span>
+                <div class="flex items-center gap-4">
+                  <img
+                    class="h-8 w-12 object-cover rounded-lg border border-gray-200"
+                    [src]="
+                      property.medias && property.medias.length > 0
+                        ? getPropertiesCoverImage(property)
+                        : null
+                    "
+                    alt="product-image"
+                  />
+                  <div>
+                    <div>{{ property.title }}</div>
+                  </div>
+                </div>
               </td>
               <td>{{ property.type }}</td>
-              <td>{{ property.bedrooms }}-{{ property.bathrooms }}-{{ property.area }}</td>
+              <td>{{ property.numberOfRooms }}</td>
               <td>${{ property.price }}</td>
               <td>{{ property.status }}</td>
               <td>{{ property.views }}</td>

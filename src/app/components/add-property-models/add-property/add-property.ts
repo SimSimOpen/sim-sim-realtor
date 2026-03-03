@@ -4,32 +4,36 @@ import { SelectMethod } from '../select-method';
 import { UploadFromMobile } from '../upload-from-mobile';
 import { CommonModule } from '@angular/common';
 import { amenitiesList } from '../../../shared/common-functions';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ProductService } from '../../../shared/services/product.service';
 
 @Component({
   selector: 'app-add-property',
-  imports: [UploadFromComputer, UploadFromMobile, SelectMethod, CommonModule],
+  imports: [UploadFromComputer, UploadFromMobile, SelectMethod, CommonModule, ReactiveFormsModule],
   templateUrl: './add-property.html',
   styleUrl: './add-property.scss',
 })
 export class AddProperty {
   @Output() closeModal = new EventEmitter<any>();
+  @Output() updatePropertiesList = new EventEmitter<any>();
   selectMethod: 'computer' | 'mobile' | '' = '';
   continueDetailsDisabled: boolean = true;
   steps: 1 | 2 = 1;
   amenities = amenitiesList;
 
   propertyForm: FormGroup;
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private productService: ProductService,
+  ) {
     this.propertyForm = this.fb.group({
       id: [null],
       title: [''],
       description: [''],
       price: [''],
-      address: [''],
-      bedrooms: [''],
-      bathrooms: [''],
+      numberOfRoom: [''],
       area: [''],
+      address: [''],
       amenities: [[]],
     });
   }
@@ -37,6 +41,22 @@ export class AddProperty {
   changeMethod(method: 'computer' | 'mobile' | '') {
     this.selectMethod = method;
     this.enableContinueDetails();
+  }
+
+  uploadProperty() {
+    this.productService.updateProperty(this.propertyForm.value).subscribe({
+      next: (response) => {
+        console.log('Property updated successfully:', response);
+        this.updatePropertiesList.emit();
+        this.propertyForm.reset();
+        this.steps = 1;
+        this.selectMethod = '';
+        this.closeModal.emit();
+      },
+      error: (error) => {
+        console.error('Error uploading property:', error);
+      },
+    });
   }
 
   updatePropertyId(id: number) {
