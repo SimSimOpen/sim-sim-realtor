@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { navigeteTo } from '../../shared/common-functions';
 import { Common } from '../../shared/common';
 import { AuthService } from '../../account/auth.service';
@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './login.scss',
 })
 export class Login {
+  @Output() changeAuth = new EventEmitter<string>();
   showPassword: boolean = false;
 
   loginForm: FormGroup;
@@ -41,5 +42,8 @@ export class Login {
           this.toastr.error('Invalid username or password', 'Login Failed');
         },
       });
+  }
+  swithToRegister() {
+    this.changeAuth.emit('register');
   }
 }

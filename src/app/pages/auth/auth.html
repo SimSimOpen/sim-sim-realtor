@@ -1,3 +1,7 @@
 <div class="auth-page">
-  <app-login></app-login>
+  @if (auth === 'login') {
+    <app-login (changeAuth)="changeAuth($event)"></app-login>
+  } @else if (auth === 'register') {
+    <app-register (changeAuth)="changeAuth($event)"></app-register>
+  }
 </div>

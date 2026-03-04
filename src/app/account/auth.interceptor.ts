@@ -6,7 +6,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
 
-  const excludedUrls = ['/api/auth/v1/authenticate', '/auth/register', '/auth/refresh'];
+  const excludedUrls = [
+    '/api/auth/v1/authenticate',
+    '/api/auth/v1/register/agent',
+    '/auth/refresh',
+  ];
 
   if (excludedUrls.some((url) => req.url.includes(url))) {
     return next(req);

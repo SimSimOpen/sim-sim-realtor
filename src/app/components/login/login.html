@@ -129,7 +129,7 @@
             />
           </div>
         </div>
-        <div class="flex justify-end cursor-pointer text-[var(--second-color)] font-semibold">
+        <div class="flex justify-end cursor-pointer text-(--second-color) font-semibold">
           <span>Forgot password?</span>
         </div>
         <div>
@@ -160,9 +160,12 @@
     </section>
     <section class="footer">
       Don't have an account?
-      <span class="text-red-500 font-semibold cursor-pointer hover:text-red-600"
-        >Join the team</span
+      <span
+        class="text-red-500 font-semibold cursor-pointer hover:text-red-600"
+        (click)="swithToRegister()"
       >
+        Join the team
+      </span>
     </section>
   </div>
 </div>

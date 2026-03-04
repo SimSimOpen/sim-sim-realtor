@@ -31,8 +31,194 @@
       </svg>
     </span>
     <section class="top-section-text">
-      <h1>Welcome to SimSim!</h1>
-      <span>Enter your credentials to access your dashboard</span>
+      <h1>Create Account</h1>
+      <span>Join us as a Client or an Agent</span>
     </section>
+    <!-- <section class="relative w-full">
+      <div
+        class="absolute top-1 bottom-1 bg-white rounded-xl shadow-sm"
+        data-id="element-130"
+        style="left: 4px; width: calc(50% - 4px); transform: none"
+      ></div>
+      <button
+        class="flex-1 relative z-10 py-2 text-sm font-semibold transition-colors duration-200 text-brand-purple"
+        data-id="element-131"
+      >
+        Client</button
+      ><button
+        class="flex-1 relative z-10 py-2 text-sm font-semibold transition-colors duration-200 text-slate-500 hover:text-slate-700"
+        data-id="element-132"
+      >
+        Agent
+      </button>
+    </section> -->
+
+    <section class="w-full">
+      <form class="space-y-4" [formGroup]="registerForm">
+        <div class="input-group">
+          <label class="block font-medium mb-1.5 ml-1"> Full Name </label>
+          <div class="flex gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-user text-slate-400"
+              aria-hidden="true"
+            >
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <input
+              type="text"
+              formControlName="username"
+              id="name"
+              name="name"
+              required
+              placeholder="Jane Doe"
+            />
+          </div>
+        </div>
+        <div class="w-full">
+          <div class="input-group">
+            <label class="block font-medium mb-1.5 ml-1">Email Address</label>
+            <div class="flex gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-mail text-slate-400"
+                aria-hidden="true"
+              >
+                <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path>
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+              </svg>
+              <input
+                type="email"
+                formControlName="email"
+                id="email"
+                name="email"
+                required
+                placeholder="agent@estately.com"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="w-full">
+          <div class="input-group">
+            <label class="block font-medium mb-1.5 ml-1"> Password </label>
+            <div class="flex gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-lock text-slate-400"
+                aria-hidden="true"
+                data-id="element-168"
+              >
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input
+                type="password"
+                formControlName="password"
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+        </div>
+        <div class="w-full">
+          <div class="input-group">
+            <label class="block font-medium mb-1.5 ml-1">Confirm Password</label>
+            <div class="flex gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-shield-check text-slate-700"
+                aria-hidden="true"
+              >
+                <path
+                  d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+                ></path>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+              <input
+                type="password"
+                formControlName="confirmPassword"
+                id="confirm-password"
+                name="confirmPassword"
+                placeholder="••••••••"
+                required
+                autocomplete="off"
+              />
+            </div>
+          </div>
+        </div>
+        <button
+          class="inline-flex items-center justify-center font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none rounded-2xl bg-brand-purple bg-purple-500 hover:bg-purple-600 text-white focus:ring-brand-purple shadow-lg shadow-purple-200 h-14 px-8 text-lg w-full group mt-2"
+          type="submit"
+          data-id="element-50"
+          tabindex="0"
+          style="transform: none"
+          (click)="register()"
+        >
+          <span class="mr-2">Next Step</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-arrow-right group-hover:translate-x-1 transition-transform"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14"></path>
+            <path d="m12 5 7 7-7 7"></path>
+          </svg>
+        </button>
+      </form>
+    </section>
+
+    <footer class="text-center mt-8">
+      Already have an account?
+      <button
+        type="button"
+        class="font-bold text-red-400 cursor-pointer text-brand-coral hover:text-red-600 transition-colors"
+        (click)="switchToLogin()"
+      >
+        Sign in
+      </button>
+    </footer>
   </div>
 </div>

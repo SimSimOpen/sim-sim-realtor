@@ -16,6 +16,13 @@ export class AuthService {
       password,
     });
   }
+  registerAgent(username: string, email: string, password: string): Observable<void> {
+    return this.http.post<void>(`${AUTH_URL}/v1/register/agent`, {
+      username,
+      email,
+      password,
+    });
+  }
 
   checkTokenValidity(): Observable<boolean> {
     return this.http.get<boolean>(`${AUTH_URL}/access/validate-token`);
