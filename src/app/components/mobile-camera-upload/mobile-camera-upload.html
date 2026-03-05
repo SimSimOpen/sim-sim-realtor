@@ -8,7 +8,6 @@
       <p class="text-red-500 text-lg">Session has expired. Please try again.</p>
     </div>
   } @else {
-    <!-- Move video OUTSIDE any nested @if so ViewChild can always find it -->
     <video
       #video
       autoplay
@@ -16,6 +15,12 @@
       class="screen rounded"
       [style.display]="stream ? 'block' : 'none'"
     ></video>
+    <span
+      (click)="closeTab()"
+      class="absolute top-5 cursor-pointer right-5 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center z-999"
+    >
+      ✕
+    </span>
 
     @if (stream && !previewUrl) {
       <div class="buttons flex gap-2 mt-3">

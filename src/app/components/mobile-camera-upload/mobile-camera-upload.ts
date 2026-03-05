@@ -4,15 +4,17 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   Output,
   ViewChild,
 } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MediaService } from '../../shared/services/media.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { MEDIA_SERVICE_URL } from '../../shared/constants/urls';
 import { Property } from '../../shared/models/properties';
+import { AuthService } from '../../account/auth.service';
 
 @Component({
   selector: 'app-mobile-camera-upload',
@@ -39,6 +41,8 @@ export class MobileCameraUpload {
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
     private http: HttpClient,
+    private authService: AuthService,
+    private router: Router,
   ) {}
 
   async startCamera() {
@@ -165,5 +169,16 @@ export class MobileCameraUpload {
         },
       });
     });
+  }
+  closeTab() {
+    this.stream?.getTracks().forEach((track) => track.stop());
+    this.router.navigate(['/mobile/done']);
+  }
+  @HostListener('window:beforeunload')
+  onBeforeUnload() {
+    this.authService.clearStorage();
+  }
+  ngOnDestroy() {
+    this.authService.clearStorage();
   }
 }

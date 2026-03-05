@@ -45,6 +45,11 @@ export const routes: Routes = [
             (m) => m.MobileCameraUpload,
           ),
       },
+      {
+        path: 'done',
+        loadComponent: () =>
+          import('./components/close-manually/close-manually').then((m) => m.CloseManually),
+      },
     ],
   },
 ];
