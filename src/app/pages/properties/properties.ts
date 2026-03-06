@@ -4,6 +4,7 @@ import { ModalComponent } from '../../components/modal/modal.component';
 import { AddProperty } from '../../components/add-property-models/add-property/add-property';
 import { Property } from '../../shared/models/properties';
 import { ProductService } from '../../shared/services/product.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-properties',
@@ -21,6 +22,7 @@ export class Properties extends BaseModalComponent {
 
   constructor(
     private productService: ProductService,
+    private toast: ToastrService,
     private ctr: ChangeDetectorRef,
   ) {
     super();
@@ -35,8 +37,21 @@ export class Properties extends BaseModalComponent {
         this.properties = properties.content;
         this.ctr.detectChanges();
       },
-      error: (error) => {
-        console.error('Error fetching properties:', error);
+      error: () => {
+        this.toast.error('Error fetching properties', 'Error');
+      },
+    });
+  }
+
+  deleteProperty(id: any) {
+    this.productService.deleteProduct(id).subscribe({
+      next: (res) => {
+        this.toast.info('Property was deleted!', 'Info');
+        this.fetchAllProperties();
+        this.ctr.detectChanges();
+      },
+      error: () => {
+        this.toast.error('Error fetching properties', 'Error');
       },
     });
   }

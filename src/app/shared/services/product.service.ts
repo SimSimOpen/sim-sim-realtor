@@ -53,4 +53,9 @@ export class ProductService {
   createDraft(): Observable<Property> {
     return this.http.post<Property>(`${PRODUCT_URL}/v1/property/create-draft`, {});
   }
+  deleteProduct(property_id: number) {
+    return this.http.delete(`${PRODUCT_URL}/v1/property/${property_id}`, {
+      responseType: 'text',
+    });
+  }
 }
