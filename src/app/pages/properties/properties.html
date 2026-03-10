@@ -102,11 +102,7 @@
               <div class="flex items-center gap-4">
                 <img
                   class="h-16 w-24 object-cover rounded-lg border border-gray-200"
-                  [src]="
-                    property.medias && property.medias.length > 0
-                      ? getPropertiesCoverImage(property)
-                      : null
-                  "
+                  [src]="getPropertiesCoverImage(property)"
                   alt="product-image"
                 />
                 <div>
