@@ -13,12 +13,13 @@ import { MediaService } from '../../shared/services/media.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { MEDIA_SERVICE_URL } from '../../shared/constants/urls';
-import { Property } from '../../shared/models/properties';
+import { Property, PropertyMedia } from '../../shared/models/properties';
 import { AuthService } from '../../account/auth.service';
+import { UploadedFilesMobile } from '../add-property-models/uploaded-files-mobile';
 
 @Component({
   selector: 'app-mobile-camera-upload',
-  imports: [],
+  imports: [UploadedFilesMobile],
   templateUrl: './mobile-camera-upload.html',
   styleUrl: './mobile-camera-upload.scss',
 })
@@ -27,7 +28,7 @@ export class MobileCameraUpload {
   previewUrl?: string;
   previewBlob?: Blob;
   property_id!: number;
-  property: any;
+  property: Property = { medias: [] as PropertyMedia[] } as Property;
   sessionId!: string;
   sessionStatus: 'Active' | 'Expired' | 'Completed' | 'Loading' = 'Loading';
   token!: string;
@@ -169,6 +170,35 @@ export class MobileCameraUpload {
         },
       });
     });
+  }
+  uploadFile(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files);
+      let property_id = this.property_id ? this.property_id : (this.property?.id as number);
+      const formData: FormData = new FormData();
+      files.forEach((file) => {
+        formData.append('files', file);
+      });
+      const params = new HttpParams().append('property_id', property_id?.toString() || '');
+
+      this.http
+        .post<Property>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, {
+          params,
+          headers: { Authorization: `Bearer ${this.token}` },
+        })
+        .subscribe({
+          next: (response) => {
+            this.toast.success('Image uploaded successfully, property ID: ' + response.id);
+            this.property = response;
+            this.propertyIdUpdate.emit(this.property.id!);
+            this.cdr.detectChanges();
+          },
+          error: (error) => {
+            this.toast.error('Error uploading image');
+          },
+        });
+    }
   }
   closeTab() {
     this.stream?.getTracks().forEach((track) => track.stop());

@@ -23,7 +23,7 @@
     </span>
 
     @if (stream && !previewUrl) {
-      <div class="buttons flex gap-2 mt-3">
+      <div class="absolute bottom-60 flex gap-2 mt-3">
         <button (click)="takePhoto()" class="capture-button"></button>
       </div>
     }
@@ -35,5 +35,14 @@
         <button (click)="discard()">Retake</button>
       </div>
     }
+    <div class="absolute bottom-50">
+      @if (property && property.medias && !previewUrl && !previewBlob) {
+        <app-uploaded-files-mobile
+          [medias]="property.medias"
+          [token]="token"
+          (addMoreMedias)="uploadFile($event)"
+        ></app-uploaded-files-mobile>
+      }
+    </div>
   }
 </div>

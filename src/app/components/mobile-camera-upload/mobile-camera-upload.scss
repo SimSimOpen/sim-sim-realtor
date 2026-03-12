@@ -7,7 +7,7 @@
   position: relative;
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   .screen {
     position: absolute;
     inset: 0;
@@ -55,4 +55,13 @@ button {
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
+}
+.uploaded-files {
+  display: flex;
+  background: red;
+  position: relative;
+  width: 100px;
+  height: 100px;
+  max-width: 600px;
+  margin-top: 20px;
 }
