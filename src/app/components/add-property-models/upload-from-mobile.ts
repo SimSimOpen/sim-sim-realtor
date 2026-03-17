@@ -9,7 +9,7 @@ import { EnvironmentTs } from '../../environments/environment';
 import { UploadedFiles } from './uploaded-files';
 
 import { Subscription } from 'rxjs';
-import { Property } from '../../shared/models/properties';
+import { Property, PropertyMedia } from '../../shared/models/properties';
 
 @Component({
   selector: 'app-upload-from-mobile',
@@ -104,8 +104,8 @@ import { Property } from '../../shared/models/properties';
       </section>
     } @else {
       <section class="uploaded-images">
-        @if (property.medias && property.medias.length > 0) {
-          <app-uploaded-files [medias]="property.medias"></app-uploaded-files>
+        @if (uploadedMedias.length > 0) {
+          <app-uploaded-files [medias]="uploadedMedias"></app-uploaded-files>
         }
       </section>
     }
@@ -148,6 +148,9 @@ export class UploadFromMobile {
       },
     });
   }
+  get uploadedMedias(): PropertyMedia[] {
+    return this.property?.medias ?? [];
+  }
 
   createMediaSession() {
     this.mediaService.createMediaSession().subscribe({
@@ -184,7 +187,7 @@ export class UploadFromMobile {
             this.sessionStarted = true;
             this.updateComponent(message);
             break;
-          case 'Media uploaded':
+          case 'Media updated':
             this.fetchUpdatedProperty();
             this.updateComponent(message);
             break;

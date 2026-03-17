@@ -320,7 +320,7 @@
               <td>{{ property.type }}</td>
               <td>{{ property.numberOfRooms }}</td>
               <td>${{ property.price }}</td>
-              <td>{{ property.status }}</td>
+              <td>{{ common.formatEnum(property.offerType || '') }}</td>
               <td>{{ property.views }}</td>
               <td>{{ property.dateListed }}</td>
               <td class="flex gap-1">

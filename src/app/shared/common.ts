@@ -16,4 +16,11 @@ export class Common {
   setActiveMenuItem(menuItem: string) {
     this.activeMenuItem = menuItem;
   }
+
+  formatEnum(value: string): string {
+    return value
+      .split('_')
+      .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+      .join(' ');
+  }
 }

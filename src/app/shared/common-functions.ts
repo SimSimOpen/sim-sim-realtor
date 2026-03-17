@@ -1,5 +1,5 @@
 import { Router } from '@angular/router';
-import { Property } from './models/properties';
+import { Property, PropertyAmenities } from './models/properties';
 
 export function navigeteTo(url: string): void {
   const router = new Router();
@@ -17,10 +17,10 @@ export const propertiesList: Property[] = [
     address: '123 Main Street',
     country: 'USA',
     region: 'California',
-    city: 'Los Angeles',
+    place: 'Los Angeles',
     district: 'Downtown',
     type: 'Apartment',
-    status: 'For Sale',
+    offerType: 'For Sale',
     views: 120,
     area: 1200,
     medias: [],
@@ -28,15 +28,21 @@ export const propertiesList: Property[] = [
   },
 ];
 
-export const amenitiesList: string[] = [
-  'Swimming Pool',
-  'Gym',
-  'Wi-Fi',
-  'Air Conditioning',
-  'Parking',
-  'Pet Friendly',
-  'Garden',
-  'Balcony',
-  'Fireplace',
-  'Laundry Room',
+export const amenitiesList: { key: keyof PropertyAmenities; label: string }[] = [
+  { key: 'parking', label: 'Parking' },
+  { key: 'garden', label: 'Garden' },
+  { key: 'swimmingPool', label: 'Swimming Pool' },
+  { key: 'gym', label: 'Gym' },
+  { key: 'security', label: 'Security' },
+  { key: 'elevator', label: 'Elevator' },
+  { key: 'washingMachine', label: 'Washing Machine' },
+  { key: 'airConditioning', label: 'Air Conditioning' },
+  { key: 'internet', label: 'Wi-Fi' },
+  { key: 'refrigerator', label: 'Refrigerator' },
+  { key: 'dishwasher', label: 'Dishwasher' },
+  { key: 'microwave', label: 'Microwave' },
+  { key: 'parkingSpace', label: 'Parking Space' },
+  { key: 'tv', label: 'TV' },
+  { key: 'satellite', label: 'Satellite' },
+  { key: 'furniture', label: 'Furniture' },
 ];

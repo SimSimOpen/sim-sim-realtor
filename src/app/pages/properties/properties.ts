@@ -6,6 +6,7 @@ import { Property } from '../../shared/models/properties';
 import { ProductService } from '../../shared/services/product.service';
 import { ToastrService } from 'ngx-toastr';
 import { EnvironmentTs } from '../../environments/environment';
+import { Common } from '../../shared/common';
 
 @Component({
   selector: 'app-properties',
@@ -25,6 +26,7 @@ export class Properties extends BaseModalComponent {
     private productService: ProductService,
     private toast: ToastrService,
     private ctr: ChangeDetectorRef,
+    public common: Common,
   ) {
     super();
   }
@@ -35,7 +37,12 @@ export class Properties extends BaseModalComponent {
   fetchAllProperties() {
     this.productService.getAllProperties(this.page, this.size, this.sort).subscribe({
       next: (properties) => {
-        this.properties = properties.content;
+        this.properties = properties.content.map((property) => {
+          const place = (property as any)['location'][0];
+          const district = (property as any)['location'][1];
+          const region = (property as any)['location'][2];
+          return { ...property, place, district, region };
+        });
         this.ctr.detectChanges();
       },
       error: () => {
