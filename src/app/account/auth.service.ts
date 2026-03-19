@@ -42,22 +42,23 @@ export class AuthService {
   }
 
   storeToken(token: string) {
-    localStorage.setItem('authToken', token);
+    sessionStorage.setItem('authToken', token);
   }
 
   getToken() {
-    return localStorage.getItem('authToken');
+    return sessionStorage.getItem('authToken');
   }
 
   setUsername(username: string) {
-    localStorage.setItem('username', username);
+    sessionStorage.setItem('username', username);
   }
+
   getUsername() {
-    return localStorage.getItem('username');
+    return sessionStorage.getItem('username');
   }
 
   clearStorage() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('username');
+    sessionStorage.removeItem('authToken');
+    sessionStorage.removeItem('username');
   }
 }

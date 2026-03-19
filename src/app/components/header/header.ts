@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from '../../account/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -6,4 +7,13 @@ import { Component } from '@angular/core';
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
-export class Header {}
+export class Header {
+  username: string = 'Thomas Anderson';
+
+  constructor(private authService: AuthService) {
+    const storedUsername = authService.getUsername();
+    if (storedUsername) {
+      this.username = storedUsername;
+    }
+  }
+}

@@ -32,7 +32,7 @@ export class Dashboard extends BaseModalComponent {
   recentProperties = propertiesList;
 
   fetchAllProperties() {
-    this.productService.getAllProperties(this.page, this.size, this.sort).subscribe({
+    this.productService.getAgentsProperties(this.page, this.size, this.sort).subscribe({
       next: (properties) => {
         this.recentProperties = properties.content;
         this.ctr.detectChanges();

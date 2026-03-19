@@ -23,6 +23,13 @@ export class ProductService {
       property,
     );
   }
+  getAgentsProperties(page: number, size: number, sort?: string): Observable<Page<Property>> {
+    let params = new HttpParams().append('page', page.toString()).append('size', size.toString());
+    if (sort) {
+      params = params.append('sort', sort);
+    }
+    return this.http.get<Page<Property>>(`${PRODUCT_URL}/v1/property/agents-all`, { params });
+  }
 
   getAllProperties(page: number, size: number, sort?: string): Observable<Page<Property>> {
     let params = new HttpParams().append('page', page.toString()).append('size', size.toString());
@@ -31,6 +38,7 @@ export class ProductService {
     }
     return this.http.get<Page<Property>>(`${PRODUCT_URL}/v1/property/all`, { params });
   }
+
   getPropertyById(id: number): Observable<Property> {
     return this.http.get<Property>(`${PRODUCT_URL}/v1/property/${id}`);
   }

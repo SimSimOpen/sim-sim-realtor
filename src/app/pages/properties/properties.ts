@@ -35,7 +35,7 @@ export class Properties extends BaseModalComponent {
   }
 
   fetchAllProperties() {
-    this.productService.getAllProperties(this.page, this.size, this.sort).subscribe({
+    this.productService.getAgentsProperties(this.page, this.size, this.sort).subscribe({
       next: (properties) => {
         this.properties = properties.content.map((property) => {
           const place = (property as any)['location'][0];
