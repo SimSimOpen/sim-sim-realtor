@@ -2,3 +2,13 @@
 
 @import 'tailwindcss';
 @import 'ngx-toastr/toastr';
+
+.next-button:hover,
+.prev-button:hover {
+  background: blue;
+  color: #fff;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}

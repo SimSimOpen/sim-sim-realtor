@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
   selector: 'app-uploaded-files',
   template: `<div>
     <div
-      class="relative group aspect-video rounded-xl overflow-hidden border-2 border-blue-200 bg-gray-100"
+      class="relative max-w-167 group aspect-video rounded-xl overflow-hidden border-2 border-blue-200 bg-gray-100"
     >
       <img [src]="medias[0]?.mediaUrl" alt="Cover photo" class="w-full h-full object-cover" />
       <div class="absolute inset-0 bg-linear-to-t from-black/50 to-transparent"></div>
@@ -41,7 +41,7 @@ import { ToastrService } from 'ngx-toastr';
     <div class="grid grid-cols-4 gap-3 mt-4">
       @for (media of medias.slice(1); track $index) {
         <div
-          class="relative group aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-100"
+          class="relative group max-w-40 aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-100"
         >
           <img [src]="media.mediaUrl" alt="Photo 2" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
@@ -77,7 +77,7 @@ import { ToastrService } from 'ngx-toastr';
       }
       @if (hasAddMoreMediasListener) {
         <label
-          class="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+          class="aspect-square w-40 h-40 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
         >
           <input
             type="file"

@@ -116,7 +116,6 @@ export class AddProperty {
   fetchRegions() {
     this.locationService.getRegions().subscribe({
       next: (regions) => {
-        console.log('Fetched regions:', regions);
         this.regions = regions;
         this.ctr.detectChanges();
       },
@@ -130,7 +129,6 @@ export class AddProperty {
     const regionId = typeof $event === 'number' ? $event : $event.target.value;
     this.locationService.getDistrictsByRegion(regionId).subscribe({
       next: (districts) => {
-        console.log('Fetched districts:', districts);
         this.districts = { available: true, list: districts };
         this.ctr.detectChanges();
       },
@@ -143,7 +141,6 @@ export class AddProperty {
   fetchPlaces(districtId: number) {
     this.locationService.getPlacesByDistrict(districtId).subscribe({
       next: (places) => {
-        console.log('Fetched places:', places);
         this.places = { available: true, list: places };
         this.ctr.detectChanges();
       },

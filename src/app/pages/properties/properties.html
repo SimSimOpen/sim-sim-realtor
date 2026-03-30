@@ -7,7 +7,7 @@
     <div class="flex items-center">
       <button
         class="bg-blue-700 text-white shadow-sm py-2 px-5 font-semibold hover:shadow-md hover:bg-blue-800 flex items-center space-x-1"
-        (click)="openModal()"
+        (click)="openAddPropertyModal()"
       >
         + Add Property
       </button>
@@ -97,7 +97,7 @@
       </thead>
       <tbody>
         @for (property of properties; track $index) {
-          <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-pointer">
+          <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-defualt">
             <td>
               <div class="flex items-center gap-4">
                 <img
@@ -127,7 +127,7 @@
                       ></path>
                       <circle cx="12" cy="10" r="3"></circle>
                     </svg>
-                    <span class="truncate">
+                    <span>
                       <span class="text-blue-600">{{ property.district }} </span> •
                       <span class="text-green-600">{{ property.region }}</span> •
                       <span class="text-purple-600">{{ property.place }}</span>
@@ -139,7 +139,7 @@
             <td class="capitalize text-sm text-gray-700">{{ property.type?.toLowerCase() }}</td>
             <td>
               <div class="flex items-center gap-3 text-sm text-gray-600">
-                <span class="flex items-center gap-1">
+                <span class="flex items-center gap-1" style="cursor: pointer">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
@@ -210,11 +210,12 @@
             <td class="text-sm font-semibold text-gray-900">${{ property.price }}</td>
             <td class="text-sm text-gray-700">{{ common.formatEnum(property.offerType || '') }}</td>
             <td>{{ property.views }}</td>
-            <td>{{ property.dateListed }}</td>
+            <td>{{ publishedDate(property) | date: 'dd-MM-yyyy' }}</td>
             <td>
               <div class="flex gap-1 items-center justify-start">
                 <button
-                  class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                  class="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-blue-50 rounded-md transition-colors"
+                  (click)="openViewPropertyModal(property)"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -237,7 +238,7 @@
                   </svg>
                 </button>
                 <button
-                  class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                  class="p-2 cursor-pointer text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -259,7 +260,7 @@
                   </svg>
                 </button>
                 <button
-                  class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                  class="p-2 cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                   (click)="deleteProperty(property.id)"
                 >
                   <svg
@@ -292,10 +293,25 @@
   </section>
 
   <section class="pagination shadow-sm flex justify-between items-center text-gray-600">
-    <span>Showing 1 to 10 of 50 properties</span>
+    <span>
+      Showing {{ paginationRange.from }} to {{ paginationRange.to }} of
+      {{ paginationRange.total }} properties
+    </span>
     <div class="flex gap-2">
-      <button class="border rounded px-2 py-1 cursor-pointer border-gray-300">Prev</button>
-      <button class="border rounded px-2 py-1 cursor-pointer border-gray-300">Next</button>
+      <button
+        [disabled]="pagination.totalPages <= 1"
+        class="border rounded px-2 py-1 cursor-pointer border-gray-300 next-button"
+        (click)="prevPage()"
+      >
+        Prev
+      </button>
+      <button
+        [disabled]="pagination.totalPages <= 1"
+        class="border rounded px-2 py-1 cursor-pointer border-gray-300 prev-button"
+        (click)="nextPage()"
+      >
+        Next
+      </button>
     </div>
   </section>
 </div>
@@ -309,4 +325,13 @@
     (closeModal)="closeModal()"
     (updatePropertiesList)="fetchAllProperties()"
   ></app-add-property>
+</app-modal>
+
+<app-modal
+  [isVisible]="isViewPropertyModalVisible"
+  (close)="closeModal()"
+  [closeOnBackdropClick]="true"
+  [showCloseButton]="false"
+>
+  <app-view-property [property]="selectedProperty" (closeModal)="closeModal()"></app-view-property>
 </app-modal>

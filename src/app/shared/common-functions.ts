@@ -1,5 +1,6 @@
 import { Router } from '@angular/router';
 import { Property, PropertyAmenities } from './models/properties';
+import { ListingStatus, PropertyType } from './enums/PropertyStatus';
 
 export function navigeteTo(url: string): void {
   const router = new Router();
@@ -19,12 +20,13 @@ export const propertiesList: Property[] = [
     region: 'California',
     place: 'Los Angeles',
     district: 'Downtown',
-    type: 'Apartment',
+    type: PropertyType.APARTMENT,
     offerType: 'For Sale',
     views: 120,
     area: 1200,
     medias: [],
     dateListed: '2024-06-01',
+    listingStatus: ListingStatus.DRAFT,
   },
 ];
 

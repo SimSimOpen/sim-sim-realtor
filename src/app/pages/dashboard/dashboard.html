@@ -304,7 +304,7 @@
         </thead>
         <tbody>
           @for (property of recentProperties; track $index) {
-            <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-pointer">
+            <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-default">
               <td>
                 <div class="flex items-center gap-4">
                   <img
@@ -317,16 +317,17 @@
                   </div>
                 </div>
               </td>
-              <td>{{ property.type }}</td>
+              <td class="capitalize text-sm text-gray-700">{{ property.type?.toLowerCase() }}</td>
               <td>{{ property.numberOfRooms }}</td>
               <td>${{ property.price }}</td>
-              <td>{{ common.formatEnum(property.offerType || '') }}</td>
+              <td class="text-sm text-gray-700">
+                {{ common.formatEnum(property.offerType || '') }}
+              </td>
               <td>{{ property.views }}</td>
-              <td>{{ property.dateListed }}</td>
+              <td>{{ property.dateListed | date: 'dd-MM-yyyy' }}</td>
               <td class="flex gap-1">
                 <button
-                  class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                  data-id="element-255"
+                  class="p-2 cursor-pointer text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

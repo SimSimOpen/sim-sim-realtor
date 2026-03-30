@@ -1,3 +1,5 @@
+import { ListingStatus, OccupancyStatus, PropertyType } from '../enums/PropertyStatus';
+
 export interface Property {
   id?: number;
   title: string;
@@ -9,11 +11,13 @@ export interface Property {
   region?: string;
   place?: string;
   district?: string;
-  type?: string; // e.g., 'Apartment', 'House', etc.
+  type?: PropertyType; // e.g., 'Apartment', 'House', etc.
   offerType?: string; // e.g., 'For Sale', 'For Rent', etc.
   views?: number;
   area?: number; // in square feet
   medias?: PropertyMedia[];
+  listingStatus: ListingStatus;
+  occupancyStatus?: OccupancyStatus; // e.g., 'Vacant', 'Occupied'
   dateListed?: string;
 }
 

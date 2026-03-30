@@ -1,0 +1,18 @@
+.view-property-component {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.hide-scrollbar {
+  // For Firefox
+  scrollbar-width: none; // hides scrollbar
+  -ms-overflow-style: none; // IE 10+
+
+  // For WebKit (Chrome, Safari, Edge)
+  &::-webkit-scrollbar {
+    display: none; // hides scrollbar
+  }
+
+  // Keep scrolling possible
+  overflow: auto;
+}

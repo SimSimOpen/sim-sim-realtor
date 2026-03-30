@@ -7,10 +7,11 @@ import { AddProperty } from '../../components/add-property-models/add-property/a
 import { ProductService } from '../../shared/services/product.service';
 import { Property } from '../../shared/models/properties';
 import { EnvironmentTs } from '../../environments/environment';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ModalComponent, AddProperty],
+  imports: [ModalComponent, AddProperty, CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -34,7 +35,11 @@ export class Dashboard extends BaseModalComponent {
   fetchAllProperties() {
     this.productService.getAgentsProperties(this.page, this.size, this.sort).subscribe({
       next: (properties) => {
-        this.recentProperties = properties.content;
+        this.recentProperties = properties.content.map((property) => {
+          const publishedDate = (property as any)['updatedAt'];
+          property.dateListed = publishedDate;
+          return property;
+        });
         this.ctr.detectChanges();
       },
       error: (error) => {
