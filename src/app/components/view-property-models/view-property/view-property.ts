@@ -9,14 +9,16 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { Property } from '../../shared/models/properties';
+import { Property } from '../../../shared/models/properties';
 import { CommonModule } from '@angular/common';
-import { EnvironmentTs } from '../../environments/environment';
-import { ListingStatus, OfferType } from '../../shared/enums/PropertyStatus';
+import { EnvironmentTs } from '../../../environments/environment';
+import { ListingStatus, OfferType } from '../../../shared/enums/PropertyStatus';
+import { AboutAgent } from '../view-property-agent';
+import { AboutProperty } from '../view-property-about';
 
 @Component({
   selector: 'app-view-property',
-  imports: [CommonModule],
+  imports: [CommonModule, AboutAgent, AboutProperty],
   templateUrl: './view-property.html',
   styleUrl: './view-property.scss',
 })
@@ -37,11 +39,17 @@ export class ViewProperty {
   arrow: 'down' | 'up' = 'down';
   private _scrollContainer?: ElementRef<HTMLDivElement>;
   private scrollListener?: () => void; // store reference
+  hasScroll: boolean = false;
 
   constructor(private ctr: ChangeDetectorRef) {}
 
   private attachScrollListener(container: HTMLDivElement) {
     this.removeScrollListener();
+
+    setTimeout(() => {
+      this.hasScroll = container.scrollHeight > container.clientHeight;
+      this.ctr.detectChanges();
+    }, 200);
 
     this.scrollListener = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
@@ -84,12 +92,7 @@ export class ViewProperty {
     return this.selectedProperty?.offerType === OfferType.FOR_RENT;
   }
   get isPublished() {
-    return this.selectedProperty?.listingStatus === ListingStatus.PUBLISHED;
-  }
-  get hasScroll(): boolean {
-    const container = this._scrollContainer?.nativeElement;
-    if (!container) return false;
-    return container.scrollHeight > container.clientHeight;
+    return this.selectedProperty?.listingStatus === ListingStatus.ACTIVE;
   }
 
   ngOnDestroy() {

@@ -1,4 +1,4 @@
-<div class="view-property-component">
+<div class="view-property-component hide-scrollbar">
   <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6">
     <a
       class="inline-flex cursor-pointer items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
@@ -216,7 +216,7 @@
               <div>
                 <div class="text-sm text-gray-500">Area</div>
                 <div class="font-semibold text-gray-900" data-id="element-313">
-                  {{ selectedProperty?.area }} m2
+                  {{ selectedProperty?.area }} m²
                 </div>
               </div>
             </div>
@@ -288,7 +288,7 @@
               <circle cx="8.5" cy="8.5" r="1.5"></circle>
               <path d="M21 15l-5-5L5 21"></path>
             </svg>
-            {{ medias.length }} Images
+            {{ medias.length - 1 }} Images
           </div>
           @if (hasScroll) {
             <div class="sticky bottom-0 flex justify-center items-center w-full">
@@ -337,6 +337,12 @@
           }
         </div>
       }
+    </div>
+    <div class="grid grid-cols-3 mt-6 gap-4">
+      <div class="col-span-2">
+        <app-about-property [property]="selectedProperty"></app-about-property>
+      </div>
+      <app-about-agent [property]="selectedProperty"></app-about-agent>
     </div>
   </main>
 </div>

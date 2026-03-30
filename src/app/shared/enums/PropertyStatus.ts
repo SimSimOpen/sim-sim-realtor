@@ -1,6 +1,6 @@
 export enum ListingStatus {
   DRAFT = 'DRAFT',
-  PUBLISHED = 'PUBLISHED',
+  ACTIVE = 'ACTIVE',
   ARCHIVED = 'ARCHIVED',
 }
 export enum OccupancyStatus {

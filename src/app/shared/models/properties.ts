@@ -18,6 +18,7 @@ export interface Property {
   medias?: PropertyMedia[];
   listingStatus: ListingStatus;
   occupancyStatus?: OccupancyStatus; // e.g., 'Vacant', 'Occupied'
+  amenities?: PropertyAmenities;
   dateListed?: string;
 }
 

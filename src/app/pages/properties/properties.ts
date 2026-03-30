@@ -10,7 +10,7 @@ import { Common } from '../../shared/common';
 import { PaginationService } from '../../shared/services/pagination.service';
 import { CommonModule } from '@angular/common';
 import { ListingStatus } from '../../shared/enums/PropertyStatus';
-import { ViewProperty } from '../../components/view-property/view-property';
+import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
 
 @Component({
   selector: 'app-properties',
@@ -111,7 +111,7 @@ export class Properties extends BaseModalComponent {
   }
   publishedDate(property: Property) {
     console.log(JSON.stringify(property));
-    if (property.listingStatus == ListingStatus.PUBLISHED) return property.dateListed;
+    if (property.listingStatus == ListingStatus.ACTIVE) return property.dateListed;
     return '';
   }
 }
