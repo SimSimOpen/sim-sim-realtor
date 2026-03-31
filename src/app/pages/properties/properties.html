@@ -239,6 +239,7 @@
                 </button>
                 <button
                   class="p-2 cursor-pointer text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                  (click)="editProperty(property)"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -317,14 +318,16 @@
 </div>
 
 <app-modal
-  [isVisible]="isAddPropertyModalVisible"
+  [isVisible]="isAddEditPropertyModalVisible"
   (close)="closeModal()"
   [closeOnBackdropClick]="true"
 >
-  <app-add-property
+  <app-add-edit-property
     (closeModal)="closeModal()"
     (updatePropertiesList)="fetchAllProperties()"
-  ></app-add-property>
+    [editProperty]="selectedProperty !== null"
+    [editingProperty]="selectedProperty"
+  ></app-add-edit-property>
 </app-modal>
 
 <app-modal

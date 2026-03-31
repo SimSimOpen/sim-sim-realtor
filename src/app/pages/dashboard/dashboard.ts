@@ -3,15 +3,16 @@ import { Common } from '../../shared/common';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { propertiesList } from '../../shared/common-functions';
 import { ModalComponent } from '../../components/modal/modal.component';
-import { AddProperty } from '../../components/add-property-models/add-property/add-property';
+import { AddEditProperty } from '../../components/add-edit-property-models/add-edit-property/add-edit-property';
 import { ProductService } from '../../shared/services/product.service';
 import { Property } from '../../shared/models/properties';
 import { EnvironmentTs } from '../../environments/environment';
 import { CommonModule } from '@angular/common';
+import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ModalComponent, AddProperty, CommonModule],
+  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -20,6 +21,8 @@ export class Dashboard extends BaseModalComponent {
   page: number = 0;
   size: number = 5;
   sort: string = 'id,desc';
+  isViewPropertyModalVisible: boolean = false;
+  selectedProperty: Property | null = null;
 
   constructor(
     public common: Common,
@@ -38,6 +41,9 @@ export class Dashboard extends BaseModalComponent {
         this.recentProperties = properties.content.map((property) => {
           const publishedDate = (property as any)['updatedAt'];
           property.dateListed = publishedDate;
+          property.address = (property as any)['location'][3]
+            ? (property as any)['location'][3]
+            : 'No address';
           return property;
         });
         this.ctr.detectChanges();
@@ -63,5 +69,11 @@ export class Dashboard extends BaseModalComponent {
 
   override closeModal(): void {
     this.isAddPropertyModalVisible = false;
+    this.isViewPropertyModalVisible = false;
+    this.selectedProperty = null;
+  }
+  openViewPropertyModal(property: Property): void {
+    this.selectedProperty = property;
+    this.isViewPropertyModalVisible = true;
   }
 }

@@ -15,7 +15,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { MEDIA_SERVICE_URL } from '../../shared/constants/urls';
 import { Property, PropertyMedia } from '../../shared/models/properties';
 import { AuthService } from '../../account/auth.service';
-import { UploadedFilesMobile } from '../add-property-models/uploaded-files-mobile';
+import { UploadedFilesMobile } from '../add-edit-property-models/uploaded-files-mobile';
 
 @Component({
   selector: 'app-mobile-camera-upload',

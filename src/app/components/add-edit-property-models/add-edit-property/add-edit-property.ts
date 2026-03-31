@@ -1,4 +1,12 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { UploadFromComputer } from '../upload-from-computer';
 import { SelectMethod } from '../select-method';
 import { UploadFromMobile } from '../upload-from-mobile';
@@ -21,7 +29,7 @@ import {
 import { Common } from '../../../shared/common';
 
 @Component({
-  selector: 'app-add-property',
+  selector: 'app-add-edit-property',
   imports: [
     UploadFromComputer,
     UploadFromMobile,
@@ -32,12 +40,14 @@ import { Common } from '../../../shared/common';
     MoneyFormatDirective,
     AreaFormatDirective,
   ],
-  templateUrl: './add-property.html',
-  styleUrl: './add-property.scss',
+  templateUrl: './add-edit-property.html',
+  styleUrl: './add-edit-property.scss',
 })
-export class AddProperty {
+export class AddEditProperty implements OnChanges {
   @Output() closeModal = new EventEmitter<any>();
   @Output() updatePropertiesList = new EventEmitter<any>();
+  @Input() editProperty: boolean = false;
+  @Input() editingProperty: any = null;
   selectMethod: 'computer' | 'mobile' | '' = '';
   continueDetailsDisabled: boolean = true;
   steps: 1 | 2 = 1;
@@ -107,6 +117,52 @@ export class AddProperty {
     this.fetchRegions();
     this.fetchDistricts(11);
   }
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['editProperty']) {
+      this.steps = this.editProperty ? 2 : 1;
+      if (this.editingProperty) {
+        this.propertyForm.patchValue({
+          id: this.editingProperty.id,
+          title: this.editingProperty.title,
+          description: this.editingProperty.description,
+          price: this.editingProperty.price,
+          numberOfRooms: this.editingProperty.numberOfRooms,
+          area: this.editingProperty.area,
+          offerType: this.editingProperty.offerType,
+          category: this.editingProperty.category,
+          type: this.editingProperty.type,
+          listingStatus: this.editingProperty.listingStatus,
+          occupancyStatus: this.editingProperty.occupancyStatus,
+          location: {
+            country: 'Uzbekistan',
+            region_id: (this.editingProperty as any)['location'][2],
+            district_id: (this.editingProperty as any)['location'][1],
+            place_id: (this.editingProperty as any)['location'][0],
+            address: (this.editingProperty as any)['location'][3],
+          },
+          amenities: {
+            parking: this.editingProperty.amenities?.parking || false,
+            garden: this.editingProperty.amenities?.garden || false,
+            swimmingPool: this.editingProperty.amenities?.swimmingPool || false,
+            gym: this.editingProperty.amenities?.gym || false,
+            security: this.editingProperty.amenities?.security || false,
+            elevator: this.editingProperty.amenities?.elevator || false,
+            washingMachine: this.editingProperty.amenities?.washingMachine || false,
+            airConditioning: this.editingProperty.amenities?.airConditioning || false,
+            internet: this.editingProperty.amenities?.internet || false,
+            refrigerator: this.editingProperty.amenities?.refrigerator || false,
+            dishwasher: this.editingProperty.amenities?.dishwasher || false,
+            microwave: this.editingProperty.amenities?.microwave || false,
+            parkingSpace: this.editingProperty.amenities?.parkingSpace || false,
+            tv: this.editingProperty.amenities?.tv || false,
+            satellite: this.editingProperty.amenities?.satellite || false,
+            furniture: this.editingProperty.amenities?.furniture || false,
+          },
+        });
+        this.ctr.detectChanges();
+      }
+    }
+  }
 
   changeMethod(method: 'computer' | 'mobile' | '') {
     this.selectMethod = method;
@@ -151,9 +207,11 @@ export class AddProperty {
   }
 
   uploadProperty() {
+    const areaValue = String(this.propertyForm.value.area ?? '').replace(/[^0-9.]/g, '');
+    const priceValue = String(this.propertyForm.value.price ?? '').replace(/,/g, '');
     this.propertyForm.patchValue({
-      area: this.propertyForm.value.area.replace(/[^0-9.]/g, ''),
-      price: this.propertyForm.value.price.replace(/,/g, ''),
+      area: areaValue,
+      price: priceValue,
     });
     this.productService.updateProperty(this.propertyForm.value).subscribe({
       next: (response) => {

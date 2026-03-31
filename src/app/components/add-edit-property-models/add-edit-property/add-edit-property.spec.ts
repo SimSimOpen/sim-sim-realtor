@@ -1,18 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddProperty } from './add-property';
+import { AddEditProperty } from './add-edit-property';
 
-describe('AddProperty', () => {
-  let component: AddProperty;
-  let fixture: ComponentFixture<AddProperty>;
+describe('AddEditProperty', () => {
+  let component: AddEditProperty;
+  let fixture: ComponentFixture<AddEditProperty>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AddProperty]
-    })
-    .compileComponents();
+      imports: [AddEditProperty],
+    }).compileComponents();
 
-    fixture = TestBed.createComponent(AddProperty);
+    fixture = TestBed.createComponent(AddEditProperty);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { ModalComponent } from '../../components/modal/modal.component';
-import { AddProperty } from '../../components/add-property-models/add-property/add-property';
+import { AddEditProperty } from '../../components/add-edit-property-models/add-edit-property/add-edit-property';
 import { Property } from '../../shared/models/properties';
 import { ProductService } from '../../shared/services/product.service';
 import { ToastrService } from 'ngx-toastr';
@@ -14,13 +14,13 @@ import { ViewProperty } from '../../components/view-property-models/view-propert
 
 @Component({
   selector: 'app-properties',
-  imports: [ModalComponent, AddProperty, CommonModule, ViewProperty],
+  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty],
   templateUrl: './properties.html',
   styleUrl: './properties.scss',
   providers: [PaginationService],
 })
 export class Properties extends BaseModalComponent {
-  isAddPropertyModalVisible: boolean = false;
+  isAddEditPropertyModalVisible: boolean = false;
   isViewPropertyModalVisible: boolean = false;
   selectedProperty: Property | null = null;
 
@@ -85,14 +85,18 @@ export class Properties extends BaseModalComponent {
   }
 
   openAddPropertyModal(): void {
-    this.isAddPropertyModalVisible = true;
+    this.isAddEditPropertyModalVisible = true;
+  }
+  editProperty(property: Property): void {
+    this.selectedProperty = property;
+    this.isAddEditPropertyModalVisible = true;
   }
   openViewPropertyModal(property: Property): void {
     this.selectedProperty = property;
     this.isViewPropertyModalVisible = true;
   }
   override closeModal(): void {
-    this.isAddPropertyModalVisible = false;
+    this.isAddEditPropertyModalVisible = false;
     this.isViewPropertyModalVisible = false;
     this.selectedProperty = null;
   }

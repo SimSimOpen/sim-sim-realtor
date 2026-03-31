@@ -314,6 +314,9 @@
                   />
                   <div>
                     <div>{{ property.title }}</div>
+                    <div class="text-xs text-gray-500">
+                      {{ property?.address }}
+                    </div>
                   </div>
                 </div>
               </td>
@@ -328,6 +331,7 @@
               <td class="flex gap-1">
                 <button
                   class="p-2 cursor-pointer text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                  (click)="openViewPropertyModal(property)"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -362,5 +366,14 @@
   (close)="closeModal()"
   [closeOnBackdropClick]="true"
 >
-  <app-add-property (closeModal)="closeModal()"></app-add-property>
+  <app-add-edit-property (closeModal)="closeModal()"></app-add-edit-property>
+</app-modal>
+
+<app-modal
+  [isVisible]="isViewPropertyModalVisible"
+  (close)="closeModal()"
+  [closeOnBackdropClick]="true"
+  [showCloseButton]="false"
+>
+  <app-view-property [property]="selectedProperty" (closeModal)="closeModal()"></app-view-property>
 </app-modal>
