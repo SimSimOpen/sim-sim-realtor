@@ -56,7 +56,7 @@ export class AddEditProperty implements OnChanges {
   steps: 1 | 2 = 1;
   amenities = amenitiesList;
   regions: Region[] = [];
-  offerTypes = Object.values(OfferType);
+  offerTypes = Object.values(OfferType).reverse();
   categories = Object.values(PropertyCategory);
   types = Object.values(PropertyType);
   listingStatuses = Object.values(ListingStatus);
@@ -85,6 +85,8 @@ export class AddEditProperty implements OnChanges {
       price: [''],
       numberOfRooms: [''],
       area: [''],
+      floor: [''],
+      totalFloors: [''],
       offerType: [OfferType.FOR_RENT],
       category: [PropertyCategory.RESIDENTIAL],
       type: [PropertyType.APARTMENT],
@@ -130,6 +132,8 @@ export class AddEditProperty implements OnChanges {
           price: this.editingProperty.price,
           numberOfRooms: this.editingProperty.numberOfRooms,
           area: this.editingProperty.area,
+          floor: this.editingProperty.floor,
+          totalFloors: this.editingProperty.totalFloors,
           offerType: this.editingProperty.offerType,
           category: this.editingProperty.category,
           type: this.editingProperty.type,
@@ -162,12 +166,65 @@ export class AddEditProperty implements OnChanges {
         this.selectDistrict((this.editingProperty.location as any[])[1]);
         this.ctr.detectChanges();
       } else {
-        this.propertyForm.reset();
+        this.resetForm;
         this.steps = 1;
         this.selectMethod = '';
         this.ctr.detectChanges();
       }
     }
+  }
+  get filteredOccupancyStatuses(): string[] {
+    const offerType = this.propertyForm.get('offerType')?.value;
+
+    return this.occupancyStatuses.filter((status) => {
+      if (offerType === 'FOR_RENT' && status === 'SOLD') return false;
+      if (offerType === 'FOR_SALE' && status === 'RENTED') return false;
+      return true;
+    });
+  }
+
+  get resetForm() {
+    return (this.propertyForm = this.fb.group({
+      id: [null],
+      title: [''],
+      description: [''],
+      price: [''],
+      numberOfRooms: [''],
+      area: [''],
+      floor: [''],
+      totalFloors: [''],
+      offerType: [OfferType.FOR_RENT],
+      category: [PropertyCategory.RESIDENTIAL],
+      type: [PropertyType.APARTMENT],
+      listingStatus: [ListingStatus.DRAFT],
+      occupancyStatus: [OccupancyStatus.AVAILABLE],
+      location: this.fb.group({
+        country: ['Uzbekistan'],
+        region_id: [11],
+        district_id: [null],
+        place_id: [null],
+        address: [''],
+      }),
+      address: [''],
+      amenities: this.fb.group({
+        parking: [false],
+        garden: [false],
+        swimmingPool: [false],
+        gym: [false],
+        security: [false],
+        elevator: [false],
+        washingMachine: [false],
+        airConditioning: [false],
+        internet: [false],
+        refrigerator: [false],
+        dishwasher: [false],
+        microwave: [false],
+        parkingSpace: [false],
+        tv: [false],
+        satellite: [false],
+        furniture: [false],
+      }),
+    }));
   }
 
   changeMethod(method: 'computer' | 'mobile' | '') {
@@ -259,7 +316,7 @@ export class AddEditProperty implements OnChanges {
       next: (response) => {
         console.log('Property updated successfully:', response);
         this.updatePropertiesList.emit();
-        this.propertyForm.reset();
+        this.resetForm;
         this.steps = 1;
         this.selectMethod = '';
         this.closeModal.emit();

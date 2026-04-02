@@ -6,6 +6,8 @@ export interface Property {
   description: string;
   price: number;
   numberOfRooms: number;
+  floor?: number;
+  totalFloors?: number;
   address: string;
   country?: string;
   region?: string;

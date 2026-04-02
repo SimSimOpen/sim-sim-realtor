@@ -146,18 +146,21 @@
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class="lucide lucide-bed h-6 w-6"
+                  class="lucide lucide-door-open h-6 w-6"
                   aria-hidden="true"
-                  data-id="element-298"
+                  data-id="element-167"
                 >
-                  <path d="M2 4v16"></path>
-                  <path d="M2 8h18a2 2 0 0 1 2 2v10"></path>
-                  <path d="M2 17h20"></path>
-                  <path d="M6 8v9"></path>
+                  <path d="M11 20H2"></path>
+                  <path
+                    d="M11 4.562v16.157a1 1 0 0 0 1.242.97L19 20V5.562a2 2 0 0 0-1.515-1.94l-4-1A2 2 0 0 0 11 4.561z"
+                  ></path>
+                  <path d="M11 4H8a2 2 0 0 0-2 2v14"></path>
+                  <path d="M14 12h.01"></path>
+                  <path d="M22 20h-3"></path>
                 </svg>
               </div>
               <div>
-                <div class="text-sm text-gray-500">Big rooms</div>
+                <div class="text-sm text-gray-500">Rooms</div>
                 <div class="font-semibold text-gray-900">
                   {{ selectedProperty?.numberOfRooms }} Rooms
                 </div>
@@ -175,22 +178,25 @@
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class="lucide lucide-bath h-6 w-6"
+                  class="lucide lucide-layers h-6 w-6"
                   aria-hidden="true"
+                  data-id="element-173"
                 >
-                  <path d="M10 4 8 6"></path>
-                  <path d="M17 19v2"></path>
-                  <path d="M2 12h20"></path>
-                  <path d="M7 19v2"></path>
                   <path
-                    d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"
+                    d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"
+                  ></path>
+                  <path
+                    d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"
+                  ></path>
+                  <path
+                    d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"
                   ></path>
                 </svg>
               </div>
               <div>
-                <div class="text-sm text-gray-500">Bathrooms</div>
+                <div class="text-sm text-gray-500">Floor</div>
                 <div class="font-semibold text-gray-900">
-                  {{ selectedProperty?.numberOfRooms }} Baths
+                  {{ selectedProperty?.floor }} / {{ selectedProperty?.totalFloors }}
                 </div>
               </div>
             </div>

@@ -102,6 +102,34 @@
     } @else if (steps === 2) {
       <div class="w-full">
         <form [formGroup]="propertyForm">
+          <div class="inline-flex w-1/3 mb-4">
+            @for (type of offerTypes; track $index) {
+              <button
+                class="capitalize px-3 py-2 border rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors mr-3"
+                [ngClass]="{
+                  'bg-blue-600 text-white': propertyForm.get('offerType')?.value === type,
+                  'bg-white text-gray-700': propertyForm.get('offerType')?.value !== type,
+                }"
+                (click)="propertyForm.get('offerType')?.setValue(type)"
+              >
+                {{ common.formatEnum(type) }}
+              </button>
+            }
+          </div>
+          <div class="inline-flex justify-end mt-4 w-2/3">
+            @for (category of categories; track $index) {
+              <button
+                class="capitalize px-3 py-2 border rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors mr-3"
+                [ngClass]="{
+                  'bg-blue-600 text-white': propertyForm.get('category')?.value === category,
+                  'bg-white text-gray-700': propertyForm.get('category')?.value !== category,
+                }"
+                (click)="propertyForm.get('category')?.setValue(category)"
+              >
+                {{ common.formatEnum(category) }}
+              </button>
+            }
+          </div>
           <div class="basic-info">
             <h6 class="text-left text-lg font-semibold">Basic Information</h6>
             <div class="flex flex-col mt-4">
@@ -114,39 +142,69 @@
                 formControlName="title"
               />
             </div>
-            <div class="flex w-full justify-between mt-4 gap-5">
-              <div class="flex flex-col w-1/3">
-                <label class="mb-1" for="number-of-rooms">Number of rooms </label>
-                <input
-                  class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  type="text"
-                  id="number-of-rooms"
-                  placeholder="e.g, 3"
-                  formControlName="numberOfRooms"
-                  onlyNumbers
-                />
+            <div class="mt-4">
+              <div class="flex w-full mt-4 gap-5">
+                <div class="flex flex-col w-1/3">
+                  <label class="mb-1" for="number-of-rooms">Number of rooms </label>
+                  <input
+                    class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    type="text"
+                    id="number-of-rooms"
+                    placeholder="e.g, 3"
+                    formControlName="numberOfRooms"
+                    onlyNumbers
+                  />
+                </div>
+                <div class="flex flex-col w-1/3">
+                  <label class="mb-1" for="price">Price </label>
+                  <input
+                    class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    type="text"
+                    id="price"
+                    placeholder="e.g, 100000"
+                    formControlName="price"
+                    moneyFormat
+                  />
+                </div>
+                <div class="flex flex-col w-1/3">
+                  <label class="mb-1" for="area">Area </label>
+                  <input
+                    class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    type="text"
+                    id="area"
+                    placeholder="e.g, 1200 sqft"
+                    formControlName="area"
+                    areaFormat
+                  />
+                </div>
               </div>
-              <div class="flex flex-col w-1/3">
-                <label class="mb-1" for="price">Price </label>
-                <input
-                  class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  type="text"
-                  id="price"
-                  placeholder="e.g, 100000"
-                  formControlName="price"
-                  moneyFormat
-                />
-              </div>
-              <div class="flex flex-col w-1/3">
-                <label class="mb-1" for="area">Area </label>
-                <input
-                  class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  type="text"
-                  id="area"
-                  placeholder="e.g, 1200 sqft"
-                  formControlName="area"
-                  areaFormat
-                />
+              <div class="flex w-full mt-4 gap-5">
+                <div class="flex flex-wrap w-2/3">
+                  <label class="mb-1 w-full" for="floor">Floor </label>
+                  @for (num of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track $index) {
+                    <button
+                      class="capitalize px-3 py-2 border text-nowrap rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors mr-3"
+                      [ngClass]="{
+                        'bg-blue-600 text-white': propertyForm.get('floor')?.value === num,
+                        'bg-white text-gray-700': propertyForm.get('floor')?.value !== num,
+                      }"
+                      (click)="propertyForm.get('floor')?.setValue(num)"
+                    >
+                      {{ num === 10 ? '10+' : num }}
+                    </button>
+                  }
+                </div>
+                <div class="flex flex-col w-1/3">
+                  <label class="mb-1" for="total-floors">Total Floors </label>
+                  <input
+                    class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    type="text"
+                    id="total-floors"
+                    placeholder="e.g, 10"
+                    formControlName="totalFloors"
+                    onlyNumbers
+                  />
+                </div>
               </div>
             </div>
             <div class="flex flex-col mt-4">
@@ -160,81 +218,21 @@
               ></textarea>
             </div>
           </div>
-          <div class="type mt-5">
-            <h6 class="text-left text-lg font-semibold">Type</h6>
-            <div class="flex gap-5">
-              <div class="flex flex-col mt-4 w-1/3">
-                <label for="offerType" class="mb-2">OfferType</label>
-                <select
-                  name="offerType"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
-                  formControlName="offerType"
+          <div class="flex mt-4 w-full items-center gap-5 overflow-scroll">
+            <label for="description">Type: </label>
+            <div class="flex items-center overflow-scroll py-2">
+              @for (type of types; track $index) {
+                <button
+                  class="capitalize px-3 py-2 border text-nowrap rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors mr-3"
+                  [ngClass]="{
+                    'bg-blue-600 text-white': propertyForm.get('type')?.value === type,
+                    'bg-white text-gray-700': propertyForm.get('type')?.value !== type,
+                  }"
+                  (click)="propertyForm.get('type')?.setValue(type)"
                 >
-                  @for (type of offerTypes; track $index) {
-                    <option value="{{ type }}" class="capitalize">
-                      {{ common.formatEnum(type) }}
-                    </option>
-                  }
-                </select>
-              </div>
-              <div class="flex flex-col mt-4 w-1/3">
-                <label for="category" class="mb-2">Category</label>
-                <select
-                  name="category"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
-                  formControlName="category"
-                >
-                  @for (category of categories; track $index) {
-                    <option value="{{ category }}" class="capitalize">
-                      {{ common.formatEnum(category) }}
-                    </option>
-                  }
-                </select>
-              </div>
-              <div class="flex flex-col mt-4 w-1/3">
-                <label for="description" class="mb-2">Type</label>
-                <select
-                  name="type"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
-                  formControlName="type"
-                >
-                  @for (type of types; track $index) {
-                    <option value="{{ type }}" class="capitalize">
-                      {{ common.formatEnum(type) }}
-                    </option>
-                  }
-                </select>
-              </div>
-            </div>
-            <div class="flex gap-5">
-              <div class="flex flex-col mt-4 w-1/2">
-                <label for="status" class="mb-2">Status</label>
-                <select
-                  name="status"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
-                  formControlName="listingStatus"
-                >
-                  @for (status of listingStatuses; track $index) {
-                    <option value="{{ status }}" class="capitalize">
-                      {{ common.formatEnum(status) }}
-                    </option>
-                  }
-                </select>
-              </div>
-              <div class="flex flex-col mt-4 w-1/2">
-                <label for="occupancy" class="mb-2">Occupancy</label>
-                <select
-                  name="occupancy"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
-                  formControlName="occupancyStatus"
-                >
-                  @for (status of occupancyStatuses; track $index) {
-                    <option value="{{ status }}" class="capitalize">
-                      {{ common.formatEnum(status) }}
-                    </option>
-                  }
-                </select>
-              </div>
+                  {{ common.formatEnum(type) }}
+                </button>
+              }
             </div>
           </div>
           <div formGroupName="location" class="type mt-5">
@@ -326,6 +324,36 @@
                     {{ amenity.label }}
                   </span>
                 </label>
+              }
+            </div>
+          </div>
+          <div class="flex justify-between">
+            <div class="inline-flex mt-4 w-1/2">
+              @for (status of listingStatuses; track $index) {
+                <button
+                  class="capitalize px-3 py-2 border rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors mr-3"
+                  [ngClass]="{
+                    'bg-blue-600 text-white': propertyForm.get('listingStatus')?.value === status,
+                    'bg-white text-gray-700': propertyForm.get('listingStatus')?.value !== status,
+                  }"
+                  (click)="propertyForm.get('listingStatus')?.setValue(status)"
+                >
+                  {{ common.formatEnum(status) }}
+                </button>
+              }
+            </div>
+            <div class="inline-flex justify-end mt-4 w-1/2">
+              @for (status of filteredOccupancyStatuses; track $index) {
+                <button
+                  class="capitalize px-3 py-2 border rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors mr-3"
+                  [ngClass]="{
+                    'bg-blue-600 text-white': propertyForm.get('occupancyStatus')?.value === status,
+                    'bg-white text-gray-700': propertyForm.get('occupancyStatus')?.value !== status,
+                  }"
+                  (click)="propertyForm.get('occupancyStatus')?.setValue(status)"
+                >
+                  {{ common.formatEnum(status) }}
+                </button>
               }
             </div>
           </div>

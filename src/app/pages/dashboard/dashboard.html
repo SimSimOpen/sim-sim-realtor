@@ -321,7 +321,9 @@
                 </div>
               </td>
               <td class="capitalize text-sm text-gray-700">{{ property.type?.toLowerCase() }}</td>
-              <td>{{ property.numberOfRooms }}</td>
+              <td>
+                {{ property.numberOfRooms }} / {{ property.floor }} / {{ property.totalFloors }}
+              </td>
               <td>${{ property.price }}</td>
               <td class="text-sm text-gray-700">
                 {{ common.formatEnum(property.offerType || '') }}
