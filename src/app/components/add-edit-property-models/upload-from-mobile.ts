@@ -1,4 +1,12 @@
-import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { MediaService } from '../../shared/services/media.service';
 import { ProductService } from '../../shared/services/product.service';
@@ -111,11 +119,12 @@ import { Property, PropertyMedia } from '../../shared/models/properties';
     }
   </div>`,
 })
-export class UploadFromMobile {
+export class UploadFromMobile implements OnChanges {
   @Output() changeMethod = new EventEmitter<'computer' | 'mobile' | ''>();
   @Output() disableContinueDetails = new EventEmitter<void>();
-
   @Output() propertyIdUpdate = new EventEmitter<number>();
+  @Input() editingProperty!: Property;
+
   property!: Property;
 
   sessionId!: string;
@@ -135,18 +144,29 @@ export class UploadFromMobile {
     private sseService: SseService,
   ) {}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['editingProperty'] && this.editingProperty) {
+      this.property = this.editingProperty;
+    }
+  }
+
   ngAfterViewInit() {
-    this.productService.createDraft().subscribe({
-      next: (property) => {
-        this.property_id = property.id as number;
-        this.propertyIdUpdate.emit(this.property_id);
-        this.createMediaSession();
-      },
-      error: (err) => {
-        console.error('Error creating draft property:', err);
-        this.toast.error('Failed to create property draft');
-      },
-    });
+    if (!this.editingProperty) {
+      this.productService.createDraft().subscribe({
+        next: (property) => {
+          this.property_id = property.id as number;
+          this.propertyIdUpdate.emit(this.property_id);
+          this.createMediaSession();
+        },
+        error: (err) => {
+          this.toast.error('Failed to create property draft');
+        },
+      });
+    } else {
+      this.property_id = this.editingProperty.id as number;
+      this.propertyIdUpdate.emit(this.property_id);
+      this.createMediaSession();
+    }
   }
   get uploadedMedias(): PropertyMedia[] {
     return this.property?.medias ?? [];

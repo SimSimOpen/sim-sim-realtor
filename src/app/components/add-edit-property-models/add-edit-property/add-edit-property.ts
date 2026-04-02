@@ -4,6 +4,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
@@ -27,6 +28,7 @@ import {
   PropertyType,
 } from '../../../shared/enums/PropertyStatus';
 import { Common } from '../../../shared/common';
+import { UploadedFiles } from '../uploaded-files';
 
 @Component({
   selector: 'app-add-edit-property',
@@ -39,6 +41,7 @@ import { Common } from '../../../shared/common';
     OnlyNumbers,
     MoneyFormatDirective,
     AreaFormatDirective,
+    UploadedFiles,
   ],
   templateUrl: './add-edit-property.html',
   styleUrl: './add-edit-property.scss',
@@ -119,7 +122,6 @@ export class AddEditProperty implements OnChanges {
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes['editProperty']) {
-      this.steps = this.editProperty ? 2 : 1;
       if (this.editingProperty) {
         this.propertyForm.patchValue({
           id: this.editingProperty.id,
@@ -135,10 +137,7 @@ export class AddEditProperty implements OnChanges {
           occupancyStatus: this.editingProperty.occupancyStatus,
           location: {
             country: 'Uzbekistan',
-            region_id: (this.editingProperty as any)['location'][2],
-            district_id: (this.editingProperty as any)['location'][1],
-            place_id: (this.editingProperty as any)['location'][0],
-            address: (this.editingProperty as any)['location'][3],
+            address: (this.editingProperty.location as any[])[3] || '',
           },
           amenities: {
             parking: this.editingProperty.amenities?.parking || false,
@@ -159,6 +158,13 @@ export class AddEditProperty implements OnChanges {
             furniture: this.editingProperty.amenities?.furniture || false,
           },
         });
+        this.selectRegion((this.editingProperty.location as any[])[0]);
+        this.selectDistrict((this.editingProperty.location as any[])[1]);
+        this.ctr.detectChanges();
+      } else {
+        this.propertyForm.reset();
+        this.steps = 1;
+        this.selectMethod = '';
         this.ctr.detectChanges();
       }
     }
@@ -181,9 +187,44 @@ export class AddEditProperty implements OnChanges {
     });
   }
 
+  selectRegion(region: string) {
+    console.log('Region is', region);
+    const regionId = this.regions.find((r) => r.name_en === region)?.id;
+    this.propertyForm.patchValue({
+      location: {
+        region_id: regionId,
+      },
+    });
+  }
+
+  selectDistrict(district: string) {
+    console.log('District is', district);
+    return this.fetchDistricts(this.propertyForm.value.location.region_id).add(() => {
+      const districtId = this.districts.list.find((d) => d.name_en === district)?.id;
+      this.propertyForm.patchValue({
+        location: {
+          district_id: districtId,
+        },
+      });
+      this.selectPlace((this.editingProperty.location as any[])[2]);
+    });
+  }
+
+  selectPlace(place: string) {
+    console.log('Place is', place);
+    return this.fetchPlaces(this.propertyForm.value.location.district_id).add(() => {
+      const placeId = this.places.list.find((p) => p.name_en === place)?.id;
+      this.propertyForm.patchValue({
+        location: {
+          place_id: placeId,
+        },
+      });
+    });
+  }
+
   fetchDistricts($event: any | number) {
     const regionId = typeof $event === 'number' ? $event : $event.target.value;
-    this.locationService.getDistrictsByRegion(regionId).subscribe({
+    return this.locationService.getDistrictsByRegion(regionId).subscribe({
       next: (districts) => {
         this.districts = { available: true, list: districts };
         this.ctr.detectChanges();
@@ -194,8 +235,9 @@ export class AddEditProperty implements OnChanges {
     });
   }
 
-  fetchPlaces(districtId: number) {
-    this.locationService.getPlacesByDistrict(districtId).subscribe({
+  fetchPlaces($event: any | number) {
+    const districtId = typeof $event === 'number' ? $event : $event.target.value;
+    return this.locationService.getPlacesByDistrict(districtId).subscribe({
       next: (places) => {
         this.places = { available: true, list: places };
         this.ctr.detectChanges();

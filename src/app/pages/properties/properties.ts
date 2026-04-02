@@ -114,7 +114,6 @@ export class Properties extends BaseModalComponent {
     if (this.pagination.nextPage()) this.fetchAllProperties();
   }
   publishedDate(property: Property) {
-    console.log(JSON.stringify(property));
     if (property.listingStatus == ListingStatus.ACTIVE) return property.dateListed;
     return '';
   }

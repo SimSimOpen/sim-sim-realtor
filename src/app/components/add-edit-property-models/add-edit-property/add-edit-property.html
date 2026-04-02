@@ -60,7 +60,10 @@
       </div>
     } @else {
       <div class="flex justify-between p-6 items-center">
-        <h1 class="text-xl font-bold">Edit Property {{ propertyForm.value.id }}</h1>
+        <h1 class="text-xl font-bold">
+          Edit Property <span class="text-blue-500">{{ propertyForm.value.title }}</span> with ID:
+          {{ propertyForm.value.id }}
+        </h1>
       </div>
     }
   </header>
@@ -80,13 +83,20 @@
             (changeMethod)="changeMethod('')"
             (disableContinueDetails)="disableContinueDetails()"
             (propertyIdUpdate)="updatePropertyId($event)"
+            [editingProperty]="editingProperty"
           ></app-upload-from-computer>
         } @else if (selectMethod == 'mobile') {
           <app-upload-from-mobile
             (changeMethod)="changeMethod('')"
             (disableContinueDetails)="disableContinueDetails()"
             (propertyIdUpdate)="updatePropertyId($event)"
+            [editingProperty]="editingProperty"
           ></app-upload-from-mobile>
+        }
+        @if (editingProperty?.medias && editingProperty.medias.length > 0 && selectMethod === '') {
+          <div class="my-6">
+            <app-uploaded-files [medias]="editingProperty.medias"></app-uploaded-files>
+          </div>
         }
       </div>
     } @else if (steps === 2) {
@@ -335,7 +345,7 @@
         </button>
         <button
           class="flex items-center gap-2 px-3 py-2 rounded-md bg-blue-600 shadow-sm text-white text-sm cursor-pointer"
-          [disabled]="continueDetailsDisabled"
+          [disabled]="continueDetailsDisabled && !editingProperty"
           (click)="nextStep()"
         >
           Continue to Details

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MediaService } from '../../shared/services/media.service';
 import { Property } from '../../shared/models/properties';
@@ -84,24 +84,31 @@ import { UploadedFiles } from './uploaded-files';
     </section>
   </div>`,
 })
-export class UploadFromComputer {
+export class UploadFromComputer implements OnChanges {
   @Output() changeMethod = new EventEmitter<'computer' | 'mobile' | ''>();
   @Output() disableContinueDetails = new EventEmitter<void>();
   @Output() propertyIdUpdate = new EventEmitter<number>();
+  @Input() editingProperty!: Property;
 
-  property_id!: number;
   property!: Property;
 
   constructor(
     private mediaService: MediaService,
     private toast: ToastrService,
   ) {}
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['editingProperty'] && this.editingProperty) {
+      this.property = this.editingProperty;
+    }
+  }
 
   uploadFile(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const files = input.files;
-      let property_id = this.property_id ? this.property_id : (this.property?.id as number);
+      let property_id = this.editingProperty?.id
+        ? this.editingProperty.id
+        : (this.property?.id as number);
       this.mediaService.uploadImage(property_id, Array.from(files)).subscribe({
         next: (response) => {
           this.toast.success('Image uploaded successfully, property ID: ' + response.id);

@@ -14,7 +14,15 @@ import { amenitiesList } from '../../shared/common-functions';
       </div>
       <div class="p-6">
         <p class="text-gray-600 leading-relaxed">
-          {{ property?.description }}
+          <textarea
+            name="description"
+            id="description"
+            rows="4"
+            class="w-full resize-none outline-none cursor-default overflow-hidden"
+            readonly
+          >
+ {{ property?.description }} </textarea
+          >
         </p>
       </div>
     </div>
