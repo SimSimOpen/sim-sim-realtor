@@ -5,6 +5,7 @@ import {
   ElementRef,
   EventEmitter,
   HostListener,
+  inject,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -12,10 +13,11 @@ import { ToastrService } from 'ngx-toastr';
 import { MediaService } from '../../shared/services/media.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { MEDIA_SERVICE_URL } from '../../shared/constants/urls';
+import { MEDIA_SERVICE_URL, PRODUCT_URL } from '../../shared/constants/urls';
 import { Property, PropertyMedia } from '../../shared/models/properties';
 import { AuthService } from '../../account/auth.service';
 import { UploadedFilesMobile } from '../add-edit-property-models/uploaded-files-mobile';
+import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 
 @Component({
   selector: 'app-mobile-camera-upload',
@@ -36,15 +38,14 @@ export class MobileCameraUpload {
   @Output() propertyIdUpdate = new EventEmitter<number>();
   @ViewChild('video', { static: false }) videoRef!: ElementRef<HTMLVideoElement>;
 
-  constructor(
-    private mediaService: MediaService,
-    private toast: ToastrService,
-    private cdr: ChangeDetectorRef,
-    private route: ActivatedRoute,
-    private http: HttpClient,
-    private authService: AuthService,
-    private router: Router,
-  ) {}
+  private mediaService = inject(MediaService);
+  private productApiService = inject(ProductApiService);
+  private toast = inject(ToastrService);
+  private cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   async startCamera() {
     if (!this.videoRef?.nativeElement) {
@@ -148,28 +149,8 @@ export class MobileCameraUpload {
 
   ngOnInit() {
     this.sessionStatus = 'Loading';
-
-    this.route.queryParams.subscribe((params) => {
-      this.sessionId = params['session_id'];
-      this.property_id = +params['property_id'];
-      this.token = params['token'];
-
-      console.log('Params loaded:', this.sessionId, this.property_id); // debug
-
-      this.mediaService.checkSessionStatus(this.sessionId, this.token).subscribe({
-        next: () => {
-          this.sessionStatus = 'Active';
-          this.cdr.detectChanges();
-          // Start camera AFTER session confirmed & view is Active
-          setTimeout(() => this.startCamera(), 0);
-        },
-        error: (error) => {
-          console.error('Session check failed:', error);
-          this.sessionStatus = 'Expired';
-          this.cdr.detectChanges();
-        },
-      });
-    });
+    this.checkSessionValid();
+    this.getPropertyIfExists();
   }
   uploadFile(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -196,9 +177,48 @@ export class MobileCameraUpload {
           },
           error: (error) => {
             this.toast.error('Error uploading image');
+            this.toast.error(error.message || error, '', { timeOut: 15000 });
           },
         });
     }
+  }
+  getPropertyIfExists() {
+    this.http
+      .get<Property>(`${PRODUCT_URL}/v1/property/${this.property_id}`, {
+        headers: { Authorization: `Bearer ${this.token}` },
+      })
+      .subscribe({
+        next: (property) => {
+          this.property = property;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error fetching property:', err);
+        },
+      });
+  }
+  checkSessionValid() {
+    this.route.queryParams.subscribe((params) => {
+      this.sessionId = params['session_id'];
+      this.property_id = +params['property_id'];
+      this.token = params['token'];
+
+      console.log('Params loaded:', this.sessionId, this.property_id); // debug
+
+      this.mediaService.checkSessionStatus(this.sessionId, this.token).subscribe({
+        next: () => {
+          this.sessionStatus = 'Active';
+          this.cdr.detectChanges();
+          // Start camera AFTER session confirmed & view is Active
+          setTimeout(() => this.startCamera(), 0);
+        },
+        error: (error) => {
+          console.error('Session check failed:', error);
+          this.sessionStatus = 'Expired';
+          this.cdr.detectChanges();
+        },
+      });
+    });
   }
   closeTab() {
     this.stream?.getTracks().forEach((track) => track.stop());

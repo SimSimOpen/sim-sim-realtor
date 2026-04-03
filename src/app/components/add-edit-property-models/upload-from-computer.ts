@@ -29,7 +29,7 @@ import { ProductStateService } from '../../shared/services/product/state/product
           Change method
         </span>
       </header>
-      @if (!property()) {
+      @if (!property()?.medias || property()?.medias!.length === 0) {
         <main>
           <div
             class=" relative border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer"

@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   Output,
@@ -18,6 +19,7 @@ import { UploadedFiles } from './uploaded-files';
 
 import { Subscription } from 'rxjs';
 import { Property, PropertyMedia } from '../../shared/models/properties';
+import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 
 @Component({
   selector: 'app-upload-from-mobile',
@@ -110,8 +112,13 @@ import { Property, PropertyMedia } from '../../shared/models/properties';
           </div>
         </div>
       </section>
+      <section class="uploaded-images mt-2">
+        @if (uploadedMedias.length > 0) {
+          <app-uploaded-files></app-uploaded-files>
+        }
+      </section>
     } @else {
-      <section class="uploaded-images">
+      <section class="uploaded-images mt-2">
         @if (uploadedMedias.length > 0) {
           <app-uploaded-files></app-uploaded-files>
         }
@@ -119,13 +126,9 @@ import { Property, PropertyMedia } from '../../shared/models/properties';
     }
   </div>`,
 })
-export class UploadFromMobile implements OnChanges {
+export class UploadFromMobile {
   @Output() changeMethod = new EventEmitter<'computer' | 'mobile' | ''>();
   @Output() disableContinueDetails = new EventEmitter<void>();
-  @Output() propertyIdUpdate = new EventEmitter<number>();
-  @Input() editingProperty!: Property;
-
-  property!: Property;
 
   sessionId!: string;
   property_id!: number;
@@ -135,27 +138,22 @@ export class UploadFromMobile implements OnChanges {
   sessionStarted: boolean = false;
   sseSubscription?: Subscription;
 
-  constructor(
-    private mediaService: MediaService,
-    private cdr: ChangeDetectorRef,
-    private productApiService: ProductApiService,
-    private toast: ToastrService,
-    private authService: AuthService,
-    private sseService: SseService,
-  ) {}
+  private mediaService = inject(MediaService);
+  private cdr = inject(ChangeDetectorRef);
+  private productApiService = inject(ProductApiService);
+  private productStateService = inject(ProductStateService);
+  private toast = inject(ToastrService);
+  private authService = inject(AuthService);
+  private sseService = inject(SseService);
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['editingProperty'] && this.editingProperty) {
-      this.property = this.editingProperty;
-    }
-  }
+  property = this.productStateService.editingProperty;
 
   ngAfterViewInit() {
-    if (!this.editingProperty) {
+    if (!this.property()) {
       this.productApiService.createDraft().subscribe({
         next: (property) => {
+          this.productStateService.updateEditing(property);
           this.property_id = property.id as number;
-          this.propertyIdUpdate.emit(this.property_id);
           this.createMediaSession();
         },
         error: (err) => {
@@ -163,13 +161,12 @@ export class UploadFromMobile implements OnChanges {
         },
       });
     } else {
-      this.property_id = this.editingProperty.id as number;
-      this.propertyIdUpdate.emit(this.property_id);
+      this.property_id = this.property()?.id as number;
       this.createMediaSession();
     }
   }
   get uploadedMedias(): PropertyMedia[] {
-    return this.property?.medias ?? [];
+    return this.property()?.medias ?? [];
   }
 
   createMediaSession() {
@@ -189,7 +186,7 @@ export class UploadFromMobile implements OnChanges {
   fetchUpdatedProperty() {
     this.productApiService.getPropertyById(this.property_id).subscribe({
       next: (property) => {
-        this.property = property;
+        this.productStateService.updateEditing(property);
         this.cdr.detectChanges();
       },
       error: (err) => {
