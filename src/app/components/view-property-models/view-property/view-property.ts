@@ -42,7 +42,8 @@ export class ViewProperty {
   private scrollListener?: () => void; // store reference
   hasScroll: boolean = false;
 
-  selectedImage: string | null = null;
+  selectedImageIndex: number | null = null;
+  allImages: string[] = [];
 
   private productStateService = inject(ProductStateService);
   private ctr = inject(ChangeDetectorRef);
@@ -103,13 +104,43 @@ export class ViewProperty {
     this.removeScrollListener();
   }
 
-  openLightbox(imageUrl: string) {
-    this.selectedImage = imageUrl;
+  openLightbox(index: number) {
+    // Build full image list: cover image first, then gallery images
+    this.allImages = [
+      this.propertiesCoverImage,
+      ...(this.selectedProperty?.medias?.filter((m) => !m.isCoverImage).map((m) => m.mediaUrl) ??
+        []),
+    ];
+    this.selectedImageIndex = index;
     document.body.style.overflow = 'hidden';
   }
 
   closeLightbox() {
-    this.selectedImage = null;
+    this.selectedImageIndex = null;
+    this.allImages = [];
     document.body.style.overflow = '';
+  }
+
+  prevImage(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.selectedImageIndex !== null && this.selectedImageIndex > 0) {
+      this.selectedImageIndex--;
+    } else {
+      this.selectedImageIndex = this.allImages.length - 1; // wrap around
+    }
+  }
+
+  nextImage(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.selectedImageIndex !== null && this.selectedImageIndex < this.allImages.length - 1) {
+      this.selectedImageIndex++;
+    } else {
+      this.selectedImageIndex = 0; // wrap around
+    }
+  }
+
+  get selectedImage(): string | null {
+    if (this.selectedImageIndex === null) return null;
+    return this.allImages[this.selectedImageIndex] ?? null;
   }
 }

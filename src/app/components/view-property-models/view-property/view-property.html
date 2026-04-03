@@ -130,7 +130,7 @@
           [src]="propertiesCoverImage"
           alt="Property Image"
           class="w-full max-w-167 h-full max-h-96 object-cover rounded-xl border border-gray-300"
-          (click)="openLightbox(propertiesCoverImage)"
+          (click)="openLightbox(0)"
         />
         <div class="absolute bottom-2 flex justify-center w-full text-sm">
           <div
@@ -272,7 +272,7 @@
                 [src]="image?.mediaUrl"
                 alt="Property Image {{ $index + 1 }}"
                 class="w-full h-auto object-cover rounded-lg border border-gray-300"
-                (click)="openLightbox(image?.mediaUrl || '')"
+                (click)="openLightbox($index + 1)"
               />
             }
           }
@@ -355,13 +355,14 @@
     </div>
   </main>
 </div>
-@if (selectedImage) {
+@if (selectedImageIndex !== null && selectedImage) {
   <div
     class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
     (click)="closeLightbox()"
   >
+    <!-- Close button -->
     <button
-      class="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition"
+      class="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition z-10"
       (click)="closeLightbox()"
     >
       <svg
@@ -380,11 +381,59 @@
       </svg>
     </button>
 
+    <!-- Prev button -->
+    <button
+      class="absolute left-4 text-white bg-white/10 hover:bg-white/25 rounded-full p-3 transition z-10 disabled:opacity-30"
+      (click)="prevImage($event)"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m15 18-6-6 6-6" />
+      </svg>
+    </button>
+
+    <!-- Image -->
     <img
       [src]="selectedImage"
       alt="Full size"
-      class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+      class="max-w-[80vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
       (click)="$event.stopPropagation()"
     />
+
+    <!-- Next button -->
+    <button
+      class="absolute right-4 text-white bg-white/10 hover:bg-white/25 rounded-full p-3 transition z-10"
+      (click)="nextImage($event)"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m9 18 6-6-6-6" />
+      </svg>
+    </button>
+
+    <!-- Image counter -->
+    <div
+      class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm bg-black/40 px-4 py-1.5 rounded-full"
+    >
+      {{ selectedImageIndex + 1 }} / {{ allImages.length }}
+    </div>
   </div>
 }
