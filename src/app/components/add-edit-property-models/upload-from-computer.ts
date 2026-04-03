@@ -1,8 +1,18 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
 import { MediaService } from '../../shared/services/media.service';
 import { Property } from '../../shared/models/properties';
 import { UploadedFiles } from './uploaded-files';
+import { ProductApiService } from '../../shared/services/product/state/product-api.service';
+import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 
 @Component({
   selector: 'app-upload-from-computer',
@@ -19,7 +29,7 @@ import { UploadedFiles } from './uploaded-files';
           Change method
         </span>
       </header>
-      @if (!property) {
+      @if (!property()) {
         <main>
           <div
             class=" relative border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer"
@@ -58,7 +68,7 @@ import { UploadedFiles } from './uploaded-files';
         <section class="space-y-4">
           <div class="flex items-center justify-between">
             <p class="text-sm font-medium text-gray-700">
-              Uploaded Files {{ property.medias?.length }}
+              Uploaded Files {{ property()?.medias?.length }}
             </p>
             <label class="cursor-pointer">
               <input
@@ -73,47 +83,33 @@ import { UploadedFiles } from './uploaded-files';
               </span>
             </label>
           </div>
-          @if (property.medias && property.medias.length > 0) {
-            <app-uploaded-files
-              [medias]="property.medias"
-              (addMoreMedias)="uploadFile($event)"
-            ></app-uploaded-files>
+          @if (property()?.medias && property()?.medias!.length > 0) {
+            <app-uploaded-files (addMoreMedias)="uploadFile($event)"></app-uploaded-files>
           }
         </section>
       }
     </section>
   </div>`,
 })
-export class UploadFromComputer implements OnChanges {
+export class UploadFromComputer {
   @Output() changeMethod = new EventEmitter<'computer' | 'mobile' | ''>();
   @Output() disableContinueDetails = new EventEmitter<void>();
-  @Output() propertyIdUpdate = new EventEmitter<number>();
-  @Input() editingProperty!: Property;
 
-  property!: Property;
+  private mediaService = inject(MediaService);
+  private toast = inject(ToastrService);
+  private productStateService = inject(ProductStateService);
 
-  constructor(
-    private mediaService: MediaService,
-    private toast: ToastrService,
-  ) {}
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['editingProperty'] && this.editingProperty) {
-      this.property = this.editingProperty;
-    }
-  }
+  property = this.productStateService.editingProperty;
 
   uploadFile(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const files = input.files;
-      let property_id = this.editingProperty?.id
-        ? this.editingProperty.id
-        : (this.property?.id as number);
+      const property_id = this.property()?.id as number;
       this.mediaService.uploadImage(property_id, Array.from(files)).subscribe({
         next: (response) => {
           this.toast.success('Image uploaded successfully, property ID: ' + response.id);
-          this.property = response;
-          this.propertyIdUpdate.emit(this.property.id!);
+          this.productStateService.updateEditing(response);
         },
         error: (error) => {
           this.toast.error('Error uploading image');

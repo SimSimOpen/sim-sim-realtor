@@ -1,14 +1,16 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { Common } from '../../shared/common';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { propertiesList } from '../../shared/common-functions';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { AddEditProperty } from '../../components/add-edit-property-models/add-edit-property/add-edit-property';
-import { ProductService } from '../../shared/services/product.service';
+import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { Property } from '../../shared/models/properties';
 import { EnvironmentTs } from '../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
+import { PaginationService } from '../../shared/services/pagination.service';
+import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,40 +20,40 @@ import { ViewProperty } from '../../components/view-property-models/view-propert
 })
 export class Dashboard extends BaseModalComponent {
   isAddPropertyModalVisible: boolean = false;
-  page: number = 0;
-  size: number = 5;
-  sort: string = 'id,desc';
   isViewPropertyModalVisible: boolean = false;
-  selectedProperty: Property | null = null;
 
-  constructor(
-    public common: Common,
-    private productService: ProductService,
-    private ctr: ChangeDetectorRef,
-  ) {
-    super();
+  public common = inject(Common);
+  private productApiService = inject(ProductApiService);
+  private productStateService = inject(ProductStateService);
+
+  private ctr = inject(ChangeDetectorRef);
+  public pagination = inject(PaginationService);
+
+  ngOnInit() {
     this.fetchAllProperties();
   }
 
   recentProperties = propertiesList;
 
   fetchAllProperties() {
-    this.productService.getAgentsProperties(this.page, this.size, this.sort).subscribe({
-      next: (properties) => {
-        this.recentProperties = properties.content.map((property) => {
-          const publishedDate = (property as any)['updatedAt'];
-          property.dateListed = publishedDate;
-          property.address = (property as any)['location'][3]
-            ? (property as any)['location'][3]
-            : 'No address';
-          return property;
-        });
-        this.ctr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error fetching properties:', error);
-      },
-    });
+    this.productApiService
+      .getAgentsProperties(this.pagination.page, this.pagination.size, this.pagination.sort)
+      .subscribe({
+        next: (properties) => {
+          this.recentProperties = properties.content.map((property) => {
+            const publishedDate = (property as any)['updatedAt'];
+            property.dateListed = publishedDate;
+            property.address = (property as any)['location'][3]
+              ? (property as any)['location'][3]
+              : 'No address';
+            return property;
+          });
+          this.ctr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error fetching properties:', error);
+        },
+      });
   }
 
   getPropertiesCoverImage(property: Property) {
@@ -70,10 +72,10 @@ export class Dashboard extends BaseModalComponent {
   override closeModal(): void {
     this.isAddPropertyModalVisible = false;
     this.isViewPropertyModalVisible = false;
-    this.selectedProperty = null;
+    this.productStateService.clearEditing();
   }
   openViewPropertyModal(property: Property): void {
-    this.selectedProperty = property;
+    this.productStateService.startEditing(property);
     this.isViewPropertyModalVisible = true;
   }
 }

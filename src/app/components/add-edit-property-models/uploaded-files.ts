@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
-import { PropertyMedia } from '../../shared/models/properties';
-import { ProductService } from '../../shared/services/product.service';
+import { Component, computed, EventEmitter, inject, Output } from '@angular/core';
+import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ToastrService } from 'ngx-toastr';
+import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 
 @Component({
   selector: 'app-uploaded-files',
@@ -9,7 +9,7 @@ import { ToastrService } from 'ngx-toastr';
     <div
       class="relative max-w-167 group aspect-video rounded-xl overflow-hidden border-2 border-blue-200 bg-gray-100"
     >
-      <img [src]="medias[0]?.mediaUrl" alt="Cover photo" class="w-full h-full object-cover" />
+      <img [src]="medias()[0]?.mediaUrl" alt="Cover photo" class="w-full h-full object-cover" />
       <div class="absolute inset-0 bg-linear-to-t from-black/50 to-transparent"></div>
       <div class="absolute bottom-3 left-3">
         <span class="px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded"
@@ -18,7 +18,7 @@ import { ToastrService } from 'ngx-toastr';
       </div>
       <button
         class="absolute top-3 right-3 p-2 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
-        (click)="deleteImage(medias[0].id)"
+        (click)="deleteImage(medias()[0].id)"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +39,7 @@ import { ToastrService } from 'ngx-toastr';
       </button>
     </div>
     <div class="grid grid-cols-4 gap-3 mt-4">
-      @for (media of medias.slice(1); track $index) {
+      @for (media of medias().slice(1); track $index) {
         <div
           class="relative group max-w-40 aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-100"
         >
@@ -111,22 +111,21 @@ import { ToastrService } from 'ngx-toastr';
   </div>`,
 })
 export class UploadedFiles {
-  @Input() medias: PropertyMedia[] = [];
   @Output() addMoreMedias = new EventEmitter<Event>();
 
-  constructor(
-    private productService: ProductService,
-    private toast: ToastrService,
-    private ctr: ChangeDetectorRef,
-  ) {}
+  private productApiService = inject(ProductApiService);
+  private toast = inject(ToastrService);
+  private productStateService = inject(ProductStateService);
+
+  medias = computed(() => this.productStateService.editingProperty()?.medias ?? []);
 
   deleteImage(image_id: number) {
-    this.productService.deleteImage(image_id).subscribe({
+    this.productApiService.deleteImage(image_id).subscribe({
       next: (res) => {
-        this.medias = this.medias.filter((media) => media.id !== image_id);
-        console.log('Delete response:', res);
-        this.toast.info('Image deleted successfully');
-        this.ctr.detectChanges();
+        this.productStateService.updateEditing({
+          medias: this.medias().filter((media) => media.id !== image_id),
+        });
+        this.toast.info(res);
       },
       error: (error) => {
         console.error('Error deleting image:', error);

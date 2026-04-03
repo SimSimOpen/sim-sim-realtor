@@ -2,8 +2,10 @@ import {
   AfterViewInit,
   ChangeDetectorRef,
   Component,
+  computed,
   ElementRef,
   EventEmitter,
+  inject,
   Input,
   NgZone,
   Output,
@@ -15,6 +17,7 @@ import { EnvironmentTs } from '../../../environments/environment';
 import { ListingStatus, OfferType } from '../../../shared/enums/PropertyStatus';
 import { AboutAgent } from '../view-property-agent';
 import { AboutProperty } from '../view-property-about';
+import { ProductStateService } from '../../../shared/services/product/state/product-state.service';
 
 @Component({
   selector: 'app-view-property',
@@ -23,7 +26,6 @@ import { AboutProperty } from '../view-property-about';
   styleUrl: './view-property.scss',
 })
 export class ViewProperty {
-  @Input() property: Property | null = null;
   @Output() closeModal = new EventEmitter<any>();
 
   @ViewChild('scrollContainer') set scrollContainer(el: ElementRef<HTMLDivElement>) {
@@ -31,7 +33,6 @@ export class ViewProperty {
       this._scrollContainer = el;
       this.attachScrollListener(el.nativeElement);
     } else {
-      // element destroyed (@if became false)
       this.removeScrollListener();
       this.arrow = 'down'; // reset arrow
     }
@@ -41,7 +42,10 @@ export class ViewProperty {
   private scrollListener?: () => void; // store reference
   hasScroll: boolean = false;
 
-  constructor(private ctr: ChangeDetectorRef) {}
+  private productStateService = inject(ProductStateService);
+  private ctr = inject(ChangeDetectorRef);
+
+  property = computed(() => this.productStateService.editingProperty() as Property);
 
   private attachScrollListener(container: HTMLDivElement) {
     this.removeScrollListener();
@@ -59,8 +63,6 @@ export class ViewProperty {
     };
 
     container.addEventListener('scroll', this.scrollListener);
-
-    // Check after images load
     setTimeout(() => this.ctr.detectChanges(), 100);
   }
   private removeScrollListener() {
@@ -71,12 +73,12 @@ export class ViewProperty {
   }
 
   get selectedProperty() {
-    if (!this.property) return null;
-    const place = (this.property as any)['location'][0];
-    const district = (this.property as any)['location'][1];
-    const region = (this.property as any)['location'][2];
-    const publishedDate = (this.property as any)['updatedAt'];
-    return { ...this.property, place, district, region, dateListed: publishedDate };
+    if (!this.property()) return null;
+    const place = (this.property() as any)['location'][0];
+    const district = (this.property() as any)['location'][1];
+    const region = (this.property() as any)['location'][2];
+    const publishedDate = (this.property() as any)['updatedAt'];
+    return { ...this.property(), place, district, region, dateListed: publishedDate };
   }
 
   get propertiesCoverImage() {

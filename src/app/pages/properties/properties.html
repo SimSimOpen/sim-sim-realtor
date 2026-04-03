@@ -301,12 +301,12 @@
   (close)="closeModal()"
   [closeOnBackdropClick]="true"
 >
-  <app-add-edit-property
-    (closeModal)="closeModal()"
-    (updatePropertiesList)="fetchAllProperties()"
-    [editProperty]="selectedProperty !== null"
-    [editingProperty]="selectedProperty"
-  ></app-add-edit-property>
+  @if (isAddEditPropertyModalVisible) {
+    <app-add-edit-property
+      (closeModal)="closeModal()"
+      (updatePropertiesList)="fetchAllProperties()"
+    ></app-add-edit-property>
+  }
 </app-modal>
 
 <app-modal
@@ -315,5 +315,7 @@
   [closeOnBackdropClick]="true"
   [showCloseButton]="false"
 >
-  <app-view-property [property]="selectedProperty" (closeModal)="closeModal()"></app-view-property>
+  @if (isViewPropertyModalVisible) {
+    <app-view-property (closeModal)="closeModal()"></app-view-property>
+  }
 </app-modal>

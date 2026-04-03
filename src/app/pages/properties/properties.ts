@@ -1,9 +1,9 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { AddEditProperty } from '../../components/add-edit-property-models/add-edit-property/add-edit-property';
 import { Property } from '../../shared/models/properties';
-import { ProductService } from '../../shared/services/product.service';
+import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ToastrService } from 'ngx-toastr';
 import { EnvironmentTs } from '../../environments/environment';
 import { Common } from '../../shared/common';
@@ -11,6 +11,7 @@ import { PaginationService } from '../../shared/services/pagination.service';
 import { CommonModule } from '@angular/common';
 import { ListingStatus } from '../../shared/enums/PropertyStatus';
 import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
+import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 
 @Component({
   selector: 'app-properties',
@@ -22,25 +23,22 @@ import { ViewProperty } from '../../components/view-property-models/view-propert
 export class Properties extends BaseModalComponent {
   isAddEditPropertyModalVisible: boolean = false;
   isViewPropertyModalVisible: boolean = false;
-  selectedProperty: Property | null = null;
 
   properties: Property[] = [];
 
-  constructor(
-    private productService: ProductService,
-    private toast: ToastrService,
-    private ctr: ChangeDetectorRef,
-    public common: Common,
-    public pagination: PaginationService,
-  ) {
-    super();
-  }
+  private productApiService = inject(ProductApiService);
+  private productStateService = inject(ProductStateService);
+  private toast = inject(ToastrService);
+  public common = inject(Common);
+  public pagination = inject(PaginationService);
+  private ctr = inject(ChangeDetectorRef);
+
   ngOnInit() {
     this.fetchAllProperties();
   }
 
   fetchAllProperties() {
-    this.productService
+    this.productApiService
       .getAgentsProperties(this.pagination.page, this.pagination.size, this.pagination.sort)
       .subscribe({
         next: (properties) => {
@@ -63,11 +61,10 @@ export class Properties extends BaseModalComponent {
   }
 
   deleteProperty(id: any) {
-    this.productService.deleteProduct(id).subscribe({
+    this.productApiService.deleteProduct(id).subscribe({
       next: (res) => {
         this.toast.info('Property was deleted!', 'Info');
         this.fetchAllProperties();
-        this.ctr.detectChanges();
       },
       error: () => {
         this.toast.error('Error fetching properties', 'Error');
@@ -83,22 +80,25 @@ export class Properties extends BaseModalComponent {
     }
     return defaultPath;
   }
+  get isEditingProperty() {
+    return this.productStateService.editingProperty() !== null;
+  }
 
   openAddPropertyModal(): void {
     this.isAddEditPropertyModalVisible = true;
   }
   editProperty(property: Property): void {
-    this.selectedProperty = property;
+    this.productStateService.startEditing(property);
     this.isAddEditPropertyModalVisible = true;
   }
   openViewPropertyModal(property: Property): void {
-    this.selectedProperty = property;
+    this.productStateService.startEditing(property);
     this.isViewPropertyModalVisible = true;
   }
   override closeModal(): void {
     this.isAddEditPropertyModalVisible = false;
     this.isViewPropertyModalVisible = false;
-    this.selectedProperty = null;
+    this.productStateService.clearEditing();
   }
   get paginationRange() {
     var from = this.pagination.page * this.pagination.size + 1;

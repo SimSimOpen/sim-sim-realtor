@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { MediaService } from '../../shared/services/media.service';
-import { ProductService } from '../../shared/services/product.service';
+import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../account/auth.service';
 import { SseService } from '../../shared/services/sse.service';
@@ -113,7 +113,7 @@ import { Property, PropertyMedia } from '../../shared/models/properties';
     } @else {
       <section class="uploaded-images">
         @if (uploadedMedias.length > 0) {
-          <app-uploaded-files [medias]="uploadedMedias"></app-uploaded-files>
+          <app-uploaded-files></app-uploaded-files>
         }
       </section>
     }
@@ -138,7 +138,7 @@ export class UploadFromMobile implements OnChanges {
   constructor(
     private mediaService: MediaService,
     private cdr: ChangeDetectorRef,
-    private productService: ProductService,
+    private productApiService: ProductApiService,
     private toast: ToastrService,
     private authService: AuthService,
     private sseService: SseService,
@@ -152,7 +152,7 @@ export class UploadFromMobile implements OnChanges {
 
   ngAfterViewInit() {
     if (!this.editingProperty) {
-      this.productService.createDraft().subscribe({
+      this.productApiService.createDraft().subscribe({
         next: (property) => {
           this.property_id = property.id as number;
           this.propertyIdUpdate.emit(this.property_id);
@@ -187,7 +187,7 @@ export class UploadFromMobile implements OnChanges {
     });
   }
   fetchUpdatedProperty() {
-    this.productService.getPropertyById(this.property_id).subscribe({
+    this.productApiService.getPropertyById(this.property_id).subscribe({
       next: (property) => {
         this.property = property;
         this.cdr.detectChanges();

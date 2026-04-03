@@ -23,14 +23,13 @@
     </a>
     <div class="flex items-center gap-3" data-id="element-266">
       <button
-        class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-10 px-4 py-2 text-sm flex items-center gap-2"
+        class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-10 px-4 py-2 text-sm gap-2"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
           viewBox="0 0 24 24"
-          inline-flex
           fill="none"
           stroke="currentColor"
           stroke-width="2"
@@ -49,8 +48,7 @@
         Share
       </button>
       <button
-        class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-10 px-4 py-2 text-sm flex items-center gap-2"
-        data-id="element-88"
+        class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-10 px-4 py-2 text-sm gap-2"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -75,15 +73,18 @@
   </header>
   <main class="p-6">
     <div class="flex items-center gap-3 mb-2">
-      <span
-        class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200"
-      >
-        {{ property?.occupancyStatus?.toLowerCase() }}
-      </span>
+      @if (property().listingStatus === 'ACTIVE') {
+        <span
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200"
+        >
+          {{ property().occupancyStatus?.toLowerCase() }}
+        </span>
+      }
       <span
         class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-blue-50 text-blue-700 border-blue-200"
-        >{{ property?.type?.toLowerCase() }}</span
       >
+        {{ property().type?.toLowerCase() }}
+      </span>
     </div>
     <div class="title flex justify-between">
       <div class="">

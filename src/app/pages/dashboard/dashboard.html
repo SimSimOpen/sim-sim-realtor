@@ -377,5 +377,7 @@
   [closeOnBackdropClick]="true"
   [showCloseButton]="false"
 >
-  <app-view-property [property]="selectedProperty" (closeModal)="closeModal()"></app-view-property>
+  @if (isViewPropertyModalVisible) {
+    <app-view-property (closeModal)="closeModal()"></app-view-property>
+  }
 </app-modal>

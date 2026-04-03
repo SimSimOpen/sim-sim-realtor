@@ -1,14 +1,14 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { PRODUCT_URL } from '../constants/urls';
-import { Property } from '../models/properties';
-import { Page } from '../models/commont-models';
+import { PRODUCT_URL } from '../../../constants/urls';
+import { Property } from '../../../models/properties';
+import { Page } from '../../../models/commont-models';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ProductService {
+export class ProductApiService {
   constructor(private http: HttpClient) {}
 
   uploadProperty(property: Property): Observable<String> {
@@ -50,6 +50,9 @@ export class ProductService {
     });
     const params = new HttpParams().append('property_id', property_id.toString());
     return this.http.post<string>(`${PRODUCT_URL}/v1/property/add/images`, formData, { params });
+  }
+  getMediaCount(property_id: number): Observable<number> {
+    return this.http.get<number>(`${PRODUCT_URL}/v1/property/property-media-count/${property_id}`);
   }
 
   deleteImage(image_id: number): Observable<string> {

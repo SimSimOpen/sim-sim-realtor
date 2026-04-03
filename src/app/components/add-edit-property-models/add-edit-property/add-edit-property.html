@@ -1,6 +1,6 @@
 <div class="add-property-component">
   <header class="border-b border-gray-300">
-    @if (!editProperty) {
+    @if (!isEditingProperty) {
       <div class="flex justify-between p-6 items-center">
         <div>
           <h1 class="text-xl font-bold">Add New Property {{ propertyForm.value.id }}</h1>
@@ -82,20 +82,18 @@
           <app-upload-from-computer
             (changeMethod)="changeMethod('')"
             (disableContinueDetails)="disableContinueDetails()"
-            (propertyIdUpdate)="updatePropertyId($event)"
-            [editingProperty]="editingProperty"
           ></app-upload-from-computer>
         } @else if (selectMethod == 'mobile') {
           <app-upload-from-mobile
             (changeMethod)="changeMethod('')"
             (disableContinueDetails)="disableContinueDetails()"
-            (propertyIdUpdate)="updatePropertyId($event)"
-            [editingProperty]="editingProperty"
           ></app-upload-from-mobile>
         }
-        @if (editingProperty?.medias && editingProperty.medias.length > 0 && selectMethod === '') {
+        @if (
+          editingProperty()?.medias && editingProperty()?.medias!.length > 0 && selectMethod === ''
+        ) {
           <div class="my-6">
-            <app-uploaded-files [medias]="editingProperty.medias"></app-uploaded-files>
+            <app-uploaded-files></app-uploaded-files>
           </div>
         }
       </div>
@@ -218,9 +216,9 @@
               ></textarea>
             </div>
           </div>
-          <div class="flex mt-4 w-full items-center gap-5 overflow-scroll">
+          <div class="flex mt-4 w-full items-center gap-5 overflow-hidden">
             <label for="description">Type: </label>
-            <div class="flex items-center overflow-scroll py-2">
+            <div class="flex items-center overflow-x-scroll py-2">
               @for (type of types; track $index) {
                 <button
                   class="capitalize px-3 py-2 border text-nowrap rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors mr-3"
@@ -271,7 +269,7 @@
                   name="district"
                   class="block rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
                   formControlName="district_id"
-                  [disabled]="!districts.available"
+                  (change)="fetchPlaces($event)"
                 >
                   @for (district of districts.list; track $index) {
                     <option (click)="fetchPlaces(district.id)" value="{{ district.id }}">
@@ -286,7 +284,6 @@
                   name="city"
                   class="block rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
                   formControlName="place_id"
-                  [disabled]="!places.available"
                 >
                   @for (place of places.list; track $index) {
                     <option value="{{ place.id }}">{{ place.name_en }}</option>
@@ -373,7 +370,7 @@
         </button>
         <button
           class="flex items-center gap-2 px-3 py-2 rounded-md bg-blue-600 shadow-sm text-white text-sm cursor-pointer"
-          [disabled]="continueDetailsDisabled && !editingProperty"
+          [disabled]="continueDetailsDisabled && !editingProperty()"
           (click)="nextStep()"
         >
           Continue to Details
@@ -428,13 +425,14 @@
         <div class="flex gap-2">
           <button
             class="px-3 py-2 border rounded-md border-gray-300 text-sm cursor-pointer hover:bg-gray-200 transition-colors"
+            (click)="uploadProperty('draft')"
           >
             Save as Draft
           </button>
 
           <button
             class="px-3 py-2 border rounded-md bg-blue-600 shadow-sm text-white text-sm cursor-pointer hover:bg-blue-700 transition-colors"
-            (click)="uploadProperty()"
+            (click)="uploadProperty('publish')"
           >
             Publish Property
           </button>
