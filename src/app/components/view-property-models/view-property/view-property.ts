@@ -42,6 +42,8 @@ export class ViewProperty {
   private scrollListener?: () => void; // store reference
   hasScroll: boolean = false;
 
+  selectedImage: string | null = null;
+
   private productStateService = inject(ProductStateService);
   private ctr = inject(ChangeDetectorRef);
 
@@ -99,5 +101,15 @@ export class ViewProperty {
 
   ngOnDestroy() {
     this.removeScrollListener();
+  }
+
+  openLightbox(imageUrl: string) {
+    this.selectedImage = imageUrl;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeLightbox() {
+    this.selectedImage = null;
+    document.body.style.overflow = '';
   }
 }
