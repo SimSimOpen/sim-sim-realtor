@@ -1,16 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { PropertyFilter } from '../models/properties';
 import { PaginationService } from './pagination.service';
-import { ProductStateService } from './product/state/product-state.service';
 import { ProductApiService } from './product/state/product-api.service';
 import { ToastrService } from 'ngx-toastr';
+import { Common } from '../common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SearchAndFilterService {
   search = '';
-  filter: PropertyFilter = {
+  public filter: PropertyFilter = {
     search: '',
     listingStatus: null,
     type: null,
@@ -19,19 +19,21 @@ export class SearchAndFilterService {
   public pagination = inject(PaginationService);
   private productApiService = inject(ProductApiService);
   private toast = inject(ToastrService);
+  private common = inject(Common);
 
   onFilterChange(field: keyof PropertyFilter, $event: any) {
     const value = $event.target.value === 'all' ? '' : $event.target.value;
-    if (field === 'search') {
-      this.filter.search = this.search;
-    } else {
-      this.filter = { ...this.filter, [field]: value };
-    }
+    this.filter = { ...this.filter, [field]: value };
     this.filterProperties();
   }
 
   filterProperties() {
     if (Object.values(this.filter).every((v) => v === '' || v === null)) {
+      this.common.productStateService.fetchProperties(
+        this.pagination.page,
+        this.pagination.size,
+        this.pagination.sort,
+      );
       return;
     }
     this.productApiService
@@ -45,7 +47,7 @@ export class SearchAndFilterService {
         next: (properties) => {
           this.pagination.totalCounts = properties.totalElements;
           this.pagination.totalPages = properties.totalPages;
-          return { ...properties.content, ...this.pagination };
+          this.common.convertPropertiesWithShortAddress(properties.content);
         },
         error: () => {
           this.toast.error('Error filtering properties', 'Error');

@@ -34,7 +34,7 @@
 
   <section class="search-filter p-5 flex justify-between items-center">
     <div class="search-bar flex items-center">
-      <form class="w-full" (submit)="onFilterChange('search', $event); $event.preventDefault()">
+      <form class="w-full" (submit)="onSearch(); $event.preventDefault()">
         <div class="search-group">
           <input
             type="text"
@@ -42,13 +42,17 @@
             name="search"
             #searchInput
             placeholder="Search by address, title or city..."
-            [(ngModel)]="search"
+            [(ngModel)]="searchTerm"
           />
         </div>
       </form>
     </div>
     <div class="filter-dropdown">
-      <select name="Status" id="filter-status" (change)="onFilterChange('listingStatus', $event)">
+      <select
+        name="Status"
+        id="filter-status"
+        (change)="searchAndFilterService.onFilterChange('listingStatus', $event)"
+      >
         <option value="all" selected>All Status</option>
         @for (status of allStatuses; track $index) {
           <option value="{{ status }}">
@@ -56,7 +60,11 @@
           </option>
         }
       </select>
-      <select name="Type" id="filter-type" (change)="onFilterChange('type', $event)">
+      <select
+        name="Type"
+        id="filter-type"
+        (change)="searchAndFilterService.onFilterChange('type', $event)"
+      >
         <option value="all" selected>All Types</option>
         @for (type of allTypes; track $index) {
           <option value="{{ type }}">
@@ -105,7 +113,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (property of properties; track $index) {
+        @for (property of productStateService.properties(); track $index) {
           <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-defualt">
             <td>
               <div class="flex items-center gap-4">

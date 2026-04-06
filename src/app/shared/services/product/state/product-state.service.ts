@@ -17,6 +17,9 @@ export class ProductStateService {
   startEditing(property: Property): void {
     this._editingProperty.set(property);
   }
+  setProperties(properties: Property[]): void {
+    this._properties.set(properties);
+  }
 
   updateEditing(partial: Partial<Property>): void {
     this._editingProperty.update((current) => ({ ...current, ...partial }) as Property);
@@ -28,7 +31,17 @@ export class ProductStateService {
 
   fetchProperties(page: number, size: number, sort?: string): void {
     this.propertyApi.getAllProperties(page, size, sort).subscribe({
-      next: (properties) => this._properties.set(properties.content),
+      next: (properties) =>
+        this._properties.set(
+          properties.content.map((property) => {
+            const place = (property as any)['location'][0];
+            const district = (property as any)['location'][1];
+            const region = (property as any)['location'][2];
+            const publishedDate = (property as any)['updatedAt'];
+            property.dateListed = publishedDate;
+            return { ...property, place, district, region };
+          }),
+        ),
     });
   }
 

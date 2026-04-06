@@ -13,6 +13,7 @@ import { ListingStatus, PropertyType } from '../../shared/enums/PropertyStatus';
 import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SearchAndFilterService } from '../../shared/services/search-and-filter.service';
 
 @Component({
   selector: 'app-properties',
@@ -25,22 +26,17 @@ export class Properties extends BaseModalComponent {
   isAddEditPropertyModalVisible: boolean = false;
   isViewPropertyModalVisible: boolean = false;
 
-  properties: Property[] = [];
   propertiesStats: PropertiesStats | null = null;
 
-  search = '';
-  filter: PropertyFilter = {
-    search: '',
-    listingStatus: null,
-    type: null,
-  };
+  searchTerm: string = '';
 
   private productApiService = inject(ProductApiService);
-  private productStateService = inject(ProductStateService);
+  public productStateService = inject(ProductStateService);
   private toast = inject(ToastrService);
   public common = inject(Common);
   public pagination = inject(PaginationService);
   private ctr = inject(ChangeDetectorRef);
+  public searchAndFilterService = inject(SearchAndFilterService);
 
   ngOnInit() {
     this.updateDataset();
@@ -58,7 +54,7 @@ export class Properties extends BaseModalComponent {
         next: (properties) => {
           this.pagination.totalCounts = properties.totalElements;
           this.pagination.totalPages = properties.totalPages;
-          this.convertPropertiesWithShortAddress(properties.content);
+          this.common.convertPropertiesWithShortAddress(properties.content);
           this.ctr.detectChanges();
         },
         error: () => {
@@ -76,40 +72,6 @@ export class Properties extends BaseModalComponent {
         this.toast.error('Error fetching properties stats', 'Error');
       },
     });
-  }
-  filterProperties() {
-    if (Object.values(this.filter).every((v) => v === '' || v === null)) {
-      this.fetchAllProperties();
-      return;
-    }
-    this.productApiService
-      .filterProperties(
-        this.filter,
-        this.pagination.page,
-        this.pagination.size,
-        this.pagination.sort,
-      )
-      .subscribe({
-        next: (properties) => {
-          this.pagination.totalCounts = properties.totalElements;
-          this.pagination.totalPages = properties.totalPages;
-          this.convertPropertiesWithShortAddress(properties.content);
-          this.ctr.detectChanges();
-        },
-        error: () => {
-          this.toast.error('Error filtering properties', 'Error');
-        },
-      });
-  }
-
-  onFilterChange(field: keyof PropertyFilter, $event: any) {
-    const value = $event.target.value === 'all' ? '' : $event.target.value;
-    if (field === 'search') {
-      this.filter.search = this.search;
-    } else {
-      this.filter = { ...this.filter, [field]: value };
-    }
-    this.filterProperties();
   }
 
   deleteProperty(id: any) {
@@ -177,15 +139,7 @@ export class Properties extends BaseModalComponent {
   get allTypes() {
     return Object.values(PropertyType);
   }
-
-  convertPropertiesWithShortAddress(properties: Property[]) {
-    this.properties = properties.map((property) => {
-      const place = (property as any)['location'][0];
-      const district = (property as any)['location'][1];
-      const region = (property as any)['location'][2];
-      const publishedDate = (property as any)['updatedAt'];
-      property.dateListed = publishedDate;
-      return { ...property, place, district, region };
-    });
+  onSearch() {
+    this.searchAndFilterService.onFilterChange('search', { target: { value: this.searchTerm } });
   }
 }
