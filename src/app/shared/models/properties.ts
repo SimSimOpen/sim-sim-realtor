@@ -103,3 +103,9 @@ export interface PropertiesStats {
   rented_count: number;
   draft_count: number;
 }
+
+export interface PropertyFilter {
+  search: string;
+  listingStatus: ListingStatus | '';
+  type: PropertyType | '';
+}

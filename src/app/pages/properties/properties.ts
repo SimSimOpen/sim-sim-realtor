@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { AddEditProperty } from '../../components/add-edit-property-models/add-edit-property/add-edit-property';
-import { PropertiesStats, Property } from '../../shared/models/properties';
+import { PropertiesStats, Property, PropertyFilter } from '../../shared/models/properties';
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ToastrService } from 'ngx-toastr';
 import { EnvironmentTs } from '../../environments/environment';
@@ -27,6 +27,12 @@ export class Properties extends BaseModalComponent {
   properties: Property[] = [];
   propertiesStats: PropertiesStats | null = null;
 
+  filter: PropertyFilter = {
+    search: '',
+    listingStatus: '',
+    type: '',
+  };
+
   private productApiService = inject(ProductApiService);
   private productStateService = inject(ProductStateService);
   private toast = inject(ToastrService);
@@ -50,14 +56,7 @@ export class Properties extends BaseModalComponent {
         next: (properties) => {
           this.pagination.totalCounts = properties.totalElements;
           this.pagination.totalPages = properties.totalPages;
-          this.properties = properties.content.map((property) => {
-            const place = (property as any)['location'][0];
-            const district = (property as any)['location'][1];
-            const region = (property as any)['location'][2];
-            const publishedDate = (property as any)['updatedAt'];
-            property.dateListed = publishedDate;
-            return { ...property, place, district, region };
-          });
+          this.convertPropertiesWithShortAddress(properties.content);
           this.ctr.detectChanges();
         },
         error: () => {
@@ -69,11 +68,42 @@ export class Properties extends BaseModalComponent {
     this.productApiService.getPropertiesStats().subscribe({
       next: (stats) => {
         this.propertiesStats = stats;
+        this.ctr.detectChanges();
       },
       error: () => {
         this.toast.error('Error fetching properties stats', 'Error');
       },
     });
+  }
+  filterProperties() {
+    if (Object.values(this.filter).every((v) => v === '' || v === null)) {
+      this.fetchAllProperties();
+      return;
+    }
+    this.productApiService
+      .filterProperties(
+        this.filter,
+        this.pagination.page,
+        this.pagination.size,
+        this.pagination.sort,
+      )
+      .subscribe({
+        next: (properties) => {
+          this.pagination.totalCounts = properties.totalElements;
+          this.pagination.totalPages = properties.totalPages;
+          this.convertPropertiesWithShortAddress(properties.content);
+          this.ctr.detectChanges();
+        },
+        error: () => {
+          this.toast.error('Error filtering properties', 'Error');
+        },
+      });
+  }
+
+  onFilterChange(field: keyof PropertyFilter, $event: any) {
+    const value = $event.target.value === 'all' ? '' : $event.target.value;
+    this.filter = { ...this.filter, [field]: value };
+    this.filterProperties();
   }
 
   deleteProperty(id: any) {
@@ -140,5 +170,16 @@ export class Properties extends BaseModalComponent {
   }
   get allTypes() {
     return Object.values(PropertyType);
+  }
+
+  convertPropertiesWithShortAddress(properties: Property[]) {
+    this.properties = properties.map((property) => {
+      const place = (property as any)['location'][0];
+      const district = (property as any)['location'][1];
+      const region = (property as any)['location'][2];
+      const publishedDate = (property as any)['updatedAt'];
+      property.dateListed = publishedDate;
+      return { ...property, place, district, region };
+    });
   }
 }

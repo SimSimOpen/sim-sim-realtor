@@ -46,16 +46,20 @@
       </form>
     </div>
     <div class="filter-dropdown">
-      <select name="Status" id="filter-status">
+      <select name="Status" id="filter-status" (change)="onFilterChange('listingStatus', $event)">
         <option value="all" selected>All Status</option>
         @for (status of allStatuses; track $index) {
-          <option value="{{ status }}">{{ common.formatEnum(status) }}</option>
+          <option value="{{ status }}">
+            {{ common.formatEnum(status) }}
+          </option>
         }
       </select>
-      <select name="Type" id="filter-type">
+      <select name="Type" id="filter-type" (change)="onFilterChange('type', $event)">
         <option value="all" selected>All Types</option>
         @for (type of allTypes; track $index) {
-          <option value="{{ type }}">{{ common.formatEnum(type) }}</option>
+          <option value="{{ type }}">
+            {{ common.formatEnum(type) }}
+          </option>
         }
         <option value="apartment">Apartment</option>
         <option value="house">House</option>

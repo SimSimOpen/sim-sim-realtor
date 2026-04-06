@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PRODUCT_URL } from '../../../constants/urls';
-import { PropertiesStats, Property } from '../../../models/properties';
+import { PropertiesStats, Property, PropertyFilter } from '../../../models/properties';
 import { Page } from '../../../models/commont-models';
 
 @Injectable({
@@ -71,5 +71,27 @@ export class ProductApiService {
     return this.http.delete(`${PRODUCT_URL}/v1/property/${property_id}`, {
       responseType: 'text',
     });
+  }
+
+  filterProperties(
+    filter: PropertyFilter,
+    page: number,
+    size: number,
+    sort?: string,
+  ): Observable<Page<Property>> {
+    let params = new HttpParams().append('page', page.toString()).append('size', size.toString());
+    if (filter.search) {
+      params = params.append('search', filter.search);
+    }
+    if (filter.listingStatus) {
+      params = params.append('listingStatus', filter.listingStatus);
+    }
+    if (filter.type) {
+      params = params.append('type', filter.type);
+    }
+    if (sort) {
+      params = params.append('sort', sort);
+    }
+    return this.http.get<Page<Property>>(`${PRODUCT_URL}/v1/property/filter`, { params });
   }
 }
