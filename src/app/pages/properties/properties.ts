@@ -2,14 +2,14 @@ import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { AddEditProperty } from '../../components/add-edit-property-models/add-edit-property/add-edit-property';
-import { Property } from '../../shared/models/properties';
+import { PropertiesStats, Property } from '../../shared/models/properties';
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ToastrService } from 'ngx-toastr';
 import { EnvironmentTs } from '../../environments/environment';
 import { Common } from '../../shared/common';
 import { PaginationService } from '../../shared/services/pagination.service';
 import { CommonModule } from '@angular/common';
-import { ListingStatus } from '../../shared/enums/PropertyStatus';
+import { ListingStatus, PropertyType } from '../../shared/enums/PropertyStatus';
 import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 
@@ -25,6 +25,7 @@ export class Properties extends BaseModalComponent {
   isViewPropertyModalVisible: boolean = false;
 
   properties: Property[] = [];
+  propertiesStats: PropertiesStats | null = null;
 
   private productApiService = inject(ProductApiService);
   private productStateService = inject(ProductStateService);
@@ -35,6 +36,7 @@ export class Properties extends BaseModalComponent {
 
   ngOnInit() {
     this.fetchAllProperties();
+    this.fetchPropertiesStats();
   }
 
   fetchAllProperties() {
@@ -59,12 +61,23 @@ export class Properties extends BaseModalComponent {
         },
       });
   }
+  fetchPropertiesStats() {
+    this.productApiService.getPropertiesStats().subscribe({
+      next: (stats) => {
+        this.propertiesStats = stats;
+      },
+      error: () => {
+        this.toast.error('Error fetching properties stats', 'Error');
+      },
+    });
+  }
 
   deleteProperty(id: any) {
     this.productApiService.deleteProduct(id).subscribe({
       next: (res) => {
         this.toast.info('Property was deleted!', 'Info');
         this.fetchAllProperties();
+        this.fetchPropertiesStats();
       },
       error: () => {
         this.toast.error('Error fetching properties', 'Error');
@@ -116,5 +129,12 @@ export class Properties extends BaseModalComponent {
   publishedDate(property: Property) {
     if (property.listingStatus == ListingStatus.ACTIVE) return property.dateListed;
     return '';
+  }
+
+  get allStatuses() {
+    return Object.values(ListingStatus);
+  }
+  get allTypes() {
+    return Object.values(PropertyType);
   }
 }

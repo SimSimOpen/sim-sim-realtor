@@ -16,19 +16,19 @@
   <section class="header-cards">
     <div class="card">
       <div>Total Listings</div>
-      <div class="text-2xl font-bold">12</div>
+      <div class="text-2xl font-bold">{{ propertiesStats?.total_count || 0 }}</div>
     </div>
     <div class="card">
       <div>Active</div>
-      <div class="text-2xl font-bold text-green-500">8</div>
+      <div class="text-2xl font-bold text-green-500">{{ propertiesStats?.active_count || 0 }}</div>
     </div>
     <div class="card">
       <div>Rented</div>
-      <div class="text-2xl font-bold text-blue-500">2</div>
+      <div class="text-2xl font-bold text-blue-500">{{ propertiesStats?.rented_count || 0 }}</div>
     </div>
     <div class="card">
       <div>Draft</div>
-      <div class="text-2xl font-bold">2</div>
+      <div class="text-2xl font-bold">{{ propertiesStats?.draft_count || 0 }}</div>
     </div>
   </section>
 
@@ -48,12 +48,15 @@
     <div class="filter-dropdown">
       <select name="Status" id="filter-status">
         <option value="all" selected>All Status</option>
-        <option value="active">Active</option>
-        <option value="rented">Rented</option>
-        <option value="draft">Draft</option>
+        @for (status of allStatuses; track $index) {
+          <option value="{{ status }}">{{ common.formatEnum(status) }}</option>
+        }
       </select>
       <select name="Type" id="filter-type">
         <option value="all" selected>All Types</option>
+        @for (type of allTypes; track $index) {
+          <option value="{{ type }}">{{ common.formatEnum(type) }}</option>
+        }
         <option value="apartment">Apartment</option>
         <option value="house">House</option>
         <option value="condo">Condo</option>

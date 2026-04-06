@@ -93,3 +93,10 @@ export interface Place {
   region_id: number;
   district_id: number;
 }
+
+export interface PropertiesStats {
+  total_count: number;
+  active_count: number;
+  rented_count: number;
+  draft_count: number;
+}

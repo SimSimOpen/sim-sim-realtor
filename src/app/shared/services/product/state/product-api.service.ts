@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PRODUCT_URL } from '../../../constants/urls';
-import { Property } from '../../../models/properties';
+import { PropertiesStats, Property } from '../../../models/properties';
 import { Page } from '../../../models/commont-models';
 
 @Injectable({
@@ -41,6 +41,9 @@ export class ProductApiService {
 
   getPropertyById(id: number): Observable<Property> {
     return this.http.get<Property>(`${PRODUCT_URL}/v1/property/${id}`);
+  }
+  getPropertiesStats(): Observable<PropertiesStats> {
+    return this.http.get<PropertiesStats>(`${PRODUCT_URL}/v1/property/stats`);
   }
 
   uploadImage(property_id: number, files: File[]): Observable<string> {
