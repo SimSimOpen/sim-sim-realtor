@@ -35,6 +35,10 @@ export class Properties extends BaseModalComponent {
   private ctr = inject(ChangeDetectorRef);
 
   ngOnInit() {
+    this.updateDataset();
+  }
+
+  updateDataset() {
     this.fetchAllProperties();
     this.fetchPropertiesStats();
   }

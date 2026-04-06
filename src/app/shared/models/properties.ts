@@ -22,6 +22,9 @@ export interface Property {
   occupancyStatus?: OccupancyStatus; // e.g., 'Vacant', 'Occupied'
   amenities?: PropertyAmenities;
   dateListed?: string;
+  ownerContact?: string;
+  agent: string;
+  agentId: number;
 }
 
 export interface PropertyLocation {

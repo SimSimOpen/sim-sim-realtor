@@ -41,7 +41,7 @@ import { ProductStateService } from '../../../shared/services/product/state/prod
 })
 export class AddEditProperty {
   @Output() closeModal = new EventEmitter<void>();
-  @Output() updatePropertiesList = new EventEmitter<void>();
+  @Output() updateDatas = new EventEmitter<void>();
 
   private fb = inject(FormBuilder);
   private productApiService = inject(ProductApiService);
@@ -319,7 +319,7 @@ export class AddEditProperty {
       next: () => {
         this.resetForm();
         this.closeModal.emit();
-        this.updatePropertiesList.emit();
+        this.updateDatas.emit();
       },
       error: (error) => {
         console.error('Error uploading property:', error);

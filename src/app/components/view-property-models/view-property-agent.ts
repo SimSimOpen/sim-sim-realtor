@@ -72,7 +72,7 @@ import { Property } from '../../shared/models/properties';
                 class="h-12 w-12 rounded-full object-cover border border-gray-200"
               />
               <div>
-                <div class="font-medium text-gray-900">Sarah Jenkins</div>
+                <div class="font-medium text-gray-900">{{ property?.agent }}</div>
                 <div class="text-xs text-gray-500">Senior Leasing Agent</div>
               </div>
             </div>

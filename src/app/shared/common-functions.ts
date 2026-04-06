@@ -27,6 +27,9 @@ export const propertiesList: Property[] = [
     medias: [],
     dateListed: '2024-06-01',
     listingStatus: ListingStatus.DRAFT,
+    ownerContact: 'owner@example.com',
+    agent: 'Sarah Jenkins',
+    agentId: 1,
   },
 ];
 
