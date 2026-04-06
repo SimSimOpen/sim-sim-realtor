@@ -106,6 +106,6 @@ export interface PropertiesStats {
 
 export interface PropertyFilter {
   search: string;
-  listingStatus: ListingStatus | '';
-  type: PropertyType | '';
+  listingStatus: ListingStatus | null;
+  type: PropertyType | null;
 }

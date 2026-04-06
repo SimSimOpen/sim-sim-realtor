@@ -34,13 +34,15 @@
 
   <section class="search-filter p-5 flex justify-between items-center">
     <div class="search-bar flex items-center">
-      <form class="w-full">
+      <form class="w-full" (submit)="onFilterChange('search', $event); $event.preventDefault()">
         <div class="search-group">
           <input
             type="text"
             id="search"
             name="search"
+            #searchInput
             placeholder="Search by address, title or city..."
+            [(ngModel)]="search"
           />
         </div>
       </form>

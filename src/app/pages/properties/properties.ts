@@ -12,10 +12,11 @@ import { CommonModule } from '@angular/common';
 import { ListingStatus, PropertyType } from '../../shared/enums/PropertyStatus';
 import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-properties',
-  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty],
+  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty, FormsModule],
   templateUrl: './properties.html',
   styleUrl: './properties.scss',
   providers: [PaginationService],
@@ -27,10 +28,11 @@ export class Properties extends BaseModalComponent {
   properties: Property[] = [];
   propertiesStats: PropertiesStats | null = null;
 
+  search = '';
   filter: PropertyFilter = {
     search: '',
-    listingStatus: '',
-    type: '',
+    listingStatus: null,
+    type: null,
   };
 
   private productApiService = inject(ProductApiService);
@@ -102,7 +104,11 @@ export class Properties extends BaseModalComponent {
 
   onFilterChange(field: keyof PropertyFilter, $event: any) {
     const value = $event.target.value === 'all' ? '' : $event.target.value;
-    this.filter = { ...this.filter, [field]: value };
+    if (field === 'search') {
+      this.filter.search = this.search;
+    } else {
+      this.filter = { ...this.filter, [field]: value };
+    }
     this.filterProperties();
   }
 
