@@ -20,13 +20,14 @@ import { UploadedFiles } from './uploaded-files';
 import { Subscription } from 'rxjs';
 import { Property, PropertyMedia } from '../../shared/models/properties';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
+import { Common } from '../../shared/common';
 
 @Component({
   selector: 'app-upload-from-mobile',
   standalone: true,
   imports: [QRCodeComponent, UploadedFiles],
   template: `<div>
-    @if (!sessionStarted) {
+    @if (!common.mobilesessionStarted) {
       <section>
         <header class="flex items-center justify-between mb-4 w-2xl">
           <h3 class="text-sm font-bold">Use Mobile Device</h3>
@@ -135,7 +136,6 @@ export class UploadFromMobile {
   userId!: number;
   expiresAt!: string;
   qrData: string = '';
-  sessionStarted: boolean = false;
   sseSubscription?: Subscription;
 
   private mediaService = inject(MediaService);
@@ -144,7 +144,7 @@ export class UploadFromMobile {
   private productStateService = inject(ProductStateService);
   private toast = inject(ToastrService);
   private authService = inject(AuthService);
-  private sseService = inject(SseService);
+  public common = inject(Common);
 
   property = this.productStateService.editingProperty;
 
@@ -162,6 +162,7 @@ export class UploadFromMobile {
       });
     } else {
       this.property_id = this.property()?.id as number;
+      this.productStateService.setPropertyIdForEditing(this.property_id);
       this.createMediaSession();
     }
   }
@@ -183,45 +184,11 @@ export class UploadFromMobile {
       },
     });
   }
-  fetchUpdatedProperty() {
-    this.productApiService.getPropertyById(this.property_id).subscribe({
-      next: (property) => {
-        this.productStateService.updateEditing(property);
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error fetching updated property:', err);
-      },
-    });
-  }
+
   ngOnInit() {
-    console.log('initializing Upload from mobile');
-    this.sseSubscription = this.sseService.notification$.subscribe({
-      next: (message) => {
-        var cleanMessage = message.replace(/^"|"$/g, '');
-        switch (cleanMessage) {
-          case 'Mobile session started':
-            this.sessionStarted = true;
-            this.updateComponent(message);
-            break;
-          case 'Media updated':
-            this.fetchUpdatedProperty();
-            this.updateComponent(message);
-            break;
-          default:
-            console.log('Received SSE message:', cleanMessage);
-        }
-      },
-      error: (err) => console.error('SSE subscription error:', err),
-      complete: () => console.warn('SSE subscription completed unexpectedly'),
-    });
+    this.common.listenToBackendEvents();
   }
   ngOnDestroy() {
     this.sseSubscription?.unsubscribe();
-  }
-  updateComponent(message: string) {
-    this.sessionStarted = true;
-    this.cdr.detectChanges(); // force re-render
-    this.toast.info(message, 'Notification');
   }
 }

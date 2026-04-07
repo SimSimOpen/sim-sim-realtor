@@ -54,4 +54,7 @@ export class SearchAndFilterService {
         },
       });
   }
+  get filterIsActive() {
+    return Object.values(this.filter).some((v) => v !== '' && v !== null);
+  }
 }

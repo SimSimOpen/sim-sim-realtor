@@ -20,7 +20,7 @@ import { SearchAndFilterService } from '../../shared/services/search-and-filter.
   imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty, FormsModule],
   templateUrl: './properties.html',
   styleUrl: './properties.scss',
-  providers: [PaginationService],
+  // providers: [PaginationService],
 })
 export class Properties extends BaseModalComponent {
   isAddEditPropertyModalVisible: boolean = false;
@@ -123,10 +123,22 @@ export class Properties extends BaseModalComponent {
     return { from: from, to: to, total: totalProperties };
   }
   prevPage() {
-    if (this.pagination.prevPage()) this.fetchAllProperties();
+    if (this.pagination.prevPage()) {
+      if (this.searchAndFilterService.filterIsActive) {
+        this.searchAndFilterService.filterProperties();
+        return;
+      }
+      this.fetchAllProperties();
+    }
   }
   nextPage() {
-    if (this.pagination.nextPage()) this.fetchAllProperties();
+    if (this.pagination.nextPage()) {
+      if (this.searchAndFilterService.filterIsActive) {
+        this.searchAndFilterService.filterProperties();
+        return;
+      }
+      this.fetchAllProperties();
+    }
   }
   publishedDate(property: Property) {
     if (property.listingStatus == ListingStatus.ACTIVE) return property.dateListed;

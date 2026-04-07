@@ -11,14 +11,16 @@ import { MediaSession } from '../models/media';
 export class MediaService {
   constructor(private http: HttpClient) {}
 
-  uploadImage(property_id: number | null, files: File[]): Observable<Property> {
+  uploadImage(property_id: number | null, files: File[]): Observable<number> {
     const formData: FormData = new FormData();
     files.forEach((file) => {
       formData.append('files', file);
     });
     const params = new HttpParams().append('property_id', property_id?.toString() || '');
 
-    return this.http.post<Property>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, { params });
+    return this.http.post<number>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, {
+      params,
+    });
   }
   createMediaSession(): Observable<MediaSession> {
     return this.http.post<MediaSession>(`${MEDIA_SERVICE_URL}/v1/session`, {});

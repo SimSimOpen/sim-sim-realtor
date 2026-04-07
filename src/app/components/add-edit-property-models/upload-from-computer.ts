@@ -13,6 +13,7 @@ import { Property } from '../../shared/models/properties';
 import { UploadedFiles } from './uploaded-files';
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
+import { Common } from '../../shared/common';
 
 @Component({
   selector: 'app-upload-from-computer',
@@ -98,6 +99,7 @@ export class UploadFromComputer {
   private mediaService = inject(MediaService);
   private toast = inject(ToastrService);
   private productStateService = inject(ProductStateService);
+  private common = inject(Common);
 
   property = this.productStateService.editingProperty;
 
@@ -108,13 +110,17 @@ export class UploadFromComputer {
       const property_id = this.property()?.id as number;
       this.mediaService.uploadImage(property_id, Array.from(files)).subscribe({
         next: (response) => {
-          this.toast.success('Image uploaded successfully, property ID: ' + response.id);
-          this.productStateService.updateEditing(response);
+          this.toast.success('Image uploaded successfully, property ID: ' + response);
+          this.productStateService.setPropertyId(response);
         },
         error: (error) => {
           this.toast.error('Error uploading image');
         },
       });
     }
+  }
+
+  ngOnInit() {
+    this.common.listenToBackendEvents();
   }
 }

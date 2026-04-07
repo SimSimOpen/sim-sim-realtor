@@ -24,6 +24,12 @@ export class ProductStateService {
   updateEditing(partial: Partial<Property>): void {
     this._editingProperty.update((current) => ({ ...current, ...partial }) as Property);
   }
+  setPropertyId(propertyId: number): void {
+    this._editingProperty.update((current) => ({ ...current, id: propertyId }) as Property);
+  }
+  setPropertyIdForEditing(propertyId: number): void {
+    this._editingProperty.update((current) => ({ ...current, id: propertyId }) as Property);
+  }
 
   clearEditing(): void {
     this._editingProperty.set(null);
