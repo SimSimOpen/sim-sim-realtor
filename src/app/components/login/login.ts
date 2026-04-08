@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { navigeteTo } from '../../shared/common-functions';
 import { Common } from '../../shared/common';
 import { AuthService } from '../../account/auth.service';
@@ -16,19 +16,13 @@ export class Login {
   @Output() changeAuth = new EventEmitter<string>();
   showPassword: boolean = false;
 
-  loginForm: FormGroup;
+  public common = inject(Common);
+  private authService = inject(AuthService);
+  private fb = inject(FormBuilder);
+  private toastr = inject(ToastrService);
 
-  constructor(
-    public common: Common,
-    private authService: AuthService,
-    private fb: FormBuilder,
-    private toastr: ToastrService,
-  ) {
-    this.loginForm = this.fb.group({
-      username: [''],
-      password: [''],
-    });
-  }
+  loginForm: FormGroup = this.buildLoginForm();
+
   login() {
     this.authService
       .authenticate(this.loginForm.value.username, this.loginForm.value.password)
@@ -45,5 +39,11 @@ export class Login {
   }
   swithToRegister() {
     this.changeAuth.emit('register');
+  }
+  buildLoginForm() {
+    return this.fb.group({
+      username: [''],
+      password: [''],
+    });
   }
 }

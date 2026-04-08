@@ -36,7 +36,7 @@ export class ProductStateService {
   }
 
   fetchProperties(page: number, size: number, sort?: string): void {
-    this.propertyApi.getAllProperties(page, size, sort).subscribe({
+    this.propertyApi.getAgentsProperties(page, size, sort).subscribe({
       next: (properties) =>
         this._properties.set(
           properties.content.map((property) => {

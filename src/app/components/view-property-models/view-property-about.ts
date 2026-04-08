@@ -21,8 +21,9 @@ import { amenitiesList } from '../../shared/common-functions';
             class="w-full resize-none outline-none cursor-default overflow-hidden"
             readonly
           >
- {{ property?.description }} </textarea
-          >
+  {{ propertyAddress }}
+  {{ property?.description }}
+        </textarea>
         </p>
       </div>
     </div>
@@ -74,5 +75,10 @@ export class AboutProperty {
     const amenities = this.property?.amenities;
     if (!amenities) return [];
     return amenitiesList.filter((item) => amenities[item.key] === true);
+  }
+  get propertyAddress() {
+    if (!this.property) return '';
+    const { address } = this.property;
+    return address || '';
   }
 }

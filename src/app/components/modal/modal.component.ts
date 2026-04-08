@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostListener, inject, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  inject,
+  Input,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { GlobalService } from '../../shared/services/global.service';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 
@@ -47,5 +55,24 @@ export class ModalComponent {
     }
     this.global.mobilesessionStarted.set(false); // Reset mobile session state when modal closes
     this.productStateService.clearEditing(); // Clear editing state when modal closes
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['isVisible']) {
+      this.toggleBodyScroll(changes['isVisible'].currentValue);
+    }
+  }
+
+  ngOnDestroy() {
+    // Safety net: always restore scroll when component is destroyed
+    this.toggleBodyScroll(false);
+  }
+
+  private toggleBodyScroll(disable: boolean) {
+    if (disable) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
   }
 }

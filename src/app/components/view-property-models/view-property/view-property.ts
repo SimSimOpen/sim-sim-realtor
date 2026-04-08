@@ -80,8 +80,9 @@ export class ViewProperty {
     const place = (this.property() as any)['location'][0];
     const district = (this.property() as any)['location'][1];
     const region = (this.property() as any)['location'][2];
+    const address = (this.property() as any)['location'][3];
     const publishedDate = (this.property() as any)['updatedAt'];
-    return { ...this.property(), place, district, region, dateListed: publishedDate };
+    return { ...this.property(), place, district, region, address, dateListed: publishedDate };
   }
 
   get propertiesCoverImage() {
