@@ -36,9 +36,9 @@
       </div>
     }
     <div class="absolute bottom-50">
-      @if (property && property.medias && !previewUrl && !previewBlob) {
+      @if (medias().length >= 0 && !previewUrl && !previewBlob) {
         <app-uploaded-files-mobile
-          [medias]="property.medias"
+          [medias]="medias()"
           [token]="token"
           (addMoreMedias)="uploadFile($event)"
         ></app-uploaded-files-mobile>

@@ -5,19 +5,22 @@ import { ProductStateService } from './services/product/state/product-state.serv
 import { SseService } from './services/sse.service';
 import { ProductApiService } from './services/product/state/product-api.service';
 import { ToastrService } from 'ngx-toastr';
+import { GlobalService } from './services/global.service';
+import { AuthService } from '../account/auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class Common {
   activeMenuItem: string = '';
-  mobilesessionStarted: boolean = false;
 
   public productStateService = inject(ProductStateService);
   public router = inject(Router);
   private toast = inject(ToastrService);
   private sseService = inject(SseService);
   private productApiService = inject(ProductApiService);
+  private global = inject(GlobalService);
+  private authService = inject(AuthService);
 
   navigateTo(url: string): void {
     this.router.navigate([url]);
@@ -46,25 +49,29 @@ export class Common {
       }),
     );
   }
-  listenToBackendEvents() {
+  listenToBackendEvents(onUpdate?: () => void) {
+    console.log('initializing Upload from mobile');
     return this.sseService.notification$.subscribe({
       next: (message) => {
         var cleanMessage = message.replace(/^"|"$/g, '');
         switch (cleanMessage) {
           case 'Mobile session started':
-            this.mobilesessionStarted = true;
-            this.updateComponent(message);
+            console.log('Mobile Session Started');
+            this.global.mobilesessionStarted.set(true);
+            this.toast.info(message, 'Notification');
             break;
           case 'Media updated':
-            this.fetchUpdatedProperty();
-            this.updateComponent(message);
+            console.log('Media Updated');
+            onUpdate?.();
+            if (this.authService.isAuthenticated()) this.fetchUpdatedProperty();
+            this.toast.info(message, 'Notification');
             break;
           default:
             console.log('Received SSE message:', cleanMessage);
         }
       },
-      error: (err) => console.error('SSE subscription error:', err),
-      complete: () => console.warn('SSE subscription completed unexpectedly'),
+      error: (err) => this.toast.error('SSE subscription error:', err),
+      complete: () => this.toast.warning('SSE subscription completed unexpectedly'),
     });
   }
 
@@ -79,10 +86,5 @@ export class Common {
           console.error('Error fetching updated property:', err);
         },
       });
-  }
-
-  updateComponent(message: string) {
-    this.mobilesessionStarted = true;
-    this.toast.info(message, 'Notification');
   }
 }

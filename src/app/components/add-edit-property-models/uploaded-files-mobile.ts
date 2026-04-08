@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { PropertyMedia } from '../../shared/models/properties';
 import { ToastrService } from 'ngx-toastr';
 import { HttpClient } from '@angular/common/http';
@@ -121,11 +121,9 @@ export class UploadedFilesMobile {
   @Input() token!: string;
   @Output() addMoreMedias = new EventEmitter<Event>();
 
-  constructor(
-    private toast: ToastrService,
-    private ctr: ChangeDetectorRef,
-    private http: HttpClient,
-  ) {}
+  private toast = inject(ToastrService);
+  private ctr = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
 
   deleteImage(image_id: number) {
     this.http

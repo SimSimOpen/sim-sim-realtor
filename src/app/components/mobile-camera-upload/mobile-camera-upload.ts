@@ -1,12 +1,10 @@
 import {
-  AfterViewInit,
   ChangeDetectorRef,
   Component,
+  computed,
   ElementRef,
-  EventEmitter,
   HostListener,
   inject,
-  Output,
   ViewChild,
 } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
@@ -17,7 +15,9 @@ import { MEDIA_SERVICE_URL, PRODUCT_URL } from '../../shared/constants/urls';
 import { Property, PropertyMedia } from '../../shared/models/properties';
 import { AuthService } from '../../account/auth.service';
 import { UploadedFilesMobile } from '../add-edit-property-models/uploaded-files-mobile';
-import { ProductApiService } from '../../shared/services/product/state/product-api.service';
+import { ProductStateService } from '../../shared/services/product/state/product-state.service';
+import { Common } from '../../shared/common';
+import { SseService } from '../../shared/services/sse.service';
 
 @Component({
   selector: 'app-mobile-camera-upload',
@@ -30,22 +30,25 @@ export class MobileCameraUpload {
   previewUrl?: string;
   previewBlob?: Blob;
   property_id!: number;
-  property: Property = { medias: [] as PropertyMedia[] } as Property;
   sessionId!: string;
   sessionStatus: 'Active' | 'Expired' | 'Completed' | 'Loading' = 'Loading';
   token!: string;
 
-  @Output() propertyIdUpdate = new EventEmitter<number>();
   @ViewChild('video', { static: false }) videoRef!: ElementRef<HTMLVideoElement>;
 
   private mediaService = inject(MediaService);
-  private productApiService = inject(ProductApiService);
+  private productStateService = inject(ProductStateService);
+  private common = inject(Common);
   private toast = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private sseService = inject(SseService);
+
+  medias = computed(() => this.productStateService.editingProperty()?.medias ?? []);
+  property = this.productStateService.editingProperty();
 
   async startCamera() {
     if (!this.videoRef?.nativeElement) {
@@ -124,15 +127,13 @@ export class MobileCameraUpload {
     const params = new HttpParams().append('property_id', this.property_id?.toString() || '');
 
     this.http
-      .post<Property>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, {
+      .post<number>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, {
         params,
         headers: { Authorization: `Bearer ${this.token}` },
       })
       .subscribe({
         next: (response) => {
-          this.toast.success('Image uploaded successfully, property ID: ' + response.id);
-          this.property = response;
-          this.propertyIdUpdate.emit(this.property.id!);
+          this.toast.success('Image uploaded successfully, property ID: ' + response);
           this.discard();
           this.cdr.detectChanges();
         },
@@ -164,16 +165,13 @@ export class MobileCameraUpload {
       const params = new HttpParams().append('property_id', property_id?.toString() || '');
 
       this.http
-        .post<Property>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, {
+        .post<number>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, {
           params,
           headers: { Authorization: `Bearer ${this.token}` },
         })
         .subscribe({
           next: (response) => {
-            this.toast.success('Image uploaded successfully, property ID: ' + response.id);
-            this.property = response;
-            this.propertyIdUpdate.emit(this.property.id!);
-            this.cdr.detectChanges();
+            this.toast.success('Image uploaded successfully, property ID: ' + response);
           },
           error: (error) => {
             this.toast.error('Error uploading image');
@@ -189,7 +187,7 @@ export class MobileCameraUpload {
       })
       .subscribe({
         next: (property) => {
-          this.property = property;
+          this.productStateService.startEditing(property);
           this.cdr.detectChanges();
         },
         error: (err) => {
@@ -202,15 +200,19 @@ export class MobileCameraUpload {
       this.sessionId = params['session_id'];
       this.property_id = +params['property_id'];
       this.token = params['token'];
-
-      console.log('Params loaded:', this.sessionId, this.property_id); // debug
-
+      this.productStateService.updateEditing({ ...this.property, id: this.property_id });
       this.mediaService.checkSessionStatus(this.sessionId, this.token).subscribe({
         next: () => {
           this.sessionStatus = 'Active';
           this.cdr.detectChanges();
           // Start camera AFTER session confirmed & view is Active
           setTimeout(() => this.startCamera(), 0);
+          setTimeout(() => {
+            this.sseService.connectWithCustomToken(this.token);
+            this.common.listenToBackendEvents(() => {
+              this.getPropertyIfExists();
+            });
+          }, 0);
         },
         error: (error) => {
           console.error('Session check failed:', error);

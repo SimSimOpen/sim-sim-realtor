@@ -79,13 +79,54 @@ export class SseService {
     }
   }
 
+  connectWithCustomToken(token: string) {
+    // Prevent multiple simultaneous connections
+    if (
+      this.eventSource?.readyState === EventSource.CONNECTING ||
+      this.eventSource?.readyState === EventSource.OPEN
+    ) {
+      console.log('[SSE] Already connecting or connected');
+      return;
+    }
+
+    this.isManualDisconnect = false;
+    this.connectionStateSubject.next(ConnectionState.CONNECTING);
+
+    if (!token) {
+      console.error('[SSE] No auth token available');
+      this.toastr.error('Authentication required', 'Error');
+      this.connectionStateSubject.next(ConnectionState.ERROR);
+      return;
+    }
+
+    console.log(`[SSE] Attempting connection (attempt ${this.reconnectAttempts + 1})`);
+    console.log(`[SSE] URL: ${EnvironmentTs.URL}/api/event/stream`);
+
+    try {
+      this.eventSource = new EventSourcePolyfill(`${EnvironmentTs.URL}/api/event/stream`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        heartbeatTimeout: 45000,
+        withCredentials: false, // Set to true if you need cookies
+      });
+
+      this.setupEventListeners();
+    } catch (error) {
+      console.error('[SSE] Failed to create EventSource:', error);
+      this.toastr.error('Failed to establish connection', 'Error');
+      this.connectionStateSubject.next(ConnectionState.ERROR);
+      this.scheduleReconnect();
+    }
+  }
+
   private setupEventListeners() {
     if (!this.eventSource) return;
 
     this.eventSource.onopen = (event) => {
       this.ngZone.run(() => {
         console.log('[SSE] ✓ Connection opened', event);
-        this.toastr.success('[SSE] ✓ Connection opened', 'Success');
+        // this.toastr.success('[SSE] ✓ Connection opened', 'Success');
         this.reconnectAttempts = 0;
         this.connectionStateSubject.next(ConnectionState.CONNECTED);
       });

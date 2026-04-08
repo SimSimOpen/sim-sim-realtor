@@ -1,43 +1,34 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Output } from '@angular/core';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { MediaService } from '../../shared/services/media.service';
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../account/auth.service';
-import { SseService } from '../../shared/services/sse.service';
 import { EnvironmentTs } from '../../environments/environment';
 import { UploadedFiles } from './uploaded-files';
 
 import { Subscription } from 'rxjs';
-import { Property, PropertyMedia } from '../../shared/models/properties';
+import { PropertyMedia } from '../../shared/models/properties';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 import { Common } from '../../shared/common';
+import { GlobalService } from '../../shared/services/global.service';
 
 @Component({
   selector: 'app-upload-from-mobile',
   standalone: true,
   imports: [QRCodeComponent, UploadedFiles],
   template: `<div>
-    @if (!common.mobilesessionStarted) {
-      <section>
-        <header class="flex items-center justify-between mb-4 w-2xl">
-          <h3 class="text-sm font-bold">Use Mobile Device</h3>
-          <span
-            class="text-xs  px-3 py-2 hover:bg-gray-100 rounded cursor-pointer"
-            (click)="changeMethod.emit(''); disableContinueDetails.emit()"
-          >
-            Change method
-          </span>
-        </header>
+    <section>
+      <header class="flex items-center justify-between mb-4 w-2xl">
+        <h3 class="text-sm font-bold">Use Mobile Device</h3>
+        <span
+          class="text-xs  px-3 py-2 hover:bg-gray-100 rounded cursor-pointer"
+          (click)="changeMethod.emit(''); disableContinueDetails.emit()"
+        >
+          Change method
+        </span>
+      </header>
+      @if (!global.mobilesessionStarted()) {
         <div class="bg-blue-50 border border-blue-200 rounded-xl p-8">
           <div class="text-center space-y-6">
             <div
@@ -112,19 +103,19 @@ import { Common } from '../../shared/common';
             </div>
           </div>
         </div>
-      </section>
-      <section class="uploaded-images mt-2">
-        @if (uploadedMedias.length > 0) {
-          <app-uploaded-files></app-uploaded-files>
-        }
-      </section>
-    } @else {
-      <section class="uploaded-images mt-2">
-        @if (uploadedMedias.length > 0) {
-          <app-uploaded-files></app-uploaded-files>
-        }
-      </section>
-    }
+        <section class="uploaded-images mt-2">
+          @if (property()?.medias!.length > 0) {
+            <app-uploaded-files></app-uploaded-files>
+          }
+        </section>
+      } @else {
+        <section class="uploaded-images mt-2">
+          @if (property()?.medias!.length > 0) {
+            <app-uploaded-files></app-uploaded-files>
+          }
+        </section>
+      }
+    </section>
   </div>`,
 })
 export class UploadFromMobile {
@@ -145,10 +136,31 @@ export class UploadFromMobile {
   private toast = inject(ToastrService);
   private authService = inject(AuthService);
   public common = inject(Common);
+  public global = inject(GlobalService);
 
   property = this.productStateService.editingProperty;
 
-  ngAfterViewInit() {
+  get uploadedMedias(): PropertyMedia[] {
+    return this.property()?.medias ?? [];
+  }
+
+  createMediaSession() {
+    this.mediaService.createMediaSession().subscribe({
+      next: (session) => {
+        this.sessionId = session.sessionId;
+        this.userId = session.userId;
+        this.expiresAt = session.expiresAt;
+        this.qrData = `${EnvironmentTs.QR_URL}/mobile/camera?session_id=${this.sessionId}&property_id=${this.property_id}&token=${this.authService.getToken()}`;
+        console.log('qrData', this.qrData);
+        this.cdr.detectChanges(); // force re-render
+      },
+      error: (error) => {
+        console.error('Error creating media session:', error);
+      },
+    });
+  }
+
+  ngOnInit() {
     if (!this.property()) {
       this.productApiService.createDraft().subscribe({
         next: (property) => {
@@ -165,28 +177,7 @@ export class UploadFromMobile {
       this.productStateService.setPropertyIdForEditing(this.property_id);
       this.createMediaSession();
     }
-  }
-  get uploadedMedias(): PropertyMedia[] {
-    return this.property()?.medias ?? [];
-  }
-
-  createMediaSession() {
-    this.mediaService.createMediaSession().subscribe({
-      next: (session) => {
-        this.sessionId = session.sessionId;
-        this.userId = session.userId;
-        this.expiresAt = session.expiresAt;
-        this.qrData = `${EnvironmentTs.QR_URL}/mobile/camera?session_id=${this.sessionId}&property_id=${this.property_id}&token=${this.authService.getToken()}`;
-        this.cdr.detectChanges(); // force re-render
-      },
-      error: (error) => {
-        console.error('Error creating media session:', error);
-      },
-    });
-  }
-
-  ngOnInit() {
-    this.common.listenToBackendEvents();
+    this.sseSubscription = this.common.listenToBackendEvents();
   }
   ngOnDestroy() {
     this.sseSubscription?.unsubscribe();
