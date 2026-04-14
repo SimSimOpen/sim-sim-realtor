@@ -15,7 +15,7 @@
   }
 }
 
-.header-cards {
+.header-cards > div {
   display: flex;
   gap: var(--space-x);
   margin-bottom: var(--space-x);

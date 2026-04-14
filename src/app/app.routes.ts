@@ -32,6 +32,18 @@ export const routes: Routes = [
         path: 'users',
         loadComponent: () => import('./pages/users/users').then((m) => m.Users),
       },
+      {
+        path: 'reports',
+        loadComponent: () => import('./pages/reports/reports').then((m) => m.ReportsComponent),
+      },
+      {
+        path: 'analytics',
+        loadComponent: () => import('./pages/analytics/analytics').then((m) => m.Analytics),
+      },
+      {
+        path: 'settings',
+        loadComponent: () => import('./pages/settings/settings').then((m) => m.Settings),
+      },
     ],
   },
   {
