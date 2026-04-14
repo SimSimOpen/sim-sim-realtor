@@ -1,0 +1,17 @@
+.settings-page {
+  --space-x: 3rem;
+  --border-radius: 0.75rem;
+  padding: 0 3rem;
+  max-width: 900px;
+  margin: auto;
+}
+
+.title {
+  margin-block: var(--space-x);
+  button {
+    outline: none;
+    border-radius: 5px;
+    height: max-content;
+    cursor: pointer;
+  }
+}
