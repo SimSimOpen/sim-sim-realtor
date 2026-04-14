@@ -33,6 +33,7 @@ export class MobileCameraUpload {
   sessionId!: string;
   sessionStatus: 'Active' | 'Expired' | 'Completed' | 'Loading' = 'Loading';
   token!: string;
+  facingMode: 'environment' | 'user' = 'environment';
 
   @ViewChild('video', { static: false }) videoRef!: ElementRef<HTMLVideoElement>;
 
@@ -50,6 +51,12 @@ export class MobileCameraUpload {
   medias = computed(() => this.productStateService.editingProperty()?.medias ?? []);
   property = this.productStateService.editingProperty();
 
+  async switchCamera() {
+    this.stopCamera();
+    this.facingMode = this.facingMode === 'environment' ? 'user' : 'environment';
+    await this.startCamera();
+  }
+
   async startCamera() {
     if (!this.videoRef?.nativeElement) {
       console.warn('Video element not available');
@@ -57,7 +64,7 @@ export class MobileCameraUpload {
     }
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' } },
+        video: { facingMode: { ideal: this.facingMode } },
         audio: false,
       });
 
