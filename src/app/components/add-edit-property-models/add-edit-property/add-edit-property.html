@@ -301,6 +301,7 @@
                 placeholder="Provide a detailed address of the property"
               />
             </div>
+            <app-yandex-map [address]="getFullAddresForMap()"> </app-yandex-map>
           </div>
           <div class="type mt-5" formGroupName="amenities">
             <h6 class="text-left text-lg font-semibold">Amenities</h6>
@@ -355,7 +356,6 @@
             </div>
           </div>
         </form>
-        <app-yandex-map [address]="'Чиланзар 3 Ташкент, Дом 5/25'"> </app-yandex-map>
       </div>
     }
   </main>

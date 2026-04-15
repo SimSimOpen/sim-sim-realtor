@@ -1,19 +1,13 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  AfterViewInit,
-  ViewChild,
-  OnDestroy,
-  Inject,
-} from '@angular/core';
+import { Component, ElementRef, Input, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
 
-// Declare globals for YMaps3
 declare const ymaps3: any;
 
 @Component({
   selector: 'app-yandex-map',
-  template: `<div #mapContainer style="width: 100%; height: 400px;"></div>`,
+  template: `<div
+    class="border border-gray-400 rounded-2xl p-2 w-full h-full my-4 aspect-video"
+    #mapContainer
+  ></div>`,
 })
 export class YandexMapComponent implements AfterViewInit, OnDestroy {
   @Input() latitude = 41.2995;
@@ -22,7 +16,9 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
   @Input() address = '';
 
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
+
   private mapInstance: any;
+  private markerElement: any;
 
   ngAfterViewInit() {
     this.waitForYmaps3().then(() => this.initMap());
@@ -31,19 +27,12 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
   private waitForYmaps3(): Promise<void> {
     return new Promise((resolve) => {
       if (typeof ymaps3 !== 'undefined' && ymaps3.ready) {
-        console.log('YMAPS3:', ymaps3);
-        ymaps3.ready.then(() => {
-          console.log('YMap API ready');
-          resolve();
-        });
+        ymaps3.ready.then(() => resolve());
       } else {
         const interval = setInterval(() => {
           if (typeof ymaps3 !== 'undefined' && ymaps3.ready) {
             clearInterval(interval);
-            ymaps3.ready.then(() => {
-              console.log('YMap API ready');
-              resolve();
-            });
+            ymaps3.ready.then(() => resolve());
           }
         }, 100);
       }
@@ -51,7 +40,7 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
   }
 
   private initMap() {
-    const { YMap, YMapDefaultSchemeLayer } = ymaps3;
+    const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer } = ymaps3; // ← add this
 
     this.mapInstance = new YMap(this.mapContainer.nativeElement, {
       location: {
@@ -60,21 +49,54 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
       },
     });
 
-    const layer = new YMapDefaultSchemeLayer();
-    this.mapInstance.addChild(layer);
-
-    if (this.latitude && this.longitude) {
-      this.setCenter(this.longitude, this.latitude, 15);
-    }
+    this.mapInstance.addChild(new YMapDefaultSchemeLayer());
+    this.mapInstance.addChild(new YMapDefaultFeaturesLayer()); // ← add this
 
     if (this.address && this.address.trim() !== '' && this.address !== 'null') {
       this.geocodeAddress(this.address);
+    } else if (this.latitude && this.longitude) {
+      this.setCenter(this.longitude, this.latitude, 15);
+      this.placeMarker(this.longitude, this.latitude);
     }
+  }
+  private createMarkerElement(): HTMLElement {
+    const el = document.createElement('div');
+    el.style.cssText = `
+      width: 28px;
+      height: 28px;
+      background: #e63b3b;
+      border: 3px solid #fff;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      cursor: pointer;
+    `;
+    return el;
+  }
+
+  private placeMarker(lon: number, lat: number) {
+    const { YMapMarker } = ymaps3;
+
+    // Remove existing marker if any
+    if (this.markerElement) {
+      this.mapInstance.removeChild(this.markerElement);
+    }
+
+    const markerEl = this.createMarkerElement();
+
+    this.markerElement = new YMapMarker(
+      {
+        coordinates: [lon, lat],
+        anchor: [0.5, 1], // bottom-center of the pin tip
+      },
+      markerEl,
+    );
+
+    this.mapInstance.addChild(this.markerElement);
   }
 
   private setCenter(lon: number, lat: number, zoom?: number) {
     if (!this.mapInstance) return;
-
     this.mapInstance.update(
       {
         location: {
@@ -82,28 +104,25 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
           zoom: zoom ?? this.zoom,
         },
       },
-      { duration: 300 }, // optional smooth animation
+      { duration: 300 },
     );
   }
 
   private geocodeAddress(address: string) {
-    // YMaps3 does not bundle geocoder; you must use Yandex Geocoder API over HTTP
-    const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=d274a689-ee61-43ea-83ff-333ac18efed4&format=json&geocode=${encodeURIComponent(
-      address,
-    )}`;
+    const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=d274a689-ee61-43ea-83ff-333ac18efed4&format=json&geocode=${encodeURIComponent(address)}`;
 
     fetch(geocoderUrl)
-      .then((response) => response.json())
+      .then((r) => r.json())
       .then((data) => {
         const feature = data.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject;
         if (!feature) return;
 
-        const pointStr = feature.Point.pos; // "lon lat"
-        const [lonStr, latStr] = pointStr.split(' ');
+        const [lonStr, latStr] = feature.Point.pos.split(' ');
         const lon = parseFloat(lonStr);
         const lat = parseFloat(latStr);
 
         this.setCenter(lon, lat, 15);
+        this.placeMarker(lon, lat); // ← place marker at geocoded location
       })
       .catch((err) => console.error('Geocoding error:', err));
   }

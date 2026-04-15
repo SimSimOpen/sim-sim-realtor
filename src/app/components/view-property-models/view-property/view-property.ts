@@ -18,10 +18,11 @@ import { ListingStatus, OfferType } from '../../../shared/enums/PropertyStatus';
 import { AboutAgent } from '../view-property-agent';
 import { AboutProperty } from '../view-property-about';
 import { ProductStateService } from '../../../shared/services/product/state/product-state.service';
+import { YandexMapComponent } from '../../add-edit-property-models/yandex-map';
 
 @Component({
   selector: 'app-view-property',
-  imports: [CommonModule, AboutAgent, AboutProperty],
+  imports: [CommonModule, AboutAgent, AboutProperty, YandexMapComponent],
   templateUrl: './view-property.html',
   styleUrl: './view-property.scss',
 })
@@ -83,6 +84,14 @@ export class ViewProperty {
     const address = (this.property() as any)['location'][3];
     const publishedDate = (this.property() as any)['updatedAt'];
     return { ...this.property(), place, district, region, address, dateListed: publishedDate };
+  }
+  get fullAddresForMap(): string {
+    if (!this.property() || !(this.property() as any)['location']) return 'Tashkent, Uzbekistan';
+    const place = (this.property() as any)['location'][0];
+    const district = (this.property() as any)['location'][1];
+    const region = (this.property() as any)['location'][2];
+    const address = (this.property() as any)['location'][3];
+    return [address, place, district, region].filter(Boolean).join(', ');
   }
 
   get propertiesCoverImage() {

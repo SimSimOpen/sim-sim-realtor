@@ -329,6 +329,28 @@ export class AddEditProperty {
     });
   }
 
+  getFullAddresForMap(): string {
+    const location = this.propertyForm.value.location;
+    const addressParts = [location.country];
+
+    if (location.region_id) {
+      const region = this.regions.find((r) => r.id === location.region_id);
+      if (region) addressParts.push(region.name_en);
+    }
+    if (location.district_id && this.districts.available) {
+      const district = this.districts.list.find((d) => d.id === location.district_id);
+      if (district) addressParts.push(district.name_en);
+    }
+    if (location.place_id && this.places.available) {
+      const place = this.places.list.find((p) => p.id === location.place_id);
+      if (place) addressParts.push(place.name_en);
+    }
+    if (location.address) {
+      addressParts.push(location.address);
+    }
+    return addressParts.join(', ');
+  }
+
   onClose() {
     this.closeModal.emit();
   }
