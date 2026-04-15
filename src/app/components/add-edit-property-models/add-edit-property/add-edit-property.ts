@@ -22,6 +22,7 @@ import { Common } from '../../../shared/common';
 import { UploadedFiles } from '../uploaded-files';
 import { Toast, ToastrService } from 'ngx-toastr';
 import { ProductStateService } from '../../../shared/services/product/state/product-state.service';
+import { YandexMapComponent } from '../yandex-map';
 
 @Component({
   selector: 'app-add-edit-property',
@@ -35,6 +36,7 @@ import { ProductStateService } from '../../../shared/services/product/state/prod
     MoneyFormatDirective,
     AreaFormatDirective,
     UploadedFiles,
+    YandexMapComponent,
   ],
   templateUrl: './add-edit-property.html',
   styleUrl: './add-edit-property.scss',
