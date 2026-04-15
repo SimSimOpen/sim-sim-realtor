@@ -1,6 +1,15 @@
-import { Component, ElementRef, Input, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  AfterViewInit,
+  ViewChild,
+  OnDestroy,
+  Inject,
+} from '@angular/core';
 
-declare const ymaps: any;
+// Declare globals for YMaps3
+declare const ymaps3: any;
 
 @Component({
   selector: 'app-yandex-map',
@@ -13,21 +22,28 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
   @Input() address = '';
 
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
-  private map: any;
+  private mapInstance: any;
 
   ngAfterViewInit() {
-    this.waitForYmaps().then(() => this.initMap());
+    this.waitForYmaps3().then(() => this.initMap());
   }
 
-  private waitForYmaps(): Promise<void> {
+  private waitForYmaps3(): Promise<void> {
     return new Promise((resolve) => {
-      if (typeof this.ymaps !== 'undefined') {
-        this.ymaps.ready(resolve);
+      if (typeof ymaps3 !== 'undefined' && ymaps3.ready) {
+        console.log('YMAPS3:', ymaps3);
+        ymaps3.ready.then(() => {
+          console.log('YMap API ready');
+          resolve();
+        });
       } else {
         const interval = setInterval(() => {
-          if (typeof this.ymaps !== 'undefined') {
+          if (typeof ymaps3 !== 'undefined' && ymaps3.ready) {
             clearInterval(interval);
-            this.ymaps.ready(resolve);
+            ymaps3.ready.then(() => {
+              console.log('YMap API ready');
+              resolve();
+            });
           }
         }, 100);
       }
@@ -35,53 +51,64 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
   }
 
   private initMap() {
-    this.map = new ymaps.Map(this.mapContainer.nativeElement, {
-      center: [this.latitude, this.longitude],
-      zoom: this.zoom,
-      controls: ['zoomControl', 'fullscreenControl'],
+    const { YMap, YMapDefaultSchemeLayer } = ymaps3;
+
+    this.mapInstance = new YMap(this.mapContainer.nativeElement, {
+      location: {
+        center: [this.longitude, this.latitude],
+        zoom: this.zoom,
+      },
     });
 
+    const layer = new YMapDefaultSchemeLayer();
+    this.mapInstance.addChild(layer);
+
     if (this.latitude && this.longitude) {
-      const placemark = new ymaps.Placemark(
-        [this.latitude, this.longitude],
-        { balloonContent: this.address || 'Property Location' },
-        { preset: 'islands#blueDotIcon' },
-      );
-      this.map.geoObjects.add(placemark);
+      this.setCenter(this.longitude, this.latitude, 15);
     }
 
-    // Geocode only if address is a real string
     if (this.address && this.address.trim() !== '' && this.address !== 'null') {
       this.geocodeAddress(this.address);
     }
   }
 
-  geocodeAddress(address: string) {
-    // ymaps is guaranteed to be ready here since initMap() runs after waitForYmaps()
-    ymaps.geocode(address).then((result: any) => {
-      const firstResult = result.geoObjects.get(0);
-      if (!firstResult) return;
+  private setCenter(lon: number, lat: number, zoom?: number) {
+    if (!this.mapInstance) return;
 
-      const coords = firstResult.geometry.getCoordinates();
-      if (coords) {
-        this.map.setCenter(coords, 15);
-        // Update placemark position too
-        this.map.geoObjects.removeAll();
-        const placemark = new ymaps.Placemark(
-          coords,
-          { balloonContent: address },
-          { preset: 'islands#blueDotIcon' },
-        );
-        this.map.geoObjects.add(placemark);
-      }
-    });
+    this.mapInstance.update(
+      {
+        location: {
+          center: [lon, lat],
+          zoom: zoom ?? this.zoom,
+        },
+      },
+      { duration: 300 }, // optional smooth animation
+    );
   }
 
-  private get ymaps(): any {
-    return (window as any)['ymaps'];
+  private geocodeAddress(address: string) {
+    // YMaps3 does not bundle geocoder; you must use Yandex Geocoder API over HTTP
+    const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=d274a689-ee61-43ea-83ff-333ac18efed4&format=json&geocode=${encodeURIComponent(
+      address,
+    )}`;
+
+    fetch(geocoderUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        const feature = data.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject;
+        if (!feature) return;
+
+        const pointStr = feature.Point.pos; // "lon lat"
+        const [lonStr, latStr] = pointStr.split(' ');
+        const lon = parseFloat(lonStr);
+        const lat = parseFloat(latStr);
+
+        this.setCenter(lon, lat, 15);
+      })
+      .catch((err) => console.error('Geocoding error:', err));
   }
 
   ngOnDestroy() {
-    this.map?.destroy();
+    this.mapInstance?.destroy?.();
   }
 }

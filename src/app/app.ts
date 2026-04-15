@@ -1,7 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
-declare const ymaps: any;
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],

@@ -9,6 +9,14 @@
   </head>
   <body>
     <app-root></app-root>
+
+    <script src="https://api-maps.yandex.ru/v3/?apikey=d274a689-ee61-43ea-83ff-333ac18efed4&lang=en_US"></script>
+
+    <script>
+      ymaps3.ready.then(() => {
+        ymaps3.strictMode = true;
+        window.__YMAPS3_READY__ = true;
+      });
+    </script>
   </body>
-  <script src="https://api-maps.yandex.ru/v3/?apikey=d274a689-ee61-43ea-83ff-333ac18efed4&lang=en_US"></script>
 </html>
