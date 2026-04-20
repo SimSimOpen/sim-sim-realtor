@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { AuthResponse } from '../shared/models/auth';
 import { Observable } from 'rxjs';
 import { AUTH_URL } from '../shared/constants/urls';
@@ -8,7 +8,7 @@ import { AUTH_URL } from '../shared/constants/urls';
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   authenticate(username: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${AUTH_URL}/v1/authenticate`, {
@@ -57,8 +57,18 @@ export class AuthService {
     return sessionStorage.getItem('username');
   }
 
+  setUserData(user: Omit<AuthResponse, 'token' | 'refreshToken'>) {
+    const { token, refreshToken, ...safeData } = user as AuthResponse;
+    localStorage.setItem('userProfile', JSON.stringify(safeData));
+  }
+  getUserDataFromStorage(): Omit<AuthResponse, 'token' | 'refreshToken'> | null {
+    const userData = localStorage.getItem('userProfile');
+    return userData ? JSON.parse(userData) : null;
+  }
+
   clearStorage() {
     sessionStorage.removeItem('authToken');
     sessionStorage.removeItem('username');
+    localStorage.removeItem('userProfile');
   }
 }

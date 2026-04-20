@@ -30,6 +30,7 @@ export class Login {
         next: (response) => {
           this.authService.storeToken(response.token);
           this.authService.setUsername(response.username);
+          this.authService.setUserData(response);
           this.common.navigateTo('/dashboard');
         },
         error: (error) => {

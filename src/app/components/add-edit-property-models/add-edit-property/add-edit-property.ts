@@ -20,7 +20,7 @@ import {
 } from '../../../shared/enums/PropertyStatus';
 import { Common } from '../../../shared/common';
 import { UploadedFiles } from '../uploaded-files';
-import { Toast, ToastrService } from 'ngx-toastr';
+import { ToastrService } from 'ngx-toastr';
 import { ProductStateService } from '../../../shared/services/product/state/product-state.service';
 import { YandexMapComponent } from '../yandex-map';
 
