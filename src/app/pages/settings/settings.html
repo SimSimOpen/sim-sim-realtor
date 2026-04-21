@@ -23,11 +23,23 @@
           <div
             class="h-20 w-20 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-500"
           >
-            JD
+            <img
+              [src]="profileImageUrl"
+              alt="Profile Image"
+              class="h-20 w-20 rounded-full object-cover"
+            />
           </div>
           <button
             class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-8 px-3 text-xs"
+            (click)="fileInput.click()"
           >
+            <input
+              type="file"
+              accept="image/*"
+              (change)="updateUserAvatar($event)"
+              class="hidden"
+              #fileInput
+            />
             Change Avatar
           </button>
         </div>

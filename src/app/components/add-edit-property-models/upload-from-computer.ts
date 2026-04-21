@@ -108,7 +108,7 @@ export class UploadFromComputer {
     if (input.files && input.files.length > 0) {
       const files = input.files;
       const property_id = this.property()?.id as number;
-      this.mediaService.uploadImage(property_id, Array.from(files)).subscribe({
+      this.mediaService.uploadProductImage(property_id, Array.from(files)).subscribe({
         next: (response) => {
           this.toast.success('Image uploaded successfully, property ID: ' + response);
           this.productStateService.setPropertyId(response);

@@ -134,7 +134,7 @@ export class MobileCameraUpload {
     const params = new HttpParams().append('property_id', this.property_id?.toString() || '');
 
     this.http
-      .post<number>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, {
+      .post<number>(`${MEDIA_SERVICE_URL}/v1/upload-product-media`, formData, {
         params,
         headers: { Authorization: `Bearer ${this.token}` },
       })
@@ -172,7 +172,7 @@ export class MobileCameraUpload {
       const params = new HttpParams().append('property_id', property_id?.toString() || '');
 
       this.http
-        .post<number>(`${MEDIA_SERVICE_URL}/v1/upload`, formData, {
+        .post<number>(`${MEDIA_SERVICE_URL}/v1/upload-product-media`, formData, {
           params,
           headers: { Authorization: `Bearer ${this.token}` },
         })

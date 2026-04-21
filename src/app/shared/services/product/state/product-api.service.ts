@@ -46,14 +46,6 @@ export class ProductApiService {
     return this.http.get<PropertiesStats>(`${PRODUCT_URL}/v1/property/stats`);
   }
 
-  uploadImage(property_id: number, files: File[]): Observable<string> {
-    const formData: FormData = new FormData();
-    files.forEach((file) => {
-      formData.append('files', file);
-    });
-    const params = new HttpParams().append('property_id', property_id.toString());
-    return this.http.post<string>(`${PRODUCT_URL}/v1/property/add/images`, formData, { params });
-  }
   getMediaCount(property_id: number): Observable<number> {
     return this.http.get<number>(`${PRODUCT_URL}/v1/property/property-media-count/${property_id}`);
   }
