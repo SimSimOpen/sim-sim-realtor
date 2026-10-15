@@ -1,54 +1,138 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged, finalize, Subject, Subscription } from 'rxjs';
+import { ModalComponent } from '../../components/modal/modal.component';
+import { ClientResponse, UserService } from '../../shared/services/user.service';
+import { formatPhone } from '../../shared/utils/phone-mask.directive';
+
+interface ClientUser {
+  id: number;
+  name: string;
+  /** Second line under the name: email, or the username when that is not just the phone again. */
+  subtitle: string;
+  phone: string;
+  signInMethod: 'PHONE' | 'PASSWORD';
+  status: 'active' | 'inactive';
+  lastActive: string | null;
+  dateJoined: string | null;
+  avatarUrl: string | null;
+  raw: ClientResponse;
+}
+
+const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-users',
-  imports: [CommonModule],
+  imports: [CommonModule, ModalComponent],
   templateUrl: './users.html',
   styleUrl: './users.scss',
 })
-export class Users {
-  users = [
-    {
-      name: 'Alice Johnson',
-      email: 'alice.johnson@example.com',
-      phone: '123-456-7890',
-      role: 'user',
-      status: 'active',
-      lastActive: '2024-05-20 12:34:56',
-      dateJoined: '2023-01-15',
-    },
-    {
-      name: 'Bob Smith',
-      email: 'bob.smith@example.com',
-      phone: '987-654-3210',
-      role: 'admin',
-      status: 'inactive',
-      lastActive: '2024-05-18 09:12:34',
-      dateJoined: '2022-11-20',
-    },
-  ];
+export class Users implements OnInit {
+  private userService = inject(UserService);
+  private destroyRef = inject(DestroyRef);
 
-  getRoleClass(user: any) {
-    if (user.role === 'admin') {
-      return ' bg-blue-50 text-blue-700 py-0.5 px-2.5 rounded-full border border-blue-200';
-    }
-    if (user.role === 'user') {
-      return 'bg-gray-50 text-gray-700 py-0.5 px-2.5 rounded-full border border-gray-200';
-    }
-    if (user.role === 'agent') {
-      return 'bg-yellow-50 text-yellow-700 py-0.5 px-2.5 rounded-full border border-yellow-200';
-    }
-    return '';
+  users = signal<ClientUser[]>([]);
+  isLoading = signal(false);
+  loadError = signal<string | null>(null);
+
+  search = signal('');
+  page = signal(0);
+  totalPages = signal(0);
+  totalElements = signal(0);
+  readonly pageSize = PAGE_SIZE;
+
+  viewingUser = signal<ClientUser | null>(null);
+
+  private searchInput = new Subject<string>();
+  private loadSub: Subscription | null = null;
+
+  ngOnInit() {
+    this.searchInput
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntilDestroyed(this.destroyRef))
+      .subscribe((term) => {
+        this.search.set(term);
+        this.page.set(0);
+        this.loadUsers();
+      });
+    this.loadUsers();
   }
 
-  getStatusClass(user: any) {
+  onSearch(event: Event) {
+    this.searchInput.next((event.target as HTMLInputElement).value.trim());
+  }
+
+  goToPage(page: number) {
+    if (page < 0 || page >= this.totalPages() || page === this.page()) {
+      return;
+    }
+    this.page.set(page);
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    // A newer search wins over a slower, older response
+    this.loadSub?.unsubscribe();
+    this.isLoading.set(true);
+    this.loadError.set(null);
+    this.loadSub = this.userService
+      .getClients(this.search(), this.page(), PAGE_SIZE)
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: (resp) => {
+          this.users.set(resp.content.map((c) => this.toUser(c)));
+          this.totalPages.set(resp.totalPages);
+          this.totalElements.set(resp.totalElements);
+        },
+        error: (err) => {
+          this.users.set([]);
+          this.loadError.set(
+            err?.status === 403
+              ? 'You are not allowed to view users.'
+              : err?.status === 404
+                ? 'Users endpoint not found on the server.'
+                : 'Could not load users.',
+          );
+        },
+      });
+  }
+
+  private toUser(c: ClientResponse): ClientUser {
+    const fullName = [c.profile?.firstName, c.profile?.lastName].filter(Boolean).join(' ').trim();
+    const phone = c.phoneNumber ? formatPhone(c.phoneNumber) : '';
+    const usernameIsPhone = c.username?.replace(/\D/g, '') === c.phoneNumber?.replace(/\D/g, '');
+    return {
+      id: c.id,
+      name: fullName || (c.signInMethod === 'PHONE' && phone ? phone : c.username),
+      subtitle: c.email || (usernameIsPhone || !fullName ? '' : c.username),
+      phone: phone || '-',
+      signInMethod: c.signInMethod,
+      status: c.enabled === false ? 'inactive' : 'active',
+      lastActive: c.lastActiveAt,
+      dateJoined: c.createdAt,
+      avatarUrl: c.profile?.profileImageUrl || null,
+      raw: c,
+    };
+  }
+
+  openViewUser(user: ClientUser) {
+    this.viewingUser.set(user);
+  }
+
+  closeViewUser() {
+    this.viewingUser.set(null);
+  }
+
+  getSignInClass(user: ClientUser) {
+    return user.signInMethod === 'PHONE'
+      ? 'bg-purple-50 text-purple-700 py-0.5 px-2.5 rounded-full border border-purple-200'
+      : 'bg-gray-50 text-gray-700 py-0.5 px-2.5 rounded-full border border-gray-200';
+  }
+
+  getStatusClass(user: ClientUser) {
     if (user.status === 'active') {
       return 'bg-green-50 text-green-700 py-0.5 px-2.5 rounded-full border border-green-200';
     }
-    if (user.status === 'inactive') {
-      return 'bg-gray-50 text-gray-700 py-0.5 px-2.5 rounded-full border border-gray-200';
-    }
-    return '';
+    return 'bg-gray-50 text-gray-700 py-0.5 px-2.5 rounded-full border border-gray-200';
   }
 }

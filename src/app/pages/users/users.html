@@ -2,7 +2,7 @@
   <section class="title flex justify-between">
     <div>
       <h1 class="text-2xl text-black font-bold">Users</h1>
-      <span>Manage your application users.</span>
+      <span>People who signed in on the website, including by phone number.</span>
     </div>
     <div class="flex items-center">
       <button
@@ -32,31 +32,46 @@
     </div>
   </section>
 
+  <section class="mt-2 flex flex-wrap items-center justify-between gap-3">
+    <div class="relative w-full max-w-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.3-4.3" />
+      </svg>
+      <input
+        type="search"
+        (input)="onSearch($event)"
+        placeholder="Search by phone, username or email"
+        aria-label="Search users"
+        class="w-full rounded-md border border-gray-300 bg-white py-2 pl-9 pr-3 focus:border-blue-600 focus:outline-none"
+      />
+    </div>
+    <span class="text-sm text-gray-500">
+      {{ totalElements() }} {{ totalElements() === 1 ? 'user' : 'users' }}
+    </span>
+  </section>
+
   <section class="users-table shadow-sm">
     <table class="w-full">
       <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
         <tr class="text-left">
           <th>User</th>
           <th>Phone</th>
-          <th>Role</th>
+          <th>Sign-in</th>
           <th>Status</th>
           <th>Last Active</th>
           <th>Date Joined</th>
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody>
-        @for (user of users; track $index) {
+      <tbody [class.opacity-60]="isLoading() && users().length > 0">
+        @for (user of users(); track user.id) {
           <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-defualt">
             <td>
               <div class="flex items-center gap-4">
                 <div class="border border-gray-300 rounded-full p-1">
-                  @if (false) {
-                    <img
-                      class="h-24 w-24 object-cover border border-gray-200"
-                      [src]=""
-                      alt="agent-image"
-                    />
+                  @if (user.avatarUrl) {
+                    <img class="h-[30px] w-[30px] rounded-full object-cover" [src]="user.avatarUrl" [alt]="user.name" />
                   } @else {
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -78,104 +93,144 @@
                 </div>
                 <div>
                   <div class="text-md font-medium text-gray-900">{{ user.name }}</div>
-                  <div class="flex items-center text-gray-700 text-sm">
-                    {{ user.email }}
-                  </div>
+                  @if (user.subtitle) {
+                    <div class="flex items-center text-gray-700 text-sm">{{ user.subtitle }}</div>
+                  }
                 </div>
               </div>
             </td>
-            <td class="text-gray-700">{{ user.phone }}</td>
-            <td>
-              <div class="capitalize text-sm font-medium text-gray-600">
-                <span [ngClass]="getRoleClass(user)">
-                  {{ user.role }}
-                </span>
-              </div>
-            </td>
-            <td class="capitalize text-sm font-medium text-gray-900">
-              <span [ngClass]="getStatusClass(user)">
-                {{ user.status }}
+            <td class="text-gray-700 whitespace-nowrap">{{ user.phone }}</td>
+            <td class="text-sm font-medium">
+              <span [ngClass]="getSignInClass(user)">
+                {{ user.signInMethod === 'PHONE' ? 'Phone code' : 'Password' }}
               </span>
             </td>
-            <td class="text-gray-700">{{ user.lastActive }}</td>
-            <td class="text-gray-700">{{ user.dateJoined }}</td>
-
+            <td class="capitalize text-sm font-medium text-gray-900">
+              <span [ngClass]="getStatusClass(user)">{{ user.status }}</span>
+            </td>
+            <td class="text-gray-700 whitespace-nowrap">{{ user.lastActive ? (user.lastActive | date: 'MMM d, y, HH:mm') : '-' }}</td>
+            <td class="text-gray-700 whitespace-nowrap">{{ user.dateJoined ? (user.dateJoined | date: 'yyyy-MM-dd') : '-' }}</td>
             <td>
-              <div class="flex gap-1 items-center justify-start">
-                <button
-                  class="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-blue-50 rounded-md transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-eye h-4 w-4"
-                    aria-hidden="true"
-                    data-id="element-256"
-                  >
-                    <path
-                      d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
-                    ></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                  </svg>
-                </button>
-                <button
-                  class="p-2 cursor-pointer text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-pen h-4 w-4"
-                    aria-hidden="true"
-                    data-id="element-258"
-                  >
-                    <path
-                      d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
-                    ></path>
-                  </svg>
-                </button>
-                <button
-                  class="p-2 cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-trash2 lucide-trash-2 h-4 w-4"
-                    aria-hidden="true"
-                    data-id="element-260"
-                  >
-                    <path d="M3 6h18"></path>
-                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                    <line x1="10" x2="10" y1="11" y2="17"></line>
-                    <line x1="14" x2="14" y1="11" y2="17"></line>
-                  </svg>
-                </button>
-              </div>
+              <button
+                type="button"
+                (click)="openViewUser(user)"
+                aria-label="View user"
+                class="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-blue-50 rounded-md transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+                  <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="text-center text-gray-500">
+              @if (isLoading()) {
+                Loading users…
+              } @else if (loadError()) {
+                <span class="text-red-600">{{ loadError() }}</span>
+                <button type="button" (click)="loadUsers()" class="ml-2 font-semibold text-blue-700 hover:underline">Retry</button>
+              } @else if (search()) {
+                No users match "{{ search() }}".
+              } @else {
+                No users yet.
+              }
             </td>
           </tr>
         }
       </tbody>
     </table>
+
+    @if (totalPages() > 1) {
+      <div class="flex items-center justify-between border-t border-gray-300 px-5 py-3 text-sm text-gray-600">
+        <span>
+          Showing {{ page() * pageSize + 1 }}–{{ page() * pageSize + users().length }} of {{ totalElements() }}
+        </span>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            (click)="goToPage(page() - 1)"
+            [disabled]="page() === 0 || isLoading()"
+            class="rounded-md border border-gray-300 bg-white px-3 py-1.5 font-semibold hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+          >
+            Previous
+          </button>
+          <span>Page {{ page() + 1 }} of {{ totalPages() }}</span>
+          <button
+            type="button"
+            (click)="goToPage(page() + 1)"
+            [disabled]="page() + 1 >= totalPages() || isLoading()"
+            class="rounded-md border border-gray-300 bg-white px-3 py-1.5 font-semibold hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    }
   </section>
+
+  <app-modal [isVisible]="!!viewingUser()" (close)="closeViewUser()">
+    @if (viewingUser(); as user) {
+      <div class="p-8">
+        <div class="flex items-center gap-5 border-b border-gray-200 pb-6">
+          <div class="h-20 w-20 shrink-0 overflow-hidden rounded-full border border-gray-300 bg-gray-100 flex items-center justify-center text-gray-400">
+            @if (user.avatarUrl) {
+              <img [src]="user.avatarUrl" [alt]="user.name" class="h-full w-full object-cover" />
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+                <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+              </svg>
+            }
+          </div>
+          <div class="min-w-0">
+            <h2 class="text-xl font-bold text-gray-900 truncate">{{ user.name }}</h2>
+            <p class="text-sm text-gray-500 truncate">&#64;{{ user.raw.username }}</p>
+            <div class="mt-2 flex flex-wrap items-center gap-2 text-xs font-medium">
+              <span class="capitalize" [ngClass]="getStatusClass(user)">{{ user.status }}</span>
+              <span [ngClass]="getSignInClass(user)">{{ user.signInMethod === 'PHONE' ? 'Phone code' : 'Password' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Account</h3>
+        <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 text-sm">
+          <div><dt class="text-gray-500">User ID</dt><dd class="font-medium text-gray-900">{{ user.raw.id }}</dd></div>
+          <div><dt class="text-gray-500">Username</dt><dd class="font-medium text-gray-900 break-all">{{ user.raw.username }}</dd></div>
+          <div><dt class="text-gray-500">Phone</dt><dd class="font-medium text-gray-900">{{ user.phone }}</dd></div>
+          <div><dt class="text-gray-500">Email</dt><dd class="font-medium text-gray-900 break-all">{{ user.raw.email || '-' }}</dd></div>
+          <div><dt class="text-gray-500">Joined</dt><dd class="font-medium text-gray-900">{{ user.dateJoined ? (user.dateJoined | date: 'medium') : '-' }}</dd></div>
+          <div><dt class="text-gray-500">Last active</dt><dd class="font-medium text-gray-900">{{ user.lastActive ? (user.lastActive | date: 'medium') : '-' }}</dd></div>
+        </dl>
+
+        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Profile</h3>
+        @if (user.raw.profile; as profile) {
+          <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 text-sm">
+            <div><dt class="text-gray-500">Profile ID</dt><dd class="font-medium text-gray-900">{{ profile.profileId || '-' }}</dd></div>
+            <div><dt class="text-gray-500">Profile phone</dt><dd class="font-medium text-gray-900">{{ profile.phoneNumber || '-' }}</dd></div>
+            <div><dt class="text-gray-500">First name</dt><dd class="font-medium text-gray-900">{{ profile.firstName || '-' }}</dd></div>
+            <div><dt class="text-gray-500">Last name</dt><dd class="font-medium text-gray-900">{{ profile.lastName || '-' }}</dd></div>
+            <div class="sm:col-span-2">
+              <dt class="text-gray-500">Description</dt>
+              <dd class="font-medium text-gray-900 whitespace-pre-line">{{ profile.description || '-' }}</dd>
+            </div>
+          </dl>
+        } @else {
+          <p class="text-sm text-gray-500">This user has no profile yet.</p>
+        }
+
+        <div class="flex justify-end pt-8">
+          <button
+            type="button"
+            (click)="closeViewUser()"
+            class="rounded-md border border-gray-300 bg-white px-5 py-2 font-semibold text-gray-700 hover:bg-gray-50"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    }
+  </app-modal>
 </div>
