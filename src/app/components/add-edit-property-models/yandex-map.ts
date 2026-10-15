@@ -1,46 +1,74 @@
-import { Component, ElementRef, Input, AfterViewInit, ViewChild, OnDestroy } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  signal,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
+import { YandexMapsLoaderService } from '../../shared/services/yandex-maps-loader.service';
 
-declare const ymaps3: any;
+/** Waits for the address to stop changing (e.g. while a form is being filled in) before geocoding. */
+const GEOCODE_DEBOUNCE_MS = 400;
 
 @Component({
   selector: 'app-yandex-map',
-  template: `<div
-    class="border border-gray-400 rounded-2xl p-2 w-full h-full my-4 aspect-video"
-    #mapContainer
-  ></div>`,
+  template: `<div class="relative w-full my-4 aspect-video">
+    <div class="border border-gray-400 rounded-2xl overflow-hidden w-full h-full" #mapContainer></div>
+    @if (error()) {
+      <div
+        class="absolute inset-0 flex items-center justify-center rounded-2xl bg-gray-50 border border-gray-200 text-sm text-gray-500 text-center px-6"
+      >
+        {{ error() }}
+      </div>
+    }
+  </div>`,
 })
-export class YandexMapComponent implements AfterViewInit, OnDestroy {
+export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() latitude = 41.2995;
   @Input() longitude = 69.2401;
   @Input() zoom = 13;
   @Input() address = '';
 
-  @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef;
+  @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef<HTMLElement>;
 
+  readonly error = signal<string | null>(null);
+
+  private loader = inject(YandexMapsLoaderService);
+  private ymaps: any;
   private mapInstance: any;
   private markerElement: any;
+  private geocodeTimer?: ReturnType<typeof setTimeout>;
+  /** Incremented per geocode so a slow, outdated response can't move the marker back. */
+  private geocodeRequestId = 0;
+  private destroyed = false;
 
-  ngAfterViewInit() {
-    this.waitForYmaps3().then(() => this.initMap());
+  async ngAfterViewInit() {
+    try {
+      this.ymaps = await this.loader.load();
+    } catch (err) {
+      console.error(err);
+      this.error.set('Map is unavailable right now.');
+      return;
+    }
+    if (this.destroyed) return;
+    this.initMap();
   }
 
-  private waitForYmaps3(): Promise<void> {
-    return new Promise((resolve) => {
-      if (typeof ymaps3 !== 'undefined' && ymaps3.ready) {
-        ymaps3.ready.then(() => resolve());
-      } else {
-        const interval = setInterval(() => {
-          if (typeof ymaps3 !== 'undefined' && ymaps3.ready) {
-            clearInterval(interval);
-            ymaps3.ready.then(() => resolve());
-          }
-        }, 100);
-      }
-    });
+  ngOnChanges(changes: SimpleChanges) {
+    // The first value is handled by initMap; later ones (form edits, a different property) re-locate.
+    if (!this.mapInstance) return;
+    if (changes['address'] || changes['latitude'] || changes['longitude']) {
+      this.locate();
+    }
   }
 
   private initMap() {
-    const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer } = ymaps3; // ← add this
+    const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer } = this.ymaps;
 
     this.mapInstance = new YMap(this.mapContainer.nativeElement, {
       location: {
@@ -50,15 +78,29 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
     });
 
     this.mapInstance.addChild(new YMapDefaultSchemeLayer());
-    this.mapInstance.addChild(new YMapDefaultFeaturesLayer()); // ← add this
+    this.mapInstance.addChild(new YMapDefaultFeaturesLayer());
 
-    if (this.address && this.address.trim() !== '' && this.address !== 'null') {
-      this.geocodeAddress(this.address);
+    this.locate();
+  }
+
+  private locate() {
+    clearTimeout(this.geocodeTimer);
+    if (this.hasAddress()) {
+      this.geocodeTimer = setTimeout(() => this.geocodeAddress(this.address), GEOCODE_DEBOUNCE_MS);
     } else if (this.latitude && this.longitude) {
-      this.setCenter(this.longitude, this.latitude, 15);
-      this.placeMarker(this.longitude, this.latitude);
+      this.showPoint(this.longitude, this.latitude);
     }
   }
+
+  private hasAddress(): boolean {
+    return !!this.address && this.address.trim() !== '' && this.address !== 'null';
+  }
+
+  private showPoint(lon: number, lat: number) {
+    this.setCenter(lon, lat, 15);
+    this.placeMarker(lon, lat);
+  }
+
   private createMarkerElement(): HTMLElement {
     const el = document.createElement('div');
     el.style.cssText = `
@@ -75,21 +117,18 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
   }
 
   private placeMarker(lon: number, lat: number) {
-    const { YMapMarker } = ymaps3;
+    const { YMapMarker } = this.ymaps;
 
-    // Remove existing marker if any
     if (this.markerElement) {
       this.mapInstance.removeChild(this.markerElement);
     }
-
-    const markerEl = this.createMarkerElement();
 
     this.markerElement = new YMapMarker(
       {
         coordinates: [lon, lat],
         anchor: [0.5, 1], // bottom-center of the pin tip
       },
-      markerEl,
+      this.createMarkerElement(),
     );
 
     this.mapInstance.addChild(this.markerElement);
@@ -97,37 +136,37 @@ export class YandexMapComponent implements AfterViewInit, OnDestroy {
 
   private setCenter(lon: number, lat: number, zoom?: number) {
     if (!this.mapInstance) return;
-    this.mapInstance.update(
-      {
-        location: {
-          center: [lon, lat],
-          zoom: zoom ?? this.zoom,
-        },
+    this.mapInstance.update({
+      location: {
+        center: [lon, lat],
+        zoom: zoom ?? this.zoom,
+        duration: 300,
       },
-      { duration: 300 },
-    );
+    });
   }
 
-  private geocodeAddress(address: string) {
-    const geocoderUrl = `https://geocode-maps.yandex.ru/1.x/?apikey=d274a689-ee61-43ea-83ff-333ac18efed4&format=json&geocode=${encodeURIComponent(address)}`;
+  /**
+   * Uses the JS API's own search, which runs on the same key as the map. The separate Geocoder
+   * HTTP API (geocode-maps.yandex.ru) needs its own key, and the map key is rejected there.
+   */
+  private async geocodeAddress(address: string) {
+    const requestId = ++this.geocodeRequestId;
+    try {
+      const results = await this.ymaps.search({ text: address, limit: 1 });
+      if (requestId !== this.geocodeRequestId || this.destroyed) return;
 
-    fetch(geocoderUrl)
-      .then((r) => r.json())
-      .then((data) => {
-        const feature = data.response?.GeoObjectCollection?.featureMember?.[0]?.GeoObject;
-        if (!feature) return;
-
-        const [lonStr, latStr] = feature.Point.pos.split(' ');
-        const lon = parseFloat(lonStr);
-        const lat = parseFloat(latStr);
-
-        this.setCenter(lon, lat, 15);
-        this.placeMarker(lon, lat); // ← place marker at geocoded location
-      })
-      .catch((err) => console.error('Geocoding error:', err));
+      const coordinates = results?.[0]?.geometry?.coordinates;
+      if (!coordinates) return;
+      const [lon, lat] = coordinates;
+      this.showPoint(lon, lat);
+    } catch (err) {
+      console.error('Geocoding error:', err);
+    }
   }
 
   ngOnDestroy() {
+    this.destroyed = true;
+    clearTimeout(this.geocodeTimer);
     this.mapInstance?.destroy?.();
   }
 }
