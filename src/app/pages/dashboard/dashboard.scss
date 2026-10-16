@@ -1,63 +1,124 @@
 .dashboard-page {
   --space-x: 2rem;
   --border-radius: 0.75rem;
-  padding: 0 var(--space-x);
+  padding: 0 var(--space-x) var(--space-x);
 }
 
 .title {
   margin-block: var(--space-x);
   button {
     outline: none;
-    border-radius: 5px;
+    border-radius: 6px;
     height: max-content;
-    padding: 8px;
+    padding: 8px 14px;
     cursor: pointer;
   }
 }
 
-.header-cards > div {
+.panel {
+  background-color: #ffffff;
+  border-radius: var(--border-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stat-tile {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem 1.5rem;
+}
+
+.stat-tile-row {
   display: flex;
-  gap: var(--space-x);
-  margin-bottom: var(--space-x);
-  .card {
-    background-color: #ffffff;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    width: 25%;
+  align-items: center;
+  gap: 1rem;
+  .stat-icon {
+    margin-bottom: 0;
   }
 }
 
-.graph-recent-activities {
-  display: flex;
-  width: 100%;
-  gap: var(--space-x);
-  > div {
-    background-color: #ffffff;
-    border-radius: var(--border-radius);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    height: 400px;
-    &:first-child {
-      width: 67%;
-    }
-
-    &:last-child {
-      width: 33%;
-    }
-  }
+.stat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
 }
-.dot {
+
+// "Live" marker on the online-now tile; pulses unless the user asked for less motion.
+.live-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
   height: 10px;
   width: 10px;
-  background-color: #3451d3;
-  border-radius: 50%;
-  display: inline-block;
+  border-radius: 9999px;
+  background: #16a34a;
+  border: 2px solid #ffffff;
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  50% {
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot {
+    animation: none;
+  }
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-note {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.segment {
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  color: #6b7280;
+  cursor: pointer;
+  &:hover {
+    color: #111827;
+  }
+}
+
+.segment-active {
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+// Same hue as the column chart; one series, so one colour.
+.type-bar {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  background: #2a78d6;
+  border-radius: 0 4px 4px 0;
 }
 
 .properties-table {
   background: #ffffff;
   border-radius: var(--border-radius);
-  margin-block: var(--space-x);
   table {
     th,
     tbody td {
