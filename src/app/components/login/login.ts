@@ -5,10 +5,12 @@ import { AuthService } from '../../account/auth.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
@@ -20,6 +22,7 @@ export class Login {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private toastr = inject(ToastrService);
+  private i18n = inject(I18nService);
 
   loginForm: FormGroup = this.buildLoginForm();
 
@@ -34,7 +37,7 @@ export class Login {
           this.common.navigateTo('/dashboard');
         },
         error: (error) => {
-          this.toastr.error('Invalid username or password', 'Login Failed');
+          this.toastr.error(this.i18n.t('auth.invalidCredentials'), this.i18n.t('auth.loginFailed'));
         },
       });
   }

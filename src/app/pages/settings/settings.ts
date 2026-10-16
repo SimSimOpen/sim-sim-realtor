@@ -6,10 +6,12 @@ import { UserData } from '../../shared/models/auth';
 import { UserService } from '../../shared/services/user.service';
 import { ToastrService } from 'ngx-toastr';
 import { MediaService } from '../../shared/services/media.service';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-settings',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -21,6 +23,7 @@ export class Settings {
   private userService = inject(UserService);
   private mediaService = inject(MediaService);
   private toastr = inject(ToastrService);
+  private i18n = inject(I18nService);
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
 
@@ -57,10 +60,10 @@ export class Settings {
       next: (response) => {
         this.authService.setUserData(response);
         this.profileImageUrl = response.profile.profileImageUrl;
-        this.toastr.success('User data updated successfully');
+        this.toastr.success(this.i18n.t('settings.saved'));
       },
       error: () => {
-        this.toastr.error('Error updating user data');
+        this.toastr.error(this.i18n.t('settings.saveError'));
       },
     });
   }
@@ -72,12 +75,12 @@ export class Settings {
       const user_id = this.authService.getUserDataFromStorage()?.profile?.userId as number;
       this.mediaService.uploadUserAvatar(user_id, files[0]).subscribe({
         next: (response) => {
-          this.toastr.success('Image uploaded successfully, user ID: ' + response);
+          this.toastr.success(this.i18n.t('settings.imageUploaded'));
           this.profileImageUrl = URL.createObjectURL(files[0]);
           this.cdr.detectChanges();
         },
         error: (error) => {
-          this.toastr.error('Error uploading image');
+          this.toastr.error(this.i18n.t('settings.imageError'));
         },
       });
     }

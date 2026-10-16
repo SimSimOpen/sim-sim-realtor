@@ -3,9 +3,12 @@ import { PropertyMedia } from '../../shared/models/properties';
 import { ToastrService } from 'ngx-toastr';
 import { HttpClient } from '@angular/common/http';
 import { PRODUCT_URL } from '../../shared/constants/urls';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-uploaded-files-mobile',
+  imports: [TranslatePipe],
   template: `<div class="relative min-w-screen">
     <div class="absolute flex max-w-screen overflow-scroll">
       <div
@@ -16,13 +19,13 @@ import { PRODUCT_URL } from '../../shared/constants/urls';
             medias[0]?.mediaUrl ??
             'https://api.media.simsim.fit/real-estate-media/default/house.png'
           "
-          alt="Cover photo"
+          [alt]="'upload.cover' | t"
           class="object-cover"
         />
         <div class="absolute inset-0 bg-linear-to-t from-black/50 to-transparent"></div>
         <div class="absolute bottom-3 left-3">
           <span class="px-2 py-1 bg-blue-600 text-white text-[10px] font-medium rounded">
-            Cover Photo
+            {{ 'upload.cover' | t }}
           </span>
         </div>
         <button
@@ -51,7 +54,7 @@ import { PRODUCT_URL } from '../../shared/constants/urls';
         <div
           class="relative group min-w-25 min-h-25 w-25 h-25 rounded-lg overflow-hidden border border-gray-200 bg-gray-100"
         >
-          <img [src]="media.mediaUrl" alt="Photo 2" class="object-cover" />
+          <img [src]="media.mediaUrl" [alt]="'upload.photo' | t" class="object-cover" />
           <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
           <button
             class="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
@@ -111,12 +114,13 @@ import { PRODUCT_URL } from '../../shared/constants/urls';
           <path d="m17 8-5-5-5 5"></path>
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
         </svg>
-        <span class="text-xs text-gray-500">Add</span>
+        <span class="text-xs text-gray-500">{{ 'upload.add' | t }}</span>
       </label>
     </div>
   </div>`,
 })
 export class UploadedFilesMobile {
+  private i18n = inject(I18nService);
   @Input() medias: PropertyMedia[] = [];
   @Input() token!: string;
   @Output() addMoreMedias = new EventEmitter<Event>();
@@ -135,12 +139,12 @@ export class UploadedFilesMobile {
         next: (res) => {
           this.medias = this.medias.filter((media) => media.id !== image_id);
           console.log('Delete response:', res);
-          this.toast.info('Image deleted successfully');
+          this.toast.info(this.i18n.t('upload.deleted'));
           this.ctr.detectChanges();
         },
         error: (error) => {
           console.error('Error deleting image:', error);
-          this.toast.error('Failed to delete image');
+          this.toast.error(this.i18n.t('upload.deleteError'));
         },
       });
   }

@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../account/auth.service';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { LanguageSwitcher } from '../../shared/i18n/language-switcher';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [TranslatePipe, LanguageSwitcher],
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })

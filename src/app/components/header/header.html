@@ -20,9 +20,10 @@
             <circle cx="11" cy="11" r="8"></circle>
           </svg>
         </span>
-        <input type="text" id="search" name="search" placeholder="Search properties, tenants..." />
+        <input type="text" id="search" name="search" [placeholder]="'header.searchPh' | t" />
       </div>
     </form>
+    <app-language-switcher class="mr-2"></app-language-switcher>
     <div class="bell-container">
       <span class="bell-icon">
         <svg
@@ -57,7 +58,7 @@
   <section class="account-info flex items-center gap-4 mr-5">
     <div class="flex flex-col items-end">
       <span class="whitespace-nowrap text-black font-semibold">{{ username }}</span>
-      <span class="whitespace-nowrap text-black font-light text-sm">Senior Broker</span>
+      <span class="whitespace-nowrap text-black font-light text-sm">{{ 'header.role' | t }}</span>
     </div>
     <div>
       <div

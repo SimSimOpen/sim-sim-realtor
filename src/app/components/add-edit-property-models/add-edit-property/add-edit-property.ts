@@ -23,6 +23,8 @@ import { UploadedFiles } from '../uploaded-files';
 import { ToastrService } from 'ngx-toastr';
 import { ProductStateService } from '../../../shared/services/product/state/product-state.service';
 import { YandexMapComponent } from '../yandex-map';
+import { TranslatePipe } from '../../../shared/i18n/translate.pipe';
+import { I18nService } from '../../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-add-edit-property',
@@ -37,6 +39,7 @@ import { YandexMapComponent } from '../yandex-map';
     AreaFormatDirective,
     UploadedFiles,
     YandexMapComponent,
+    TranslatePipe,
   ],
   templateUrl: './add-edit-property.html',
   styleUrl: './add-edit-property.scss',
@@ -52,6 +55,7 @@ export class AddEditProperty {
   private ctr = inject(ChangeDetectorRef);
   public common = inject(Common);
   private toastr = inject(ToastrService);
+  private i18n = inject(I18nService);
 
   editingProperty = this.productStateService.editingProperty;
 
@@ -301,7 +305,7 @@ export class AddEditProperty {
       this.productApiService.getMediaCount(this.propertyForm.value.id).subscribe({
         next: (count) => {
           if (count < 3) {
-            this.toastr.error('Please upload at least 3 images to publish the property.', 'Error', {
+            this.toastr.error(this.i18n.t('addEdit.needPhotos'), this.i18n.t('common.error'), {
               timeOut: 3000,
             });
             return;

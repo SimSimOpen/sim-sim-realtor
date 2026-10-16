@@ -1,11 +1,11 @@
 <div class="mobile-camera-page">
   @if (sessionStatus === 'Loading') {
     <div class="flex items-center justify-center h-screen">
-      <p class="text-red-500 text-lg">Checking session...</p>
+      <p class="text-red-500 text-lg">{{ 'camera.checking' | t }}</p>
     </div>
   } @else if (sessionStatus === 'Expired') {
     <div class="expired-message">
-      <p class="text-red-500 text-lg">Session has expired. Please try again.</p>
+      <p class="text-red-500 text-lg">{{ 'camera.expired' | t }}</p>
     </div>
   } @else {
     <video
@@ -50,8 +50,8 @@
       <div class="blur-bakcground"></div>
       <img [src]="previewUrl" class="mt-3 previews border border-blue-500 rounded" />
       <div class="previews flex gap-2 mt-2">
-        <button (click)="uploadCapturedPhoto()">Use & Upload</button>
-        <button (click)="discard()">Retake</button>
+        <button (click)="uploadCapturedPhoto()">{{ 'camera.useUpload' | t }}</button>
+        <button (click)="discard()">{{ 'camera.retake' | t }}</button>
       </div>
     }
     <div class="absolute bottom-50">

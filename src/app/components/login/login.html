@@ -31,14 +31,14 @@
       </svg>
     </span>
     <section class="top-section-text">
-      <h1>Welcome to SimSim!</h1>
-      <span>Enter your credentials to access your dashboard</span>
+      <h1>{{ 'auth.welcome' | t }}</h1>
+      <span>{{ 'auth.loginSubtitle' | t }}</span>
     </section>
 
     <section class="w-full">
       <form [formGroup]="loginForm" class="flex flex-col gap-4">
         <div class="input-group">
-          <label for="email">Email Address</label>
+          <label for="email">{{ 'auth.email' | t }}</label>
           <div class="flex gap-2">
             <span>
               <svg
@@ -71,7 +71,7 @@
           </div>
         </div>
         <div class="input-group">
-          <label for="password">Password</label>
+          <label for="password">{{ 'auth.password' | t }}</label>
           <div class="flex gap-2">
             @if (showPassword) {
               <span (click)="showPassword = !showPassword" class="cursor-pointer">
@@ -130,11 +130,11 @@
           </div>
         </div>
         <div class="flex justify-end cursor-pointer text-(--second-color) font-semibold">
-          <span>Forgot password?</span>
+          <span>{{ 'auth.forgot' | t }}</span>
         </div>
         <div>
           <button type="submit" (click)="login()" class="submit-button cursor-pointer">
-            Sign In
+            {{ 'auth.signIn' | t }}
             <span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -159,12 +159,12 @@
       </form>
     </section>
     <section class="footer">
-      Don't have an account?
+      {{ 'auth.noAccount' | t }}
       <span
         class="text-red-500 font-semibold cursor-pointer hover:text-red-600"
         (click)="swithToRegister()"
       >
-        Join the team
+        {{ 'auth.joinTeam' | t }}
       </span>
     </section>
   </div>

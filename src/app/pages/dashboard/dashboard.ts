@@ -11,10 +11,11 @@ import { CommonModule } from '@angular/common';
 import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
 import { PaginationService } from '../../shared/services/pagination.service';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty],
+  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty, TranslatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -45,7 +46,7 @@ export class Dashboard extends BaseModalComponent {
             property.dateListed = publishedDate;
             property.address = (property as any)['location'][3]
               ? (property as any)['location'][3]
-              : 'No address';
+              : '';
             return property;
           });
           this.ctr.detectChanges();

@@ -7,6 +7,8 @@ import { ProductApiService } from './services/product/state/product-api.service'
 import { ToastrService } from 'ngx-toastr';
 import { GlobalService } from './services/global.service';
 import { AuthService } from '../account/auth.service';
+import { I18nService } from './i18n/i18n.service';
+import { en, TranslationKey } from './i18n/translations';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +23,7 @@ export class Common {
   private productApiService = inject(ProductApiService);
   private global = inject(GlobalService);
   private authService = inject(AuthService);
+  private i18n = inject(I18nService);
 
   navigateTo(url: string): void {
     this.router.navigate([url]);
@@ -30,7 +33,11 @@ export class Common {
     this.activeMenuItem = menuItem;
   }
 
-  formatEnum(value: string): string {
+  /** Display label for an enum value (e.g. FOR_SALE) in the current language. */
+  formatEnum(value: string | null | undefined): string {
+    if (!value) return '';
+    const key = `enum.${value}`;
+    if (key in en) return this.i18n.t(key as TranslationKey);
     return value
       .split('_')
       .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
@@ -58,20 +65,20 @@ export class Common {
           case 'Mobile session started':
             console.log('Mobile Session Started');
             this.global.mobilesessionStarted.set(true);
-            this.toast.info(message, 'Notification');
+            this.toast.info(this.i18n.t('sse.mobileSessionStarted'), this.i18n.t('sse.notification'));
             break;
           case 'Media updated':
             console.log('Media Updated');
             onUpdate?.();
             if (this.authService.isAuthenticated()) this.fetchUpdatedProperty();
-            this.toast.info(message, 'Notification');
+            this.toast.info(this.i18n.t('sse.mediaUpdated'), this.i18n.t('sse.notification'));
             break;
           default:
             console.log('Received SSE message:', cleanMessage);
         }
       },
-      error: (err) => this.toast.error('SSE subscription error:', err),
-      complete: () => this.toast.warning('SSE subscription completed unexpectedly'),
+      error: (err) => this.toast.error(this.i18n.t('sse.error')),
+      complete: () => this.toast.warning(this.i18n.t('sse.closed')),
     });
   }
 

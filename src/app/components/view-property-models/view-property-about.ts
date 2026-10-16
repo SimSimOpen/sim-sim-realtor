@@ -1,15 +1,17 @@
 import { Component, Input } from '@angular/core';
 import { Property } from '../../shared/models/properties';
 import { amenitiesList } from '../../shared/common-functions';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 
 @Component({
   selector: 'app-about-property',
+  imports: [TranslatePipe],
   standalone: true,
   template: ` <div>
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
       <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
         <div data-id="element-91">
-          <h3 class="text-lg font-medium text-gray-900">About this property</h3>
+          <h3 class="text-lg font-medium text-gray-900">{{ 'property.about' | t }}</h3>
         </div>
       </div>
       <div class="p-6">
@@ -34,7 +36,7 @@ import { amenitiesList } from '../../shared/common-functions';
       >
         <div data-id="element-91">
           <h3 class="text-lg font-medium text-gray-900" data-id="element-92">
-            Amenities &amp; Features
+            {{ 'property.amenities' | t }}
           </h3>
         </div>
       </div>
@@ -59,7 +61,7 @@ import { amenitiesList } from '../../shared/common-functions';
                 <circle cx="12" cy="12" r="10"></circle>
                 <path d="m9 12 2 2 4-4"></path>
               </svg>
-              <span data-id="element-326">{{ amenity.label }}</span>
+              <span data-id="element-326">{{ amenity.label | t }}</span>
             </div>
           }
         </div>

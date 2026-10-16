@@ -19,7 +19,7 @@
         <path d="m12 19-7-7 7-7"></path>
         <path d="M19 12H5"></path>
       </svg>
-      Back to Properties
+      {{ 'property.back' | t }}
     </a>
     <div class="flex items-center gap-3" data-id="element-266">
       <button
@@ -45,7 +45,7 @@
           <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
           <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
         </svg>
-        Share
+        {{ 'property.share' | t }}
       </button>
       <button
         class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-10 px-4 py-2 text-sm gap-2"
@@ -67,7 +67,7 @@
             d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
           ></path>
         </svg>
-        Save
+        {{ 'property.save' | t }}
       </button>
     </div>
   </header>
@@ -77,13 +77,13 @@
         <span
           class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200"
         >
-          {{ property().occupancyStatus?.toLowerCase() }}
+          {{ common.formatEnum(property().occupancyStatus) }}
         </span>
       }
       <span
         class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-blue-50 text-blue-700 border-blue-200"
       >
-        {{ property().type?.toLowerCase() }}
+        {{ common.formatEnum(property().type) }}
       </span>
     </div>
     <div class="title flex justify-between">
@@ -120,7 +120,7 @@
       <div class="text-left md:text-right">
         <div class="text-3xl font-bold text-gray-900">$ {{ selectedProperty?.price }}</div>
         @if (isRent) {
-          <div class="text-sm text-gray-500">per month</div>
+          <div class="text-sm text-gray-500">{{ 'property.perMonth' | t }}</div>
         }
       </div>
     </div>
@@ -128,7 +128,7 @@
       <div class="relative col-span-2">
         <img
           [src]="propertiesCoverImage"
-          alt="Property Image"
+          [alt]="'property.image' | t"
           class="w-full max-w-167 h-full max-h-96 object-cover rounded-xl border border-gray-300"
           (click)="openLightbox(0)"
         />
@@ -162,9 +162,9 @@
                 </svg>
               </div>
               <div>
-                <div class="text-sm text-gray-500">Rooms</div>
+                <div class="text-sm text-gray-500">{{ 'property.rooms' | t }}</div>
                 <div class="font-semibold text-gray-900">
-                  {{ selectedProperty?.numberOfRooms }} Rooms
+                  {{ selectedProperty?.numberOfRooms }} {{ 'property.roomsUnit' | t: { count: selectedProperty?.numberOfRooms ?? 0 } }}
                 </div>
               </div>
             </div>
@@ -196,7 +196,7 @@
                 </svg>
               </div>
               <div>
-                <div class="text-sm text-gray-500">Floor</div>
+                <div class="text-sm text-gray-500">{{ 'property.floor' | t }}</div>
                 <div class="font-semibold text-gray-900">
                   {{ selectedProperty?.floor }} / {{ selectedProperty?.totalFloors }}
                 </div>
@@ -221,7 +221,7 @@
                 </svg>
               </div>
               <div>
-                <div class="text-sm text-gray-500">Area</div>
+                <div class="text-sm text-gray-500">{{ 'property.area' | t }}</div>
                 <div class="font-semibold text-gray-900" data-id="element-313">
                   {{ selectedProperty?.area }} m²
                 </div>
@@ -250,7 +250,7 @@
                   </svg>
                 </div>
                 <div>
-                  <div class="text-sm text-gray-500" data-id="element-318">Available</div>
+                  <div class="text-sm text-gray-500" data-id="element-318">{{ 'property.available' | t }}</div>
                   <div class="font-semibold text-gray-900" data-id="element-319">
                     {{ selectedProperty?.dateListed | date: 'dd-MM-yyyy' }}
                   </div>
@@ -270,7 +270,7 @@
             @if (!image.isCoverImage) {
               <img
                 [src]="image?.mediaUrl"
-                alt="Property Image {{ $index + 1 }}"
+                [alt]="('property.image' | t) + ' ' + ($index + 1)"
                 class="md:w-full md:h-auto sm:w-auto h-48 object-cover rounded-lg border border-gray-300"
                 (click)="openLightbox($index + 1)"
               />
@@ -297,7 +297,7 @@
               />
               <path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
             </svg>
-            {{ medias.length - 1 }} Images
+            {{ 'property.imagesCount' | t: { count: medias.length - 1 } }}
           </div>
           @if (hasScroll) {
             <div class="sticky bottom-0 flex justify-center items-center w-full">
@@ -405,7 +405,7 @@
     <!-- Image -->
     <img
       [src]="selectedImage"
-      alt="Full size"
+      [alt]="'property.fullSize' | t"
       class="max-w-[80vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
       (click)="$event.stopPropagation()"
     />

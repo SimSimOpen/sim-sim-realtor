@@ -18,14 +18,17 @@ import { UploadedFilesMobile } from '../add-edit-property-models/uploaded-files-
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 import { Common } from '../../shared/common';
 import { SseService } from '../../shared/services/sse.service';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-mobile-camera-upload',
-  imports: [UploadedFilesMobile],
+  imports: [UploadedFilesMobile, TranslatePipe],
   templateUrl: './mobile-camera-upload.html',
   styleUrl: './mobile-camera-upload.scss',
 })
 export class MobileCameraUpload {
+  private i18n = inject(I18nService);
   stream?: MediaStream;
   previewUrl?: string;
   previewBlob?: Blob;
@@ -74,7 +77,7 @@ export class MobileCameraUpload {
       this.cdr.detectChanges();
     } catch (error) {
       console.error('Error accessing camera:', error);
-      this.toast.error('Could not access camera');
+      this.toast.error(this.i18n.t('camera.noAccess'));
     }
   }
 
@@ -83,7 +86,7 @@ export class MobileCameraUpload {
     console.log('clicked take photo');
 
     if (!this.stream || !video.videoWidth || !video.videoHeight) {
-      this.toast.error('Camera not ready yet');
+      this.toast.error(this.i18n.t('camera.notReady'));
       return;
     }
 
@@ -121,7 +124,7 @@ export class MobileCameraUpload {
 
   uploadCapturedPhoto(): void {
     if (!this.previewBlob) {
-      this.toast.error('No photo to upload');
+      this.toast.error(this.i18n.t('camera.noPhoto'));
       return;
     }
 
@@ -140,12 +143,12 @@ export class MobileCameraUpload {
       })
       .subscribe({
         next: (response) => {
-          this.toast.success('Image uploaded successfully, property ID: ' + response);
+          this.toast.success(this.i18n.t('upload.uploaded'));
           this.discard();
           this.cdr.detectChanges();
         },
         error: (error) => {
-          this.toast.error('Error uploading image', error.message || error, { timeOut: 15000 });
+          this.toast.error(error.message || error, this.i18n.t('upload.uploadError'), { timeOut: 15000 });
         },
       });
   }
@@ -178,10 +181,10 @@ export class MobileCameraUpload {
         })
         .subscribe({
           next: (response) => {
-            this.toast.success('Image uploaded successfully, property ID: ' + response);
+            this.toast.success(this.i18n.t('upload.uploaded'));
           },
           error: (error) => {
-            this.toast.error('Error uploading image');
+            this.toast.error(this.i18n.t('upload.uploadError'));
             this.toast.error(error.message || error, '', { timeOut: 15000 });
           },
         });

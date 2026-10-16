@@ -1,33 +1,33 @@
 <div class="properties-page">
   <section class="title flex justify-between">
     <div>
-      <h1 class="text-2xl text-black font-bold">My Properties</h1>
-      <span>Manage your rental property listings.</span>
+      <h1 class="text-2xl text-black font-bold">{{ 'properties.title' | t }}</h1>
+      <span>{{ 'properties.subtitle' | t }}</span>
     </div>
     <div class="flex items-center">
       <button
         class="bg-blue-700 text-white shadow-sm py-2 px-5 font-semibold hover:shadow-md hover:bg-blue-800 flex items-center space-x-1"
         (click)="openAddPropertyModal()"
       >
-        + Add Property
+        {{ 'dash.addProperty' | t }}
       </button>
     </div>
   </section>
   <section class="header-cards">
     <div class="card">
-      <div>Total Listings</div>
+      <div>{{ 'properties.total' | t }}</div>
       <div class="text-2xl font-bold">{{ propertiesStats?.total_count || 0 }}</div>
     </div>
     <div class="card">
-      <div>Active</div>
+      <div>{{ 'enum.ACTIVE' | t }}</div>
       <div class="text-2xl font-bold text-green-500">{{ propertiesStats?.active_count || 0 }}</div>
     </div>
     <div class="card">
-      <div>Rented</div>
+      <div>{{ 'enum.RENTED' | t }}</div>
       <div class="text-2xl font-bold text-blue-500">{{ propertiesStats?.rented_count || 0 }}</div>
     </div>
     <div class="card">
-      <div>Draft</div>
+      <div>{{ 'enum.DRAFT' | t }}</div>
       <div class="text-2xl font-bold">{{ propertiesStats?.draft_count || 0 }}</div>
     </div>
   </section>
@@ -40,7 +40,7 @@
             type="text"
             id="search"
             name="search"
-            placeholder="Search by address, title or city..."
+            [placeholder]="'properties.searchPh' | t"
             [(ngModel)]="searchTerm"
           />
         </div>
@@ -52,7 +52,7 @@
         id="filter-status"
         (change)="searchAndFilterService.onFilterChange('listingStatus', $event)"
       >
-        <option value="all" selected>All Status</option>
+        <option value="all" selected>{{ 'properties.allStatus' | t }}</option>
         @for (status of allStatuses; track $index) {
           <option value="{{ status }}">
             {{ common.formatEnum(status) }}
@@ -64,15 +64,15 @@
         id="filter-type"
         (change)="searchAndFilterService.onFilterChange('type', $event)"
       >
-        <option value="all" selected>All Types</option>
+        <option value="all" selected>{{ 'properties.allTypes' | t }}</option>
         @for (type of allTypes; track $index) {
           <option value="{{ type }}">
             {{ common.formatEnum(type) }}
           </option>
         }
-        <option value="apartment">Apartment</option>
-        <option value="house">House</option>
-        <option value="condo">Condo</option>
+        <option value="apartment">{{ 'enum.APARTMENT' | t }}</option>
+        <option value="house">{{ 'enum.HOUSE' | t }}</option>
+        <option value="condo">{{ 'properties.condo' | t }}</option>
       </select>
       <span>
         <svg
@@ -101,14 +101,14 @@
     <table class="w-full">
       <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
         <tr class="text-left">
-          <th>Property</th>
-          <th>Type</th>
-          <th>Details</th>
-          <th>Price</th>
-          <th>Status</th>
-          <th>Views</th>
-          <th>Date</th>
-          <th>Actions</th>
+          <th>{{ 'table.property' | t }}</th>
+          <th>{{ 'table.type' | t }}</th>
+          <th>{{ 'table.details' | t }}</th>
+          <th>{{ 'table.price' | t }}</th>
+          <th>{{ 'table.status' | t }}</th>
+          <th>{{ 'table.views' | t }}</th>
+          <th>{{ 'table.date' | t }}</th>
+          <th>{{ 'table.actions' | t }}</th>
         </tr>
       </thead>
       <tbody>
@@ -119,7 +119,7 @@
                 <img
                   class="h-16 w-24 object-cover rounded-lg border border-gray-200"
                   [src]="getPropertiesCoverImage(property)"
-                  alt="product-image"
+                  [alt]="'property.image' | t"
                 />
                 <div>
                   <div class="text-md font-medium text-gray-900">{{ property.title }}</div>
@@ -152,7 +152,7 @@
                 </div>
               </div>
             </td>
-            <td class="capitalize text-sm text-gray-700">{{ property.type?.toLowerCase() }}</td>
+            <td class="capitalize text-sm text-gray-700">{{ common.formatEnum(property.type) }}</td>
             <td>
               <div class="flex items-center gap-3 text-sm text-gray-600">
                 <span class="flex items-center gap-1" style="cursor: pointer">
@@ -290,8 +290,7 @@
 
   <section class="pagination shadow-sm flex justify-between items-center text-gray-600">
     <span>
-      Showing {{ paginationRange.from }} to {{ paginationRange.to }} of
-      {{ paginationRange.total }} properties
+      {{ 'common.showing' | t: { from: paginationRange.from, to: paginationRange.to, total: paginationRange.total } }}
     </span>
     <div class="flex gap-2">
       <button
@@ -299,14 +298,14 @@
         class="border rounded px-2 py-1 cursor-pointer border-gray-300 next-button"
         (click)="prevPage()"
       >
-        Prev
+        {{ 'common.prev' | t }}
       </button>
       <button
         [disabled]="pagination.totalPages <= 1"
         class="border rounded px-2 py-1 cursor-pointer border-gray-300 prev-button"
         (click)="nextPage()"
       >
-        Next
+        {{ 'common.next' | t }}
       </button>
     </div>
   </section>

@@ -1,8 +1,8 @@
 <div class="users-page">
   <section class="title flex justify-between">
     <div>
-      <h1 class="text-2xl text-black font-bold">Users</h1>
-      <span>People who signed in on the website, including by phone number.</span>
+      <h1 class="text-2xl text-black font-bold">{{ 'menu.users' | t }}</h1>
+      <span>{{ 'users.subtitle' | t }}</span>
     </div>
     <div class="flex items-center">
       <button
@@ -27,7 +27,7 @@
           <line x1="19" x2="19" y1="8" y2="14"></line>
           <line x1="22" x2="16" y1="11" y2="11"></line>
         </svg>
-        Add Admin
+        {{ 'users.addAdmin' | t }}
       </button>
     </div>
   </section>
@@ -41,13 +41,13 @@
       <input
         type="search"
         (input)="onSearch($event)"
-        placeholder="Search by phone, username or email"
-        aria-label="Search users"
+        [placeholder]="'users.searchPh' | t"
+        [aria-label]="'users.search' | t"
         class="w-full rounded-md border border-gray-300 bg-white py-2 pl-9 pr-3 focus:border-blue-600 focus:outline-none"
       />
     </div>
     <span class="text-sm text-gray-500">
-      {{ totalElements() }} {{ totalElements() === 1 ? 'user' : 'users' }}
+      {{ 'users.count' | t: { count: totalElements() } }}
     </span>
   </section>
 
@@ -55,13 +55,13 @@
     <table class="w-full">
       <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
         <tr class="text-left">
-          <th>User</th>
-          <th>Phone</th>
-          <th>Sign-in</th>
-          <th>Status</th>
-          <th>Last Active</th>
-          <th>Date Joined</th>
-          <th>Actions</th>
+          <th>{{ 'users.user' | t }}</th>
+          <th>{{ 'common.phone' | t }}</th>
+          <th>{{ 'users.signIn' | t }}</th>
+          <th>{{ 'table.status' | t }}</th>
+          <th>{{ 'users.lastActive' | t }}</th>
+          <th>{{ 'common.dateJoined' | t }}</th>
+          <th>{{ 'table.actions' | t }}</th>
         </tr>
       </thead>
       <tbody [class.opacity-60]="isLoading() && users().length > 0">
@@ -102,11 +102,11 @@
             <td class="text-gray-700 whitespace-nowrap">{{ user.phone }}</td>
             <td class="text-sm font-medium">
               <span [ngClass]="getSignInClass(user)">
-                {{ user.signInMethod === 'PHONE' ? 'Phone code' : 'Password' }}
+                {{ (user.signInMethod === 'PHONE' ? 'users.phoneCode' : 'auth.password') | t }}
               </span>
             </td>
             <td class="capitalize text-sm font-medium text-gray-900">
-              <span [ngClass]="getStatusClass(user)">{{ user.status }}</span>
+              <span [ngClass]="getStatusClass(user)">{{ 'agents.status.' + user.status | t }}</span>
             </td>
             <td class="text-gray-700 whitespace-nowrap">{{ user.lastActive ? (user.lastActive | date: 'MMM d, y, HH:mm') : '-' }}</td>
             <td class="text-gray-700 whitespace-nowrap">{{ user.dateJoined ? (user.dateJoined | date: 'yyyy-MM-dd') : '-' }}</td>
@@ -114,7 +114,7 @@
               <button
                 type="button"
                 (click)="openViewUser(user)"
-                aria-label="View user"
+                [aria-label]="'users.view' | t"
                 class="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-blue-50 rounded-md transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
@@ -128,14 +128,14 @@
           <tr>
             <td colspan="7" class="text-center text-gray-500">
               @if (isLoading()) {
-                Loading users…
+                {{ 'users.loading' | t }}
               } @else if (loadError()) {
                 <span class="text-red-600">{{ loadError() }}</span>
-                <button type="button" (click)="loadUsers()" class="ml-2 font-semibold text-blue-700 hover:underline">Retry</button>
+                <button type="button" (click)="loadUsers()" class="ml-2 font-semibold text-blue-700 hover:underline">{{ 'common.retry' | t }}</button>
               } @else if (search()) {
-                No users match "{{ search() }}".
+                {{ 'users.noMatch' | t: { query: search() } }}
               } @else {
-                No users yet.
+                {{ 'users.empty' | t }}
               }
             </td>
           </tr>
@@ -146,7 +146,7 @@
     @if (totalPages() > 1) {
       <div class="flex items-center justify-between border-t border-gray-300 px-5 py-3 text-sm text-gray-600">
         <span>
-          Showing {{ page() * pageSize + 1 }}–{{ page() * pageSize + users().length }} of {{ totalElements() }}
+          {{ 'common.showing' | t: { from: page() * pageSize + 1, to: page() * pageSize + users().length, total: totalElements() } }}
         </span>
         <div class="flex items-center gap-2">
           <button
@@ -155,16 +155,16 @@
             [disabled]="page() === 0 || isLoading()"
             class="rounded-md border border-gray-300 bg-white px-3 py-1.5 font-semibold hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
           >
-            Previous
+            {{ 'common.previous' | t }}
           </button>
-          <span>Page {{ page() + 1 }} of {{ totalPages() }}</span>
+          <span>{{ 'common.pageOf' | t: { page: page() + 1, pages: totalPages() } }}</span>
           <button
             type="button"
             (click)="goToPage(page() + 1)"
             [disabled]="page() + 1 >= totalPages() || isLoading()"
             class="rounded-md border border-gray-300 bg-white px-3 py-1.5 font-semibold hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
           >
-            Next
+            {{ 'common.next' | t }}
           </button>
         </div>
       </div>
@@ -189,36 +189,36 @@
             <h2 class="text-xl font-bold text-gray-900 truncate">{{ user.name }}</h2>
             <p class="text-sm text-gray-500 truncate">&#64;{{ user.raw.username }}</p>
             <div class="mt-2 flex flex-wrap items-center gap-2 text-xs font-medium">
-              <span class="capitalize" [ngClass]="getStatusClass(user)">{{ user.status }}</span>
-              <span [ngClass]="getSignInClass(user)">{{ user.signInMethod === 'PHONE' ? 'Phone code' : 'Password' }}</span>
+              <span class="capitalize" [ngClass]="getStatusClass(user)">{{ 'agents.status.' + user.status | t }}</span>
+              <span [ngClass]="getSignInClass(user)">{{ (user.signInMethod === 'PHONE' ? 'users.phoneCode' : 'auth.password') | t }}</span>
             </div>
           </div>
         </div>
 
-        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Account</h3>
+        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">{{ 'common.account' | t }}</h3>
         <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 text-sm">
-          <div><dt class="text-gray-500">User ID</dt><dd class="font-medium text-gray-900">{{ user.raw.id }}</dd></div>
-          <div><dt class="text-gray-500">Username</dt><dd class="font-medium text-gray-900 break-all">{{ user.raw.username }}</dd></div>
-          <div><dt class="text-gray-500">Phone</dt><dd class="font-medium text-gray-900">{{ user.phone }}</dd></div>
-          <div><dt class="text-gray-500">Email</dt><dd class="font-medium text-gray-900 break-all">{{ user.raw.email || '-' }}</dd></div>
-          <div><dt class="text-gray-500">Joined</dt><dd class="font-medium text-gray-900">{{ user.dateJoined ? (user.dateJoined | date: 'medium') : '-' }}</dd></div>
-          <div><dt class="text-gray-500">Last active</dt><dd class="font-medium text-gray-900">{{ user.lastActive ? (user.lastActive | date: 'medium') : '-' }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.userId' | t }}</dt><dd class="font-medium text-gray-900">{{ user.raw.id }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.username' | t }}</dt><dd class="font-medium text-gray-900 break-all">{{ user.raw.username }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.phone' | t }}</dt><dd class="font-medium text-gray-900">{{ user.phone }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.email' | t }}</dt><dd class="font-medium text-gray-900 break-all">{{ user.raw.email || '-' }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.joined' | t }}</dt><dd class="font-medium text-gray-900">{{ user.dateJoined ? (user.dateJoined | date: 'medium') : '-' }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'users.lastActive' | t }}</dt><dd class="font-medium text-gray-900">{{ user.lastActive ? (user.lastActive | date: 'medium') : '-' }}</dd></div>
         </dl>
 
-        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Profile</h3>
+        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">{{ 'common.profile' | t }}</h3>
         @if (user.raw.profile; as profile) {
           <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 text-sm">
-            <div><dt class="text-gray-500">Profile ID</dt><dd class="font-medium text-gray-900">{{ profile.profileId || '-' }}</dd></div>
-            <div><dt class="text-gray-500">Profile phone</dt><dd class="font-medium text-gray-900">{{ profile.phoneNumber || '-' }}</dd></div>
-            <div><dt class="text-gray-500">First name</dt><dd class="font-medium text-gray-900">{{ profile.firstName || '-' }}</dd></div>
-            <div><dt class="text-gray-500">Last name</dt><dd class="font-medium text-gray-900">{{ profile.lastName || '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.profileId' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.profileId || '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.profilePhone' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.phoneNumber || '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.firstName' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.firstName || '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.lastName' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.lastName || '-' }}</dd></div>
             <div class="sm:col-span-2">
-              <dt class="text-gray-500">Description</dt>
+              <dt class="text-gray-500">{{ 'common.description' | t }}</dt>
               <dd class="font-medium text-gray-900 whitespace-pre-line">{{ profile.description || '-' }}</dd>
             </div>
           </dl>
         } @else {
-          <p class="text-sm text-gray-500">This user has no profile yet.</p>
+          <p class="text-sm text-gray-500">{{ 'users.noProfile' | t }}</p>
         }
 
         <div class="flex justify-end pt-8">
@@ -227,7 +227,7 @@
             (click)="closeViewUser()"
             class="rounded-md border border-gray-300 bg-white px-5 py-2 font-semibold text-gray-700 hover:bg-gray-50"
           >
-            Close
+            {{ 'common.close' | t }}
           </button>
         </div>
       </div>

@@ -2,10 +2,11 @@ import { Component, HostListener } from '@angular/core';
 import { Common } from '../../shared/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../account/auth.service';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 
 @Component({
   selector: 'app-sidebar-menu',
-  imports: [],
+  imports: [TranslatePipe],
   templateUrl: './sidebar-menu.html',
   styleUrl: './sidebar-menu.scss',
 })

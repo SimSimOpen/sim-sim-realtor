@@ -1,8 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { Property } from '../../shared/models/properties';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 
 @Component({
   selector: 'app-about-agent',
+  imports: [TranslatePipe],
   standalone: true,
   template: ` <div class="space-y-6">
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm sticky top-24">
@@ -10,13 +12,13 @@ import { Property } from '../../shared/models/properties';
         <div class="space-y-6" data-id="element-329">
           <div data-id="element-330">
             <div class="text-2xl font-bold text-gray-900">$ {{ property?.price }}</div>
-            <div class="text-sm text-gray-500">per month + utilities</div>
+            <div class="text-sm text-gray-500">{{ 'property.perMonthUtilities' | t }}</div>
           </div>
           <div class="space-y-3" data-id="element-333">
             <button
               class="flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-blue-700 text-white hover:bg-blue-800 focus:ring-blue-700 shadow-sm h-10 px-4 py-2 text-sm w-full flex justify-center items-center gap-2"
             >
-              Apply Now
+              {{ 'property.applyNow' | t }}
             </button>
             <button
               class="flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-10 px-4 py-2 text-sm w-full flex justify-center items-center gap-2"
@@ -40,7 +42,7 @@ import { Property } from '../../shared/models/properties';
                 <rect width="18" height="18" x="3" y="4" rx="2"></rect>
                 <path d="M3 10h18"></path>
               </svg>
-              Schedule a Tour
+              {{ 'property.scheduleTour' | t }}
             </button>
           </div>
           <div class="pt-4 border-t border-gray-100" data-id="element-337">
@@ -63,17 +65,17 @@ import { Property } from '../../shared/models/properties';
                 ></path>
                 <path d="m9 12 2 2 4-4"></path>
               </svg>
-              <span>Verified Listing</span>
+              <span>{{ 'property.verified' | t }}</span>
             </div>
             <div class="flex items-center gap-4">
               <img
                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=800&amp;q=80"
-                alt="Sarah Jenkins"
+                [alt]="property?.agent ?? ''"
                 class="h-12 w-12 rounded-full object-cover border border-gray-200"
               />
               <div>
                 <div class="font-medium text-gray-900">{{ property?.agent }}</div>
-                <div class="text-xs text-gray-500">Senior Leasing Agent</div>
+                <div class="text-xs text-gray-500">{{ 'property.agentRole' | t }}</div>
               </div>
             </div>
             <div class="mt-4 grid grid-cols-2 gap-2">
@@ -97,7 +99,7 @@ import { Property } from '../../shared/models/properties';
                     d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"
                   ></path>
                 </svg>
-                Call
+                {{ 'property.call' | t }}
               </button>
               <button
                 class="flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-8 px-3 text-xs gap-2"

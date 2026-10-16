@@ -31,8 +31,8 @@
       </svg>
     </span>
     <section class="top-section-text">
-      <h1>Create Account</h1>
-      <span>Join us as a Client or an Agent</span>
+      <h1>{{ 'auth.createAccount' | t }}</h1>
+      <span>{{ 'auth.registerSubtitle' | t }}</span>
     </section>
     <!-- <section class="relative w-full">
       <div
@@ -56,7 +56,7 @@
     <section class="w-full">
       <form class="space-y-4" [formGroup]="registerForm">
         <div class="input-group">
-          <label class="block font-medium mb-1.5 ml-1"> Full Name </label>
+          <label class="block font-medium mb-1.5 ml-1">{{ 'auth.fullName' | t }}</label>
           <div class="flex gap-2">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -80,13 +80,13 @@
               id="name"
               name="name"
               required
-              placeholder="Jane Doe"
+              [placeholder]="'auth.fullNamePh' | t"
             />
           </div>
         </div>
         <div class="w-full">
           <div class="input-group">
-            <label class="block font-medium mb-1.5 ml-1">Email Address</label>
+            <label class="block font-medium mb-1.5 ml-1">{{ 'auth.email' | t }}</label>
             <div class="flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -117,7 +117,7 @@
         </div>
         <div class="w-full">
           <div class="input-group">
-            <label class="block font-medium mb-1.5 ml-1"> Password </label>
+            <label class="block font-medium mb-1.5 ml-1">{{ 'auth.password' | t }}</label>
             <div class="flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -149,7 +149,7 @@
         </div>
         <div class="w-full">
           <div class="input-group">
-            <label class="block font-medium mb-1.5 ml-1">Confirm Password</label>
+            <label class="block font-medium mb-1.5 ml-1">{{ 'auth.confirmPassword' | t }}</label>
             <div class="flex gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +189,7 @@
           style="transform: none"
           (click)="register()"
         >
-          <span class="mr-2">Next Step</span>
+          <span class="mr-2">{{ 'auth.nextStep' | t }}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="18"
@@ -211,13 +211,13 @@
     </section>
 
     <footer class="text-center mt-8">
-      Already have an account?
+      {{ 'auth.haveAccount' | t }}
       <button
         type="button"
         class="font-bold text-red-400 cursor-pointer text-brand-coral hover:text-red-600 transition-colors"
         (click)="switchToLogin()"
       >
-        Sign in
+        {{ 'auth.signIn' | t }}
       </button>
     </footer>
   </div>

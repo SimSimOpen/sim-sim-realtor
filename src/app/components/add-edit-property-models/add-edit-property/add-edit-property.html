@@ -3,12 +3,12 @@
     @if (!isEditingProperty) {
       <div class="flex justify-between p-6 items-center">
         <div>
-          <h1 class="text-xl font-bold">Add New Property {{ propertyForm.value.id }}</h1>
+          <h1 class="text-xl font-bold">{{ 'addEdit.addTitle' | t }} {{ propertyForm.value.id }}</h1>
           <span class="text-sm text-gray-500">
             @if (steps === 1) {
-              Upload property photos
+              {{ 'addEdit.step1' | t }}
             } @else if (steps === 2) {
-              Fill in property details
+              {{ 'addEdit.step2' | t }}
             }
           </span>
         </div>
@@ -61,8 +61,8 @@
     } @else {
       <div class="flex justify-between p-6 items-center">
         <h1 class="text-xl font-bold">
-          Edit Property <span class="text-blue-500">{{ propertyForm.value.title }}</span> with ID:
-          {{ propertyForm.value.id }}
+          {{ 'addEdit.editTitle' | t }} <span class="text-blue-500">{{ propertyForm.value.title }}</span>
+          {{ 'addEdit.withId' | t: { id: propertyForm.value.id } }}
         </h1>
       </div>
     }
@@ -71,9 +71,9 @@
     @if (steps === 1) {
       <div>
         <div class="text-center">
-          <div class="font-semibold">Add Property Photos</div>
+          <div class="font-semibold">{{ 'addEdit.photosTitle' | t }}</div>
           <span class="text-sm text-gray-500">
-            Choose how you'd like to upload photos of your property
+            {{ 'addEdit.photosSubtitle' | t }}
           </span>
         </div>
         @if (selectMethod === '') {
@@ -129,21 +129,21 @@
             }
           </div>
           <div class="basic-info">
-            <h6 class="text-left text-lg font-semibold">Basic Information</h6>
+            <h6 class="text-left text-lg font-semibold">{{ 'addEdit.basicInfo' | t }}</h6>
             <div class="flex flex-col mt-4">
-              <label class="mb-1" for="title">Property Title </label>
+              <label class="mb-1" for="title">{{ 'addEdit.title' | t }} </label>
               <input
                 class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 type="text"
                 id="title"
-                placeholder="e.g, Spacious 2 Bedroom Apartment in Downtown"
+                [placeholder]="'addEdit.titlePh' | t"
                 formControlName="title"
               />
             </div>
             <div class="mt-4">
               <div class="flex w-full mt-4 gap-5">
                 <div class="flex flex-col w-1/3">
-                  <label class="mb-1" for="number-of-rooms">Number of rooms </label>
+                  <label class="mb-1" for="number-of-rooms">{{ 'addEdit.rooms' | t }} </label>
                   <input
                     class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     type="text"
@@ -154,7 +154,7 @@
                   />
                 </div>
                 <div class="flex flex-col w-1/3">
-                  <label class="mb-1" for="price">Price </label>
+                  <label class="mb-1" for="price">{{ 'table.price' | t }} </label>
                   <input
                     class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     type="text"
@@ -165,12 +165,12 @@
                   />
                 </div>
                 <div class="flex flex-col w-1/3">
-                  <label class="mb-1" for="area">Area </label>
+                  <label class="mb-1" for="area">{{ 'addEdit.area' | t }} </label>
                   <input
                     class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     type="text"
                     id="area"
-                    placeholder="e.g, 1200 sqft"
+                    [placeholder]="'addEdit.areaPh' | t"
                     formControlName="area"
                     areaFormat
                   />
@@ -178,7 +178,7 @@
               </div>
               <div class="flex w-full mt-4 gap-5">
                 <div class="flex flex-wrap w-2/3">
-                  <label class="mb-1 w-full" for="floor">Floor </label>
+                  <label class="mb-1 w-full" for="floor">{{ 'addEdit.floor' | t }} </label>
                   @for (num of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track $index) {
                     <button
                       class="capitalize px-3 py-2 border text-nowrap rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors mr-3"
@@ -193,7 +193,7 @@
                   }
                 </div>
                 <div class="flex flex-col w-1/3">
-                  <label class="mb-1" for="total-floors">Total Floors </label>
+                  <label class="mb-1" for="total-floors">{{ 'addEdit.totalFloors' | t }} </label>
                   <input
                     class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     type="text"
@@ -206,18 +206,18 @@
               </div>
             </div>
             <div class="flex flex-col mt-4">
-              <label for="description" class="mb-2">Description</label>
+              <label for="description" class="mb-2">{{ 'common.description' | t }}</label>
               <textarea
                 class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 id="description"
-                placeholder="Provide a detailed description of the property"
+                [placeholder]="'addEdit.descriptionPh' | t"
                 formControlName="description"
                 rows="4"
               ></textarea>
             </div>
           </div>
           <div class="flex mt-4 w-full items-center gap-5 overflow-hidden">
-            <label for="description">Type: </label>
+            <label for="description">{{ 'addEdit.typeLabel' | t }}</label>
             <div class="flex items-center overflow-x-scroll py-2">
               @for (type of types; track $index) {
                 <button
@@ -234,20 +234,20 @@
             </div>
           </div>
           <div formGroupName="location" class="type mt-5">
-            <h6 class="text-left text-lg font-semibold">Location</h6>
+            <h6 class="text-left text-lg font-semibold">{{ 'addEdit.location' | t }}</h6>
             <div class="flex gap-5">
               <div class="flex flex-col mt-4 w-1/2">
-                <label class="mb-1" for="country">Country</label>
+                <label class="mb-1" for="country">{{ 'addEdit.country' | t }}</label>
                 <select
                   name="country"
                   class="block rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
                   formControlName="country"
                 >
-                  <option value="Uzbekistan" selected="true">Uzbekistan</option>
+                  <option value="Uzbekistan" selected="true">{{ 'addEdit.uzbekistan' | t }}</option>
                 </select>
               </div>
               <div class="flex flex-col mt-4 w-1/2">
-                <label class="mb-1" for="region">Region</label>
+                <label class="mb-1" for="region">{{ 'addEdit.region' | t }}</label>
                 <select
                   name="region"
                   class="block rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
@@ -264,7 +264,7 @@
             </div>
             <div class="flex gap-5">
               <div class="flex flex-col mt-4 w-1/2">
-                <label class="mb-1" for="district">District</label>
+                <label class="mb-1" for="district">{{ 'addEdit.district' | t }}</label>
                 <select
                   name="district"
                   class="block rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
@@ -279,7 +279,7 @@
                 </select>
               </div>
               <div class="flex flex-col mt-4 w-1/2">
-                <label class="mb-1" for="city">Place</label>
+                <label class="mb-1" for="city">{{ 'addEdit.place' | t }}</label>
                 <select
                   name="city"
                   class="block rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
@@ -292,19 +292,19 @@
               </div>
             </div>
             <div class="flex flex-col mt-4">
-              <label for="address" class="mb-2">Address</label>
+              <label for="address" class="mb-2">{{ 'addEdit.address' | t }}</label>
               <input
                 type="text"
                 class="px-3 py-2 border text-sm shadow-sm border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 id="address"
                 formControlName="address"
-                placeholder="Provide a detailed address of the property"
+                [placeholder]="'addEdit.addressPh' | t"
               />
             </div>
             <app-yandex-map [address]="getFullAddresForMap()"> </app-yandex-map>
           </div>
           <div class="type mt-5" formGroupName="amenities">
-            <h6 class="text-left text-lg font-semibold">Amenities</h6>
+            <h6 class="text-left text-lg font-semibold">{{ 'addEdit.amenities' | t }}</h6>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3" data-id="element-121">
               @for (amenity of amenities; track $index) {
                 <label class="flex items-center gap-2 cursor-pointer group" data-id="element-122">
@@ -319,7 +319,7 @@
                     class="text-sm text-gray-700 group-hover:text-gray-900"
                     data-id="element-124"
                   >
-                    {{ amenity.label }}
+                    {{ amenity.label | t }}
                   </span>
                 </label>
               }
@@ -367,14 +367,14 @@
           class="px-3 py-2 border rounded-md border-gray-300 text-sm cursor-pointer hover:bg-gray-200 transition-colors"
           (click)="closeModal.emit()"
         >
-          Cancel
+          {{ 'common.cancel' | t }}
         </button>
         <button
           class="flex items-center gap-2 px-3 py-2 rounded-md bg-blue-600 shadow-sm text-white text-sm cursor-pointer"
           [disabled]="continueDetailsDisabled && !editingProperty()"
           (click)="nextStep()"
         >
-          Continue to Details
+          {{ 'addEdit.continue' | t }}
           <span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -421,21 +421,21 @@
               <path d="M19 12H5"></path>
             </svg>
           </span>
-          Back to Photos
+          {{ 'addEdit.backToPhotos' | t }}
         </button>
         <div class="flex gap-2">
           <button
             class="px-3 py-2 border rounded-md border-gray-300 text-sm cursor-pointer hover:bg-gray-200 transition-colors"
             (click)="uploadProperty('draft')"
           >
-            Save as Draft
+            {{ 'addEdit.saveDraft' | t }}
           </button>
 
           <button
             class="px-3 py-2 border rounded-md bg-blue-600 shadow-sm text-white text-sm cursor-pointer hover:bg-blue-700 transition-colors"
             (click)="uploadProperty('publish')"
           >
-            Publish Property
+            {{ 'addEdit.publish' | t }}
           </button>
         </div>
       </div>

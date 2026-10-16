@@ -2,18 +2,21 @@ import { Component, computed, EventEmitter, inject, Output } from '@angular/core
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ToastrService } from 'ngx-toastr';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-uploaded-files',
+  imports: [TranslatePipe],
   template: `<div>
     <div
       class="relative max-w-167 group aspect-video rounded-xl overflow-hidden border-2 border-blue-200 bg-gray-100"
     >
-      <img [src]="medias()[0]?.mediaUrl" alt="Cover photo" class="w-full h-full object-cover" />
+      <img [src]="medias()[0]?.mediaUrl" [alt]="'upload.cover' | t" class="w-full h-full object-cover" />
       <div class="absolute inset-0 bg-linear-to-t from-black/50 to-transparent"></div>
       <div class="absolute bottom-3 left-3">
         <span class="px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded"
-          >Cover Photo</span
+          >{{ 'upload.cover' | t }}</span
         >
       </div>
       <button
@@ -43,7 +46,7 @@ import { ProductStateService } from '../../shared/services/product/state/product
         <div
           class="relative group max-w-40 aspect-square rounded-lg overflow-hidden border border-gray-200 bg-gray-100"
         >
-          <img [src]="media.mediaUrl" alt="Photo 2" class="w-full h-full object-cover" />
+          <img [src]="media.mediaUrl" [alt]="'upload.photo' | t" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
           <button
             class="absolute top-1.5 right-1.5 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
@@ -104,13 +107,14 @@ import { ProductStateService } from '../../shared/services/product/state/product
             <path d="m17 8-5-5-5 5"></path>
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           </svg>
-          <span class="text-xs text-gray-500">Add</span>
+          <span class="text-xs text-gray-500">{{ 'upload.add' | t }}</span>
         </label>
       }
     </div>
   </div>`,
 })
 export class UploadedFiles {
+  private i18n = inject(I18nService);
   @Output() addMoreMedias = new EventEmitter<Event>();
 
   private productApiService = inject(ProductApiService);
@@ -129,7 +133,7 @@ export class UploadedFiles {
       },
       error: (error) => {
         console.error('Error deleting image:', error);
-        this.toast.error('Failed to delete image');
+        this.toast.error(this.i18n.t('upload.deleteError'));
       },
     });
   }

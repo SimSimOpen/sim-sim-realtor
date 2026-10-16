@@ -5,6 +5,8 @@ import { debounceTime, distinctUntilChanged, finalize, Subject, Subscription } f
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ClientResponse, UserService } from '../../shared/services/user.service';
 import { formatPhone } from '../../shared/utils/phone-mask.directive';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 interface ClientUser {
   id: number;
@@ -24,13 +26,14 @@ const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-users',
-  imports: [CommonModule, ModalComponent],
+  imports: [CommonModule, ModalComponent, TranslatePipe],
   templateUrl: './users.html',
   styleUrl: './users.scss',
 })
 export class Users implements OnInit {
   private userService = inject(UserService);
   private destroyRef = inject(DestroyRef);
+  private i18n = inject(I18nService);
 
   users = signal<ClientUser[]>([]);
   isLoading = signal(false);
@@ -88,10 +91,10 @@ export class Users implements OnInit {
           this.users.set([]);
           this.loadError.set(
             err?.status === 403
-              ? 'You are not allowed to view users.'
+              ? this.i18n.t('users.err.forbidden')
               : err?.status === 404
-                ? 'Users endpoint not found on the server.'
-                : 'Could not load users.',
+                ? this.i18n.t('users.err.notFound')
+                : this.i18n.t('users.err.load'),
           );
         },
       });

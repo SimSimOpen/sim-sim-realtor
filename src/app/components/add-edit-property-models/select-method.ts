@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 
 @Component({
   selector: 'app-select-method',
+  imports: [TranslatePipe],
   standalone: true,
   template: `<div class="flex justify-center gap-3 w-full max-w-2xl">
     <div
@@ -31,9 +33,9 @@ import { Component, EventEmitter, Output } from '@angular/core';
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
         </svg>
       </div>
-      <h3>Upload from Computer</h3>
+      <h3>{{ 'upload.computerTitle' | t }}</h3>
       <span class="text-sm text-gray-600 text-center"
-        >Select photos from your computer's file system</span
+        >{{ 'upload.computerBody' | t }}</span
       >
     </div>
     <div
@@ -60,9 +62,9 @@ import { Component, EventEmitter, Output } from '@angular/core';
           <path d="M12 18h.01"></path>
         </svg>
       </div>
-      <h3>Use Mobile App</h3>
+      <h3>{{ 'upload.mobileApp' | t }}</h3>
       <span class="text-sm text-gray-600 text-center"
-        >Take photos with your phone or select from gallery</span
+        >{{ 'upload.mobileAppBody' | t }}</span
       >
     </div>
   </div>`,

@@ -1,4 +1,5 @@
-import { Injectable, NgZone } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
+import { I18nService } from '../i18n/i18n.service';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { EnvironmentTs } from '../../environments/environment';
 import { ToastrService } from 'ngx-toastr';
@@ -16,6 +17,7 @@ export enum ConnectionState {
   providedIn: 'root',
 })
 export class SseService {
+  private i18n = inject(I18nService);
   private eventSource?: EventSource;
   private notificationSubject = new Subject<string>();
   public notification$ = this.notificationSubject.asObservable();
@@ -53,7 +55,7 @@ export class SseService {
     const token = this.authService.getToken();
     if (!token) {
       console.error('[SSE] No auth token available');
-      this.toastr.error('Authentication required', 'Error');
+      this.toastr.error(this.i18n.t('sse.authRequired'), this.i18n.t('common.error'));
       this.connectionStateSubject.next(ConnectionState.ERROR);
       return;
     }
@@ -73,7 +75,7 @@ export class SseService {
       this.setupEventListeners();
     } catch (error) {
       console.error('[SSE] Failed to create EventSource:', error);
-      this.toastr.error('Failed to establish connection', 'Error');
+      this.toastr.error(this.i18n.t('sse.connectFailed'), this.i18n.t('common.error'));
       this.connectionStateSubject.next(ConnectionState.ERROR);
       this.scheduleReconnect();
     }
@@ -94,7 +96,7 @@ export class SseService {
 
     if (!token) {
       console.error('[SSE] No auth token available');
-      this.toastr.error('Authentication required', 'Error');
+      this.toastr.error(this.i18n.t('sse.authRequired'), this.i18n.t('common.error'));
       this.connectionStateSubject.next(ConnectionState.ERROR);
       return;
     }
@@ -114,7 +116,7 @@ export class SseService {
       this.setupEventListeners();
     } catch (error) {
       console.error('[SSE] Failed to create EventSource:', error);
-      this.toastr.error('Failed to establish connection', 'Error');
+      this.toastr.error(this.i18n.t('sse.connectFailed'), this.i18n.t('common.error'));
       this.connectionStateSubject.next(ConnectionState.ERROR);
       this.scheduleReconnect();
     }
@@ -164,7 +166,7 @@ export class SseService {
           console.log('[SSE] Connection failed, trying to reconnect');
         }
 
-        this.toastr.error('Connection to server lost.', 'Error', {
+        this.toastr.error(this.i18n.t('sse.lost'), this.i18n.t('common.error'), {
           timeOut: 5000,
         });
 

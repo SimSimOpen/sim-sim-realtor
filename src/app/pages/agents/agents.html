@@ -1,8 +1,8 @@
 <div class="agents-page">
   <section class="title flex justify-between">
     <div>
-      <h1 class="text-2xl text-black font-bold">Agents</h1>
-      <span>Manage your property agents.</span>
+      <h1 class="text-2xl text-black font-bold">{{ 'menu.agents' | t }}</h1>
+      <span>{{ 'agents.subtitle' | t }}</span>
     </div>
     <div class="flex items-center">
       <button
@@ -10,7 +10,7 @@
         (click)="openAddAgent()"
         class="bg-blue-700 text-white shadow-sm py-2 px-5 font-semibold hover:shadow-md hover:bg-blue-800 flex items-center space-x-1"
       >
-        + Add Agent
+        {{ 'agents.addButton' | t }}
       </button>
     </div>
   </section>
@@ -19,12 +19,12 @@
     <table class="w-full">
       <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
         <tr class="text-left">
-          <th>Agent</th>
-          <th>Phone</th>
-          <th>Properties Assigned</th>
-          <th>Status</th>
-          <th>Date Joined</th>
-          <th>Actions</th>
+          <th>{{ 'agents.agent' | t }}</th>
+          <th>{{ 'common.phone' | t }}</th>
+          <th>{{ 'agents.propertiesAssigned' | t }}</th>
+          <th>{{ 'table.status' | t }}</th>
+          <th>{{ 'common.dateJoined' | t }}</th>
+          <th>{{ 'table.actions' | t }}</th>
         </tr>
       </thead>
       <tbody>
@@ -77,7 +77,7 @@
             </td>
             <td class="capitalize text-sm font-medium text-gray-900">
               <span [ngClass]="getStatusClass(agent)">
-                {{ agent.status }}
+                {{ 'agents.status.' + agent.status | t }}
               </span>
             </td>
             <td class="text-gray-700">{{ agent.dateJoined }}</td>
@@ -87,7 +87,7 @@
                 <button
                   type="button"
                   (click)="openViewAgent(agent)"
-                  aria-label="View agent"
+                  [aria-label]="'agents.view' | t"
                   class="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-blue-50 rounded-md transition-colors"
                 >
                   <svg
@@ -114,7 +114,7 @@
                   <button
                     type="button"
                     (click)="openEditAgent(agent)"
-                    aria-label="Edit agent"
+                    [aria-label]="'agents.edit' | t"
                     class="p-2 cursor-pointer text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                   >
                     <svg
@@ -139,7 +139,7 @@
                   <button
                     type="button"
                     (click)="openDeleteAgent(agent)"
-                    aria-label="Delete agent"
+                    [aria-label]="'agents.deleteShort' | t"
                     class="p-2 cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                   >
                     <svg
@@ -168,14 +168,14 @@
                     type="button"
                     (click)="reactivateAgent(agent)"
                     [disabled]="reactivatingId() !== null"
-                    aria-label="Reactivate agent"
+                    [aria-label]="'agents.reactivateShort' | t"
                     class="flex items-center gap-1 p-2 cursor-pointer text-sm font-semibold text-green-700 hover:bg-green-50 rounded-md transition-colors disabled:opacity-50"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                       <path d="M3 3v5h5" />
                     </svg>
-                    {{ reactivatingId() === agent.id ? 'Reactivating…' : 'Reactivate' }}
+                    {{ (reactivatingId() === agent.id ? 'agents.reactivating' : 'agents.reactivate') | t }}
                   </button>
                 }
               </div>
@@ -185,12 +185,12 @@
           <tr>
             <td colspan="6" class="text-center text-gray-500">
               @if (isLoading()) {
-                Loading agents…
+                {{ 'agents.loading' | t }}
               } @else if (loadError()) {
                 <span class="text-red-600">{{ loadError() }}</span>
-                <button type="button" (click)="loadAgents()" class="ml-2 font-semibold text-blue-700 hover:underline">Retry</button>
+                <button type="button" (click)="loadAgents()" class="ml-2 font-semibold text-blue-700 hover:underline">{{ 'common.retry' | t }}</button>
               } @else {
-                No agents yet.
+                {{ 'agents.empty' | t }}
               }
             </td>
           </tr>
@@ -201,12 +201,12 @@
 
   <app-modal [isVisible]="isAddAgentOpen()" (close)="closeAddAgent()">
     <div class="p-8">
-      <h2 class="text-xl font-bold text-gray-900">Add Agent</h2>
-      <p class="text-sm text-gray-500 mb-6">Create a login for a new property agent.</p>
+      <h2 class="text-xl font-bold text-gray-900">{{ 'agents.addTitle' | t }}</h2>
+      <p class="text-sm text-gray-500 mb-6">{{ 'agents.addSubtitle' | t }}</p>
 
       <form class="space-y-4" [formGroup]="addAgentForm" (ngSubmit)="submitAddAgent()" novalidate>
         <div>
-          <label for="agent-username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+          <label for="agent-username" class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.username' | t }}</label>
           <input
             id="agent-username"
             type="text"
@@ -217,12 +217,12 @@
             [class.border-red-500]="isInvalid('username')"
           />
           @if (isInvalid('username')) {
-            <p class="mt-1 text-xs text-red-600">Username is required (min 3 characters).</p>
+            <p class="mt-1 text-xs text-red-600">{{ 'agents.err.usernameRequired' | t }}</p>
           }
         </div>
 
         <div>
-          <label for="agent-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label for="agent-email" class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.email' | t }}</label>
           <input
             id="agent-email"
             type="email"
@@ -233,12 +233,12 @@
             [class.border-red-500]="isInvalid('email')"
           />
           @if (isInvalid('email')) {
-            <p class="mt-1 text-xs text-red-600">Enter a valid email address.</p>
+            <p class="mt-1 text-xs text-red-600">{{ 'common.emailInvalid' | t }}</p>
           }
         </div>
 
         <div>
-          <label for="agent-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone number</label>
+          <label for="agent-phone" class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.phoneNumber' | t }}</label>
           <input
             id="agent-phone"
             type="tel"
@@ -250,13 +250,13 @@
             [class.border-red-500]="isInvalid('phoneNumber')"
           />
           @if (isInvalid('phoneNumber')) {
-            <p class="mt-1 text-xs text-red-600">Enter a full number, e.g. +998 90 123 45 67.</p>
+            <p class="mt-1 text-xs text-red-600">{{ 'common.phoneInvalid' | t }}</p>
           }
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label for="agent-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label for="agent-password" class="block text-sm font-medium text-gray-700 mb-1">{{ 'auth.password' | t }}</label>
             <div class="relative">
               <input
                 id="agent-password"
@@ -288,11 +288,11 @@
               </button>
             </div>
             @if (isInvalid('password')) {
-              <p class="mt-1 text-xs text-red-600">At least 8 characters.</p>
+              <p class="mt-1 text-xs text-red-600">{{ 'agents.err.passwordShort' | t }}</p>
             }
           </div>
           <div>
-            <label for="agent-confirm" class="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
+            <label for="agent-confirm" class="block text-sm font-medium text-gray-700 mb-1">{{ 'auth.confirmPassword' | t }}</label>
             <div class="relative">
               <input
                 id="agent-confirm"
@@ -326,7 +326,7 @@
               </button>
             </div>
             @if (addAgentForm.hasError('passwordMismatch') && addAgentForm.controls.confirmPassword.touched) {
-              <p class="mt-1 text-xs text-red-600">Passwords do not match.</p>
+              <p class="mt-1 text-xs text-red-600">{{ 'agents.err.passwordMismatch' | t }}</p>
             }
           </div>
         </div>
@@ -337,14 +337,14 @@
             (click)="closeAddAgent()"
             class="rounded-md border border-gray-300 bg-white px-5 py-2 font-semibold text-gray-700 hover:bg-gray-50"
           >
-            Cancel
+            {{ 'common.cancel' | t }}
           </button>
           <button
             type="submit"
             [disabled]="isSubmitting()"
             class="rounded-md bg-blue-700 px-5 py-2 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
           >
-            {{ isSubmitting() ? 'Creating…' : 'Create Agent' }}
+            {{ (isSubmitting() ? 'agents.creating' : 'agents.create') | t }}
           </button>
         </div>
       </form>
@@ -353,14 +353,14 @@
 
   <app-modal [isVisible]="!!editingAgent()" (close)="closeEditAgent()">
     <div class="p-8">
-      <h2 class="text-xl font-bold text-gray-900">Edit Agent</h2>
-      <p class="text-sm text-gray-500 mb-6">Update the agent's login and contact details.</p>
+      <h2 class="text-xl font-bold text-gray-900">{{ 'agents.editTitle' | t }}</h2>
+      <p class="text-sm text-gray-500 mb-6">{{ 'agents.editSubtitle' | t }}</p>
 
       <form class="space-y-4" [formGroup]="editAgentForm" (ngSubmit)="submitEditAgent()" novalidate>
         <div class="flex items-center gap-5">
           <div class="h-20 w-20 shrink-0 overflow-hidden rounded-full border border-gray-300 bg-gray-100 flex items-center justify-center text-gray-400">
             @if (avatarPreview()) {
-              <img [src]="avatarPreview()" alt="Agent profile image" class="h-full w-full object-cover" />
+              <img [src]="avatarPreview()" [alt]="'agents.avatarAlt' | t" class="h-full w-full object-cover" />
             } @else {
               <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
@@ -374,33 +374,33 @@
               (click)="avatarInput.click()"
               class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 cursor-pointer"
             >
-              {{ avatarPreview() ? 'Change photo' : 'Upload photo' }}
+              {{ (avatarPreview() ? 'agents.changePhoto' : 'agents.uploadPhoto') | t }}
             </button>
             @if (avatarFile()) {
               <button type="button" (click)="setAvatarFile(null)" class="ml-2 text-sm text-gray-500 hover:text-red-600 cursor-pointer">
-                Undo
+                {{ 'common.undo' | t }}
               </button>
             }
             <input #avatarInput type="file" accept="image/*" class="hidden" (change)="onAvatarSelected($event)" />
             <p class="mt-1 text-xs text-gray-500">
-              {{ avatarFile() ? avatarFile()!.name + ' — uploads when you save.' : 'JPG, PNG or WebP.' }}
+              {{ avatarFile() ? ('agents.photoPending' | t: { name: avatarFile()!.name }) : ('agents.photoFormats' | t) }}
             </p>
           </div>
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label for="edit-first-name" class="block text-sm font-medium text-gray-700 mb-1">First name</label>
+            <label for="edit-first-name" class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.firstName' | t }}</label>
             <input id="edit-first-name" type="text" formControlName="firstName" autocomplete="off" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-blue-600 focus:outline-none" />
           </div>
           <div>
-            <label for="edit-last-name" class="block text-sm font-medium text-gray-700 mb-1">Last name</label>
+            <label for="edit-last-name" class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.lastName' | t }}</label>
             <input id="edit-last-name" type="text" formControlName="lastName" autocomplete="off" class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:border-blue-600 focus:outline-none" />
           </div>
         </div>
 
         <div>
-          <label for="edit-username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+          <label for="edit-username" class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.username' | t }}</label>
           <input
             id="edit-username"
             type="text"
@@ -410,12 +410,12 @@
             [class.border-red-500]="isInvalid('username', editAgentForm)"
           />
           @if (isInvalid('username', editAgentForm)) {
-            <p class="mt-1 text-xs text-red-600">Username is required (min 3 characters).</p>
+            <p class="mt-1 text-xs text-red-600">{{ 'agents.err.usernameRequired' | t }}</p>
           }
         </div>
 
         <div>
-          <label for="edit-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <label for="edit-email" class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.email' | t }}</label>
           <input
             id="edit-email"
             type="email"
@@ -425,12 +425,12 @@
             [class.border-red-500]="isInvalid('email', editAgentForm)"
           />
           @if (isInvalid('email', editAgentForm)) {
-            <p class="mt-1 text-xs text-red-600">Enter a valid email address.</p>
+            <p class="mt-1 text-xs text-red-600">{{ 'common.emailInvalid' | t }}</p>
           }
         </div>
 
         <div>
-          <label for="edit-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone number</label>
+          <label for="edit-phone" class="block text-sm font-medium text-gray-700 mb-1">{{ 'common.phoneNumber' | t }}</label>
           <input
             id="edit-phone"
             type="tel"
@@ -442,7 +442,7 @@
             [class.border-red-500]="isInvalid('phoneNumber', editAgentForm)"
           />
           @if (isInvalid('phoneNumber', editAgentForm)) {
-            <p class="mt-1 text-xs text-red-600">Enter a full number, e.g. +998 90 123 45 67.</p>
+            <p class="mt-1 text-xs text-red-600">{{ 'common.phoneInvalid' | t }}</p>
           }
         </div>
 
@@ -452,14 +452,14 @@
             (click)="closeEditAgent()"
             class="rounded-md border border-gray-300 bg-white px-5 py-2 font-semibold text-gray-700 hover:bg-gray-50"
           >
-            Cancel
+            {{ 'common.cancel' | t }}
           </button>
           <button
             type="submit"
             [disabled]="isUpdating()"
             class="rounded-md bg-blue-700 px-5 py-2 font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
           >
-            {{ isUpdating() ? 'Saving…' : 'Save Changes' }}
+            {{ (isUpdating() ? 'common.saving' : 'common.saveChanges') | t }}
           </button>
         </div>
       </form>
@@ -484,7 +484,7 @@
             <h2 class="text-xl font-bold text-gray-900 truncate">{{ agent.name }}</h2>
             <p class="text-sm text-gray-500 truncate">&#64;{{ agent.username }}</p>
             <div class="mt-2 flex flex-wrap items-center gap-2 text-xs">
-              <span class="capitalize font-medium" [ngClass]="getStatusClass(agent)">{{ agent.status }}</span>
+              <span class="capitalize font-medium" [ngClass]="getStatusClass(agent)">{{ 'agents.status.' + agent.status | t }}</span>
               @for (role of agent.raw.authorities; track role) {
                 <span class="rounded-full border border-blue-200 bg-blue-50 px-2.5 py-0.5 font-medium text-blue-700">{{ role }}</span>
               }
@@ -492,35 +492,35 @@
           </div>
         </div>
 
-        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Account</h3>
+        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">{{ 'common.account' | t }}</h3>
         <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 text-sm">
-          <div><dt class="text-gray-500">User ID</dt><dd class="font-medium text-gray-900">{{ agent.raw.id }}</dd></div>
-          <div><dt class="text-gray-500">Username</dt><dd class="font-medium text-gray-900 break-all">{{ agent.raw.username }}</dd></div>
-          <div><dt class="text-gray-500">Email</dt><dd class="font-medium text-gray-900 break-all">{{ agent.raw.email }}</dd></div>
-          <div><dt class="text-gray-500">Phone</dt><dd class="font-medium text-gray-900">{{ agent.raw.phoneNumber || '-' }}</dd></div>
-          <div><dt class="text-gray-500">Properties assigned</dt><dd class="font-medium text-gray-900">{{ agent.properties }}</dd></div>
-          <div><dt class="text-gray-500">Joined</dt><dd class="font-medium text-gray-900">{{ agent.raw.createdAt ? (agent.raw.createdAt | date: 'medium') : '-' }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.userId' | t }}</dt><dd class="font-medium text-gray-900">{{ agent.raw.id }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.username' | t }}</dt><dd class="font-medium text-gray-900 break-all">{{ agent.raw.username }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.email' | t }}</dt><dd class="font-medium text-gray-900 break-all">{{ agent.raw.email }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.phone' | t }}</dt><dd class="font-medium text-gray-900">{{ agent.raw.phoneNumber || '-' }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'agents.propertiesAssigned' | t }}</dt><dd class="font-medium text-gray-900">{{ agent.properties }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'common.joined' | t }}</dt><dd class="font-medium text-gray-900">{{ agent.raw.createdAt ? (agent.raw.createdAt | date: 'medium') : '-' }}</dd></div>
           @if (agent.raw.deletedAt) {
-            <div><dt class="text-gray-500">Deactivated</dt><dd class="font-medium text-red-700">{{ agent.raw.deletedAt | date: 'medium' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'agents.deactivatedLabel' | t }}</dt><dd class="font-medium text-red-700">{{ agent.raw.deletedAt | date: 'medium' }}</dd></div>
           }
         </dl>
 
-        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">Profile</h3>
+        <h3 class="mt-6 mb-3 text-xs font-semibold uppercase tracking-wide text-gray-500">{{ 'common.profile' | t }}</h3>
         @if (agent.raw.profile; as profile) {
           <dl class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 text-sm">
-            <div><dt class="text-gray-500">Profile ID</dt><dd class="font-medium text-gray-900">{{ profile.profileId || '-' }}</dd></div>
-            <div><dt class="text-gray-500">Profile phone</dt><dd class="font-medium text-gray-900">{{ profile.phoneNumber || '-' }}</dd></div>
-            <div><dt class="text-gray-500">First name</dt><dd class="font-medium text-gray-900">{{ profile.firstName || '-' }}</dd></div>
-            <div><dt class="text-gray-500">Last name</dt><dd class="font-medium text-gray-900">{{ profile.lastName || '-' }}</dd></div>
-            <div><dt class="text-gray-500">Profile created</dt><dd class="font-medium text-gray-900">{{ profile.createdAt ? (profile.createdAt | date: 'medium') : '-' }}</dd></div>
-            <div><dt class="text-gray-500">Last updated</dt><dd class="font-medium text-gray-900">{{ profile.updatedAt ? (profile.updatedAt | date: 'medium') : '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.profileId' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.profileId || '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.profilePhone' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.phoneNumber || '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.firstName' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.firstName || '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.lastName' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.lastName || '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.profileCreated' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.createdAt ? (profile.createdAt | date: 'medium') : '-' }}</dd></div>
+            <div><dt class="text-gray-500">{{ 'common.lastUpdated' | t }}</dt><dd class="font-medium text-gray-900">{{ profile.updatedAt ? (profile.updatedAt | date: 'medium') : '-' }}</dd></div>
             <div class="sm:col-span-2">
-              <dt class="text-gray-500">Description</dt>
+              <dt class="text-gray-500">{{ 'common.description' | t }}</dt>
               <dd class="font-medium text-gray-900 whitespace-pre-line">{{ profile.description || '-' }}</dd>
             </div>
           </dl>
         } @else {
-          <p class="text-sm text-gray-500">This agent has no profile yet. Editing the agent will create one.</p>
+          <p class="text-sm text-gray-500">{{ 'agents.noProfile' | t }}</p>
         }
 
         <div class="flex justify-end gap-2 pt-8">
@@ -529,7 +529,7 @@
             (click)="closeViewAgent()"
             class="rounded-md border border-gray-300 bg-white px-5 py-2 font-semibold text-gray-700 hover:bg-gray-50"
           >
-            Close
+            {{ 'common.close' | t }}
           </button>
           @if (agent.status === 'active') {
             <button
@@ -537,7 +537,7 @@
               (click)="editFromView(agent)"
               class="rounded-md bg-blue-700 px-5 py-2 font-semibold text-white hover:bg-blue-800"
             >
-              Edit Agent
+              {{ 'agents.editTitle' | t }}
             </button>
           } @else {
             <button
@@ -546,7 +546,7 @@
               [disabled]="reactivatingId() !== null"
               class="rounded-md bg-green-700 px-5 py-2 font-semibold text-white hover:bg-green-800 disabled:opacity-50"
             >
-              {{ reactivatingId() === agent.id ? 'Reactivating…' : 'Reactivate Agent' }}
+              {{ (reactivatingId() === agent.id ? 'agents.reactivating' : 'agents.reactivateAgent') | t }}
             </button>
           }
         </div>
@@ -557,10 +557,9 @@
   <app-modal [isVisible]="!!deletingAgent()" (close)="closeDeleteAgent()">
     @if (deletingAgent(); as agent) {
       <div class="p-8">
-        <h2 class="text-xl font-bold text-gray-900">Delete Agent</h2>
+        <h2 class="text-xl font-bold text-gray-900">{{ 'agents.delete' | t }}</h2>
         <p class="mt-2 text-sm text-gray-600">
-          <span class="font-semibold text-gray-900">{{ agent.name }}</span> will be deactivated and can no longer
-          sign in. Their account, profile and data are kept, so you can reactivate them later from this list.
+          <span class="font-semibold text-gray-900">{{ agent.name }}</span> {{ 'agents.deleteBody' | t }}
         </p>
         <div class="flex justify-end gap-2 pt-6">
           <button
@@ -568,7 +567,7 @@
             (click)="closeDeleteAgent()"
             class="rounded-md border border-gray-300 bg-white px-5 py-2 font-semibold text-gray-700 hover:bg-gray-50"
           >
-            Cancel
+            {{ 'common.cancel' | t }}
           </button>
           <button
             type="button"
@@ -576,7 +575,7 @@
             [disabled]="isDeleting()"
             class="rounded-md bg-red-600 px-5 py-2 font-semibold text-white hover:bg-red-700 disabled:opacity-50"
           >
-            {{ isDeleting() ? 'Deleting…' : 'Delete Agent' }}
+            {{ (isDeleting() ? 'agents.deleting' : 'agents.delete') | t }}
           </button>
         </div>
       </div>

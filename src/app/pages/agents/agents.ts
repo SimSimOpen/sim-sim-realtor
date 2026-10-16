@@ -15,6 +15,8 @@ import { ModalComponent } from '../../components/modal/modal.component';
 import { AgentResponse, AgentService } from '../../shared/services/agent.service';
 import { MediaService } from '../../shared/services/media.service';
 import { formatPhone, PHONE_PATTERN, PhoneMask } from '../../shared/utils/phone-mask.directive';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 interface Agent {
   id: number;
@@ -39,7 +41,7 @@ const passwordsMatch = (group: AbstractControl): ValidationErrors | null => {
 
 @Component({
   selector: 'app-agents',
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent, PhoneMask],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, PhoneMask, TranslatePipe],
   templateUrl: './agents.html',
   styleUrl: './agents.scss',
 })
@@ -47,6 +49,7 @@ export class Agents implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private toast = inject(ToastrService);
+  private i18n = inject(I18nService);
   private agentService = inject(AgentService);
   private mediaService = inject(MediaService);
 
@@ -108,10 +111,10 @@ export class Agents implements OnInit {
           this.agents.set([]);
           this.loadError.set(
             err?.status === 403
-              ? 'You are not allowed to view agents.'
+              ? this.i18n.t('agents.err.forbiddenView')
               : err?.status === 404
-                ? 'Agents endpoint not found on the server.'
-                : 'Could not load agents.',
+                ? this.i18n.t('agents.err.notFound')
+                : this.i18n.t('agents.err.load'),
           );
         },
       });
@@ -167,15 +170,15 @@ export class Agents implements OnInit {
       .subscribe({
         next: () => {
           this.loadAgents();
-          this.toast.success(`Agent "${username}" created`, 'Success');
+          this.toast.success(this.i18n.t('agents.created', { name: username }), this.i18n.t('common.success'));
           this.closeAddAgent();
         },
         error: (err) => {
           const message =
             err?.error?.message ??
             (typeof err?.error === 'string' ? err.error : null) ??
-            (err?.status === 403 ? 'You are not allowed to add agents' : 'Could not create agent');
-          this.toast.error(message, 'Add Agent Failed');
+            (err?.status === 403 ? this.i18n.t('agents.err.forbiddenAdd') : this.i18n.t('agents.err.create'));
+          this.toast.error(message, this.i18n.t('agents.err.addTitle'));
         },
       });
   }
@@ -206,7 +209,7 @@ export class Agents implements OnInit {
       return;
     }
     if (!file.type.startsWith('image/')) {
-      this.toast.error('Please choose an image file', 'Invalid File');
+      this.toast.error(this.i18n.t('agents.err.imageOnly'), this.i18n.t('agents.err.invalidFile'));
       return;
     }
     this.setAvatarFile(file);
@@ -264,7 +267,7 @@ export class Agents implements OnInit {
           if (avatar) {
             this.uploadAgentAvatar(next, avatar);
           } else {
-            this.toast.success(`Agent "${next.name}" updated`, 'Success');
+            this.toast.success(this.i18n.t('agents.updated', { name: next.name }), this.i18n.t('common.success'));
           }
           this.closeEditAgent();
         },
@@ -272,8 +275,8 @@ export class Agents implements OnInit {
           const message =
             err?.error?.message ??
             (typeof err?.error === 'string' ? err.error : null) ??
-            (err?.status === 403 ? 'You are not allowed to edit agents' : 'Could not update agent');
-          this.toast.error(message, 'Edit Agent Failed');
+            (err?.status === 403 ? this.i18n.t('agents.err.forbiddenEdit') : this.i18n.t('agents.err.update'));
+          this.toast.error(message, this.i18n.t('agents.err.editTitle'));
         },
       });
   }
@@ -298,11 +301,14 @@ export class Agents implements OnInit {
       .subscribe({
         next: (updated) => {
           this.replaceAgent(updated);
-          this.toast.success(`Agent "${agent.name}" deactivated`, 'Success');
+          this.toast.success(this.i18n.t('agents.deactivated', { name: agent.name }), this.i18n.t('common.success'));
           this.closeDeleteAgent();
         },
         error: (err) => {
-          this.toast.error(this.errorMessage(err, 'delete agents', 'Could not delete agent'), 'Delete Agent Failed');
+          this.toast.error(
+            this.errorMessage(err, this.i18n.t('agents.err.forbiddenDelete'), this.i18n.t('agents.err.delete')),
+            this.i18n.t('agents.err.deleteTitle'),
+          );
         },
       });
   }
@@ -318,12 +324,12 @@ export class Agents implements OnInit {
       .subscribe({
         next: (updated) => {
           this.replaceAgent(updated);
-          this.toast.success(`Agent "${agent.name}" reactivated`, 'Success');
+          this.toast.success(this.i18n.t('agents.reactivated', { name: agent.name }), this.i18n.t('common.success'));
         },
         error: (err) => {
           this.toast.error(
-            this.errorMessage(err, 'reactivate agents', 'Could not reactivate agent'),
-            'Reactivate Agent Failed',
+            this.errorMessage(err, this.i18n.t('agents.err.forbiddenReactivate'), this.i18n.t('agents.err.reactivate')),
+            this.i18n.t('agents.err.reactivateTitle'),
           );
         },
       });
@@ -337,11 +343,11 @@ export class Agents implements OnInit {
     }
   }
 
-  private errorMessage(err: any, action: string, fallback: string): string {
+  private errorMessage(err: any, forbidden: string, fallback: string): string {
     return (
       err?.error?.message ??
       (typeof err?.error === 'string' ? err.error : null) ??
-      (err?.status === 403 ? `You are not allowed to ${action}` : fallback)
+      (err?.status === 403 ? forbidden : fallback)
     );
   }
 
@@ -349,11 +355,11 @@ export class Agents implements OnInit {
   private uploadAgentAvatar(agent: Agent, file: File) {
     this.mediaService.uploadUserAvatar(agent.id, file).subscribe({
       next: () => {
-        this.toast.success(`Agent "${agent.name}" updated`, 'Success');
+        this.toast.success(this.i18n.t('agents.updated', { name: agent.name }), this.i18n.t('common.success'));
         this.loadAgents();
       },
       error: () => {
-        this.toast.warning('Details saved, but the profile image could not be uploaded', 'Partial Update');
+        this.toast.warning(this.i18n.t('agents.avatarFailed'), this.i18n.t('agents.partialUpdate'));
       },
     });
   }

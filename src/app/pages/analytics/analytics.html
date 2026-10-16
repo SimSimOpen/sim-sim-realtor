@@ -1,8 +1,8 @@
 <div class="analytics-page">
   <section class="title flex justify-between">
     <div>
-      <h1 class="text-2xl text-black font-bold">Analytics</h1>
-      <span>Property performance insights.</span>
+      <h1 class="text-2xl text-black font-bold">{{ 'menu.analytics' | t }}</h1>
+      <span>{{ 'analytics.subtitle' | t }}</span>
     </div>
   </section>
 
@@ -30,7 +30,7 @@
           </svg>
         </div>
       </div>
-      <h3 class="text-sm font-medium text-gray-500">Avg. Occupancy Rate</h3>
+      <h3 class="text-sm font-medium text-gray-500">{{ 'analytics.avgOccupancy' | t }}</h3>
       <p class="text-2xl font-bold text-gray-900 mt-1">92.4%</p>
     </div>
     <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
@@ -73,7 +73,7 @@
           +15.3%</span
         >
       </div>
-      <h3 class="text-sm font-medium text-gray-500">Revenue Growth</h3>
+      <h3 class="text-sm font-medium text-gray-500">{{ 'analytics.revenueGrowth' | t }}</h3>
       <p class="text-2xl font-bold text-gray-900 mt-1">+15.3%</p>
     </div>
     <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
@@ -97,7 +97,7 @@
           </svg>
         </div>
       </div>
-      <h3 class="text-sm font-medium text-gray-500">Avg. Days on Market</h3>
+      <h3 class="text-sm font-medium text-gray-500">{{ 'analytics.daysOnMarket' | t }}</h3>
       <p class="text-2xl font-bold text-gray-900 mt-1">18</p>
     </div>
     <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
@@ -122,7 +122,7 @@
           </svg>
         </div>
       </div>
-      <h3 class="text-sm font-medium text-gray-500">Client Satisfaction</h3>
+      <h3 class="text-sm font-medium text-gray-500">{{ 'analytics.satisfaction' | t }}</h3>
       <p class="text-2xl font-bold text-gray-900 mt-1">4.6/5</p>
     </div>
   </section>
@@ -131,28 +131,28 @@
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
       <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
         <div>
-          <h3 class="text-lg font-medium text-gray-900">Revenue Trends</h3>
+          <h3 class="text-lg font-medium text-gray-900">{{ 'analytics.revenueTrends' | t }}</h3>
         </div>
       </div>
       <div class="p-6">
         <div
           class="bg-gray-50 rounded-lg h-64 flex items-center justify-center border border-dashed border-gray-200"
         >
-          <span class="text-gray-400 font-medium">Chart placeholder</span>
+          <span class="text-gray-400 font-medium">{{ 'analytics.chartPlaceholder' | t }}</span>
         </div>
       </div>
     </div>
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
       <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
         <div>
-          <h3 class="text-lg font-medium text-gray-900">Occupancy by Property Type</h3>
+          <h3 class="text-lg font-medium text-gray-900">{{ 'analytics.occupancyByType' | t }}</h3>
         </div>
       </div>
       <div class="p-6">
         <div
           class="bg-gray-50 rounded-lg h-64 flex items-center justify-center border border-dashed border-gray-200"
         >
-          <span class="text-gray-400 font-medium">Chart placeholder</span>
+          <span class="text-gray-400 font-medium">{{ 'analytics.chartPlaceholder' | t }}</span>
         </div>
       </div>
     </div>
@@ -160,16 +160,16 @@
 
   <section class="analytics-table shadow-sm">
     <div class="px-6 py-4 border-b border-gray-100" data-id="element-988">
-      <h3 class="text-lg font-medium text-gray-900" data-id="element-989">Recent Reports</h3>
+      <h3 class="text-lg font-medium text-gray-900" data-id="element-989">{{ 'reports.recent' | t }}</h3>
     </div>
     <table class="w-full">
       <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
         <tr class="text-left">
-          <th>Property</th>
-          <th>Type</th>
-          <th>Occupancy</th>
-          <th>Revenue(YTD)</th>
-          <th>Trend</th>
+          <th>{{ 'table.property' | t }}</th>
+          <th>{{ 'table.type' | t }}</th>
+          <th>{{ 'analytics.occupancy' | t }}</th>
+          <th>{{ 'analytics.revenueYtd' | t }}</th>
+          <th>{{ 'analytics.trend' | t }}</th>
         </tr>
       </thead>
       <tbody>

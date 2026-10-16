@@ -1,4 +1,5 @@
 import { inject, Injectable } from '@angular/core';
+import { I18nService } from '../i18n/i18n.service';
 import { PropertyFilter } from '../models/properties';
 import { PaginationService } from './pagination.service';
 import { ProductApiService } from './product/state/product-api.service';
@@ -19,6 +20,7 @@ export class SearchAndFilterService {
   public pagination = inject(PaginationService);
   private productApiService = inject(ProductApiService);
   private toast = inject(ToastrService);
+  private i18n = inject(I18nService);
   private common = inject(Common);
 
   onFilterChange(field: keyof PropertyFilter, $event: any) {
@@ -50,7 +52,7 @@ export class SearchAndFilterService {
           this.common.convertPropertiesWithShortAddress(properties.content);
         },
         error: () => {
-          this.toast.error('Error filtering properties', 'Error');
+          this.toast.error(this.i18n.t('properties.filterError'), this.i18n.t('common.error'));
         },
       });
   }

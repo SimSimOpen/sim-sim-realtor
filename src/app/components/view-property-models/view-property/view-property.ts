@@ -13,16 +13,18 @@ import {
 } from '@angular/core';
 import { Property } from '../../../shared/models/properties';
 import { CommonModule } from '@angular/common';
+import { Common } from '../../../shared/common';
 import { EnvironmentTs } from '../../../environments/environment';
 import { ListingStatus, OfferType } from '../../../shared/enums/PropertyStatus';
 import { AboutAgent } from '../view-property-agent';
 import { AboutProperty } from '../view-property-about';
 import { ProductStateService } from '../../../shared/services/product/state/product-state.service';
 import { YandexMapComponent } from '../../add-edit-property-models/yandex-map';
+import { TranslatePipe } from '../../../shared/i18n/translate.pipe';
 
 @Component({
   selector: 'app-view-property',
-  imports: [CommonModule, AboutAgent, AboutProperty, YandexMapComponent],
+  imports: [CommonModule, AboutAgent, AboutProperty, YandexMapComponent, TranslatePipe],
   templateUrl: './view-property.html',
   styleUrl: './view-property.scss',
 })
@@ -48,6 +50,7 @@ export class ViewProperty {
 
   private productStateService = inject(ProductStateService);
   private ctr = inject(ChangeDetectorRef);
+  public common = inject(Common);
 
   property = computed(() => this.productStateService.editingProperty() as Property);
 

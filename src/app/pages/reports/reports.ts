@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 
 @Component({
   selector: 'app-reports',
+  imports: [TranslatePipe],
   templateUrl: './reports.html',
   styleUrls: ['./reports.scss'],
 })

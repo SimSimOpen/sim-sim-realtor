@@ -1,8 +1,8 @@
 <div class="dashboard-page">
   <section class="title flex justify-between">
     <div>
-      <h1 class="text-2xl text-black font-bold">Dashboard Overview</h1>
-      <span class="text-gray-500">Welcome back, here's what's happening today.</span>
+      <h1 class="text-2xl text-black font-bold">{{ 'dash.title' | t }}</h1>
+      <span class="text-gray-500">{{ 'dash.subtitle' | t }}</span>
     </div>
     <div class="flex space-x-2 items-center">
       <button
@@ -28,13 +28,13 @@
             <path d="m7 10 5 5 5-5"></path>
           </svg>
         </span>
-        <span>Export Report</span>
+        <span>{{ 'dash.export' | t }}</span>
       </button>
       <button
         class="bg-blue-700 text-white shadow-sm p-1 font-semibold text-xs hover:shadow-md hover:bg-blue-800 flex items-center space-x-1"
         (click)="openModal()"
       >
-        + Add Property
+        {{ 'dash.addProperty' | t }}
       </button>
     </div>
   </section>
@@ -63,7 +63,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-sm text-gray-500">Registered Users</p>
+          <p class="text-sm text-gray-500">{{ 'dash.registeredUsers' | t }}</p>
           <p class="text-2xl font-bold text-gray-900">12,847</p>
         </div>
       </div>
@@ -94,7 +94,7 @@
           </div>
         </div>
         <div>
-          <p class="text-sm text-gray-500">Currently Online</p>
+          <p class="text-sm text-gray-500">{{ 'dash.online' | t }}</p>
           <p class="text-2xl font-bold text-gray-900">342</p>
         </div>
       </div>
@@ -141,7 +141,7 @@
             +12.5%
           </span>
         </div>
-        <div class="mt-5">Total Revenue</div>
+        <div class="mt-5">{{ 'dash.revenue' | t }}</div>
         <div class="text-2xl text-black font-bold">$45,230.00</div>
       </div>
       <div class="card active-properties">
@@ -194,7 +194,7 @@
           </span>
         </div>
 
-        <div class="mt-5">Active Properties</div>
+        <div class="mt-5">{{ 'dash.activeProperties' | t }}</div>
         <div class="text-2xl text-black font-bold">128</div>
       </div>
       <div class="card occupancy-rate">
@@ -239,7 +239,7 @@
             -1.2%
           </span>
         </div>
-        <div class="mt-5">Occupancy Rate</div>
+        <div class="mt-5">{{ 'dash.occupancy' | t }}</div>
         <div class="text-2xl text-black font-bold">85.4%</div>
       </div>
 
@@ -284,19 +284,19 @@
             +2</span
           >
         </div>
-        <div class="mt-5">Pending Deals</div>
+        <div class="mt-5">{{ 'dash.pendingDeals' | t }}</div>
         <div class="text-2xl text-black font-bold">24</div>
       </div>
     </div>
   </section>
 
   <section class="graph-recent-activities">
-    <div class="flex justify-center items-center">Graph is here</div>
+    <div class="flex justify-center items-center">{{ 'dash.graphPlaceholder' | t }}</div>
     <div>
       <div class="border-b border-gray-300">
         <div class="p-5">
-          <div class="font-semibold">Recent Activity</div>
-          <span class="text-sm text-gray-500">Latest System Updates</span>
+          <div class="font-semibold">{{ 'dash.recentActivity' | t }}</div>
+          <span class="text-sm text-gray-500">{{ 'dash.latestUpdates' | t }}</span>
         </div>
       </div>
       <div class="p-5">
@@ -305,8 +305,8 @@
             <span class="inline-block w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
           </div>
           <div>
-            <h6 class="text-sm">New User Signed</h6>
-            <span class="text-xs text-gray-500">New Comment <span>•</span>2 hours ago</span>
+            <h6 class="text-sm">{{ 'dash.newUser' | t }}</h6>
+            <span class="text-xs text-gray-500">{{ 'dash.newComment' | t }} <span>•</span>{{ 'dash.twoHoursAgo' | t }}</span>
           </div>
         </div>
         <div class="flex pb-5">
@@ -314,8 +314,8 @@
             <span class="inline-block w-2.5 h-2.5 bg-red-600 rounded-full"></span>
           </div>
           <div>
-            <h6 class="text-sm">New Property Visit</h6>
-            <span class="text-xs text-gray-500">New Comment <span>•</span>2 hours ago</span>
+            <h6 class="text-sm">{{ 'dash.newVisit' | t }}</h6>
+            <span class="text-xs text-gray-500">{{ 'dash.newComment' | t }} <span>•</span>{{ 'dash.twoHoursAgo' | t }}</span>
           </div>
         </div>
         <div class="flex pb-5">
@@ -323,21 +323,21 @@
             <span class="inline-block w-2.5 h-2.5 bg-yellow-600 rounded-full"></span>
           </div>
           <div>
-            <h6 class="text-sm">New Comment</h6>
-            <span class="text-xs text-gray-500">New Comment <span>•</span>2 hours ago</span>
+            <h6 class="text-sm">{{ 'dash.newComment' | t }}</h6>
+            <span class="text-xs text-gray-500">{{ 'dash.newComment' | t }} <span>•</span>{{ 'dash.twoHoursAgo' | t }}</span>
           </div>
         </div>
       </div>
-      <div class="p-5 text-center hover:bg-gray-50 text-sm cursor-pointer">View All Activities</div>
+      <div class="p-5 text-center hover:bg-gray-50 text-sm cursor-pointer">{{ 'dash.viewAllActivities' | t }}</div>
     </div>
   </section>
 
   <section class="properties-table shadow-sm">
     <div class="flex justify-between p-5 border-b border-gray-300 mb-5">
       <div>
-        <h2 class="font-bold">Recently Added Properties</h2>
+        <h2 class="font-bold">{{ 'dash.recentProperties' | t }}</h2>
         <span class="text-gray-600 text-sm"
-          >Here are the most recent properties added to your listings.</span
+          >{{ 'dash.recentPropertiesSub' | t }}</span
         >
       </div>
       <div>
@@ -345,7 +345,7 @@
           class="border rounded border-gray-300 text-sm px-3 py-1 cursor-pointer hover:bg-gray-100 hover:shadow-sm transition-shadow"
           (click)="common.setActiveMenuItem('/properties'); common.navigateTo('/properties')"
         >
-          View All
+          {{ 'common.viewAll' | t }}
         </button>
       </div>
     </div>
@@ -353,13 +353,13 @@
       <table class="w-full">
         <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
           <tr class="text-left">
-            <th>Property</th>
-            <th>Type</th>
-            <th>Details</th>
-            <th>Rent/Month</th>
-            <th>Status</th>
-            <th>Views</th>
-            <th>Date Listed</th>
+            <th>{{ 'table.property' | t }}</th>
+            <th>{{ 'table.type' | t }}</th>
+            <th>{{ 'table.details' | t }}</th>
+            <th>{{ 'table.rentMonth' | t }}</th>
+            <th>{{ 'table.status' | t }}</th>
+            <th>{{ 'table.views' | t }}</th>
+            <th>{{ 'table.dateListed' | t }}</th>
             <th></th>
           </tr>
         </thead>
@@ -371,17 +371,17 @@
                   <img
                     class="h-8 w-12 object-cover rounded-lg border border-gray-200"
                     [src]="getPropertiesCoverImage(property)"
-                    alt="product-image"
+                    [alt]="'property.image' | t"
                   />
                   <div>
                     <div>{{ property.title }}</div>
                     <div class="text-xs text-gray-500">
-                      {{ property?.address }}
+                      {{ property?.address || ('common.noAddress' | t) }}
                     </div>
                   </div>
                 </div>
               </td>
-              <td class="capitalize text-sm text-gray-700">{{ property.type?.toLowerCase() }}</td>
+              <td class="capitalize text-sm text-gray-700">{{ common.formatEnum(property.type) }}</td>
               <td>
                 {{ property.numberOfRooms }} / {{ property.floor }} / {{ property.totalFloors }}
               </td>

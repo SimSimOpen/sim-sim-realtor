@@ -12,18 +12,20 @@ import {
 } from '@angular/core';
 import { YandexMapsLoaderService } from '../../shared/services/yandex-maps-loader.service';
 
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 /** Waits for the address to stop changing (e.g. while a form is being filled in) before geocoding. */
 const GEOCODE_DEBOUNCE_MS = 400;
 
 @Component({
   selector: 'app-yandex-map',
+  imports: [TranslatePipe],
   template: `<div class="relative w-full my-4 aspect-video">
     <div class="border border-gray-400 rounded-2xl overflow-hidden w-full h-full" #mapContainer></div>
     @if (error()) {
       <div
         class="absolute inset-0 flex items-center justify-center rounded-2xl bg-gray-50 border border-gray-200 text-sm text-gray-500 text-center px-6"
       >
-        {{ error() }}
+        {{ error()! | t }}
       </div>
     }
   </div>`,
@@ -52,7 +54,7 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.ymaps = await this.loader.load();
     } catch (err) {
       console.error(err);
-      this.error.set('Map is unavailable right now.');
+      this.error.set('map.unavailable');
       return;
     }
     if (this.destroyed) return;

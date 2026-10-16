@@ -4,13 +4,14 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideToastr } from 'ngx-toastr';
 import { authInterceptor } from './account/auth.interceptor';
+import { languageInterceptor } from './shared/i18n/language.interceptor';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, languageInterceptor])),
     provideToastr({
       closeButton: true,
       timeOut: 1500, // 1.5 seconds

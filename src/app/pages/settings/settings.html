@@ -1,15 +1,15 @@
 <div class="settings-page">
   <section class="title flex justify-between">
     <div>
-      <h1 class="text-2xl text-black font-bold">Settings</h1>
-      <span>Manage your account and preferences.</span>
+      <h1 class="text-2xl text-black font-bold">{{ 'menu.settings' | t }}</h1>
+      <span>{{ 'settings.subtitle' | t }}</span>
     </div>
   </section>
 
   <section class="bg-white rounded-lg border border-gray-200 shadow-sm">
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
       <div>
-        <h3 class="text-lg font-medium text-gray-900">Profile Information</h3>
+        <h3 class="text-lg font-medium text-gray-900">{{ 'settings.profileInfo' | t }}</h3>
       </div>
       <div>
         <span class="border border-gray-400 bg-white rounded-md p-2 text-sm">
@@ -25,7 +25,7 @@
           >
             <img
               [src]="profileImageUrl"
-              alt="Profile Image"
+              [alt]="'settings.profileImage' | t"
               class="h-20 w-20 rounded-full object-cover"
             />
           </div>
@@ -40,13 +40,13 @@
               class="hidden"
               #fileInput
             />
-            Change Avatar
+            {{ 'settings.changeAvatar' | t }}
           </button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6" [formGroup]="userForm">
           <div class="w-full">
             <label for="qfhbuqopo" class="block text-sm font-medium text-gray-700 mb-1.5">
-              Username
+              {{ 'common.username' | t }}
             </label>
             <div class="relative">
               <input
@@ -58,7 +58,7 @@
           </div>
           <div class="w-full">
             <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1.5">
-              Full Name
+              {{ 'auth.fullName' | t }}
             </label>
             <div class="relative">
               <input
@@ -70,7 +70,7 @@
           </div>
           <div class="w-full">
             <label for="email" class="block text-sm font-medium text-gray-700 mb-1.5">
-              Email Address
+              {{ 'auth.email' | t }}
             </label>
             <div class="relative">
               <input
@@ -83,7 +83,7 @@
           </div>
           <div class="w-full">
             <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1.5"
-              >Phone Number</label
+              >{{ 'common.phoneNumber' | t }}</label
             >
             <div class="relative">
               <input
@@ -101,7 +101,7 @@
             class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-blue-700 text-white hover:bg-blue-800 focus:ring-blue-700 shadow-sm h-10 px-4 py-2 text-sm"
             (click)="updateUserData()"
           >
-            Save Changes
+            {{ 'common.saveChanges' | t }}
           </button>
         </div>
       </div>
@@ -111,15 +111,15 @@
   <section class="mt-8 bg-white rounded-lg border border-gray-200 shadow-sm">
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
       <div>
-        <h3 class="text-lg font-medium text-gray-900">Notifications</h3>
+        <h3 class="text-lg font-medium text-gray-900">{{ 'settings.notifications' | t }}</h3>
       </div>
     </div>
     <div class="p-6">
       <div class="space-y-4">
         <div class="flex items-center justify-between py-3 border-b border-gray-100">
           <div>
-            <h4 class="text-sm font-medium text-gray-900">Email Notifications</h4>
-            <p class="text-sm text-gray-500">Receive daily updates via email.</p>
+            <h4 class="text-sm font-medium text-gray-900">{{ 'settings.emailNotifications' | t }}</h4>
+            <p class="text-sm text-gray-500">{{ 'settings.emailNotificationsBody' | t }}</p>
           </div>
           <div
             class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
@@ -138,8 +138,8 @@
         </div>
         <div class="flex items-center justify-between py-3 border-b border-gray-100">
           <div>
-            <h4 class="text-sm font-medium text-gray-900">SMS Notifications</h4>
-            <p class="text-sm text-gray-500">Get text alerts for urgent matters.</p>
+            <h4 class="text-sm font-medium text-gray-900">{{ 'settings.smsNotifications' | t }}</h4>
+            <p class="text-sm text-gray-500">{{ 'settings.smsNotificationsBody' | t }}</p>
           </div>
           <div
             class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
@@ -157,8 +157,8 @@
         </div>
         <div class="flex items-center justify-between py-3 border-b border-gray-100">
           <div>
-            <h4 class="text-sm font-medium text-gray-900">Push Notifications</h4>
-            <p class="text-sm text-gray-500">Receive alerts in your browser.</p>
+            <h4 class="text-sm font-medium text-gray-900">{{ 'settings.pushNotifications' | t }}</h4>
+            <p class="text-sm text-gray-500">{{ 'settings.pushNotificationsBody' | t }}</p>
           </div>
           <div
             class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
@@ -177,8 +177,8 @@
         </div>
         <div class="flex items-center justify-between py-3">
           <div>
-            <h4 class="text-sm font-medium text-gray-900">Weekly Digest</h4>
-            <p class="text-sm text-gray-500">A weekly summary of your properties.</p>
+            <h4 class="text-sm font-medium text-gray-900">{{ 'settings.weeklyDigest' | t }}</h4>
+            <p class="text-sm text-gray-500">{{ 'settings.weeklyDigestBody' | t }}</p>
           </div>
           <div
             class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
@@ -201,7 +201,7 @@
   <section class="mt-8 bg-white rounded-lg border border-gray-200 shadow-sm">
     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
       <div>
-        <h3 class="text-lg font-medium text-gray-900">Security</h3>
+        <h3 class="text-lg font-medium text-gray-900">{{ 'settings.security' | t }}</h3>
       </div>
     </div>
     <div class="p-6">
@@ -210,7 +210,7 @@
           <div class="md:col-span-2">
             <div class="w-full">
               <label for="1hx80v3cc" class="block text-sm font-medium text-gray-700 mb-1.5"
-                >Current Password</label
+                >{{ 'settings.currentPassword' | t }}</label
               >
               <div class="relative">
                 <input
@@ -223,7 +223,7 @@
           </div>
           <div class="w-full">
             <label for="y1x8trtvg" class="block text-sm font-medium text-gray-700 mb-1.5"
-              >New Password</label
+              >{{ 'settings.newPassword' | t }}</label
             >
             <div class="relative">
               <input
@@ -235,7 +235,7 @@
           </div>
           <div class="w-full">
             <label for="x2t8egsn5" class="block text-sm font-medium text-gray-700 mb-1.5"
-              >Confirm New Password</label
+              >{{ 'settings.confirmNewPassword' | t }}</label
             >
             <div class="relative">
               <input
@@ -250,7 +250,7 @@
           <button
             class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-blue-700 text-white hover:bg-blue-800 focus:ring-blue-700 shadow-sm h-10 px-4 py-2 text-sm"
           >
-            Update Password
+            {{ 'settings.updatePassword' | t }}
           </button>
         </div>
       </div>
@@ -259,19 +259,19 @@
 
   <section class="my-8 bg-white rounded-lg border border-red-200 shadow-sm overflow-hidden">
     <div class="px-6 py-4 border-b border-red-100 bg-red-50/50">
-      <h3 class="text-lg font-medium text-red-800">Danger Zone</h3>
+      <h3 class="text-lg font-medium text-red-800">{{ 'settings.dangerZone' | t }}</h3>
     </div>
     <div class="p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div>
-        <h4 class="text-sm font-medium text-gray-900">Delete Account</h4>
+        <h4 class="text-sm font-medium text-gray-900">{{ 'settings.deleteAccount' | t }}</h4>
         <p class="text-sm text-gray-500 mt-1">
-          Once you delete your account, there is no going back. Please be certain.
+          {{ 'settings.deleteAccountBody' | t }}
         </p>
       </div>
       <button
         class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-10 px-4 py-2 text-sm text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
       >
-        Delete Account
+        {{ 'settings.deleteAccount' | t }}
       </button>
     </div>
   </section>

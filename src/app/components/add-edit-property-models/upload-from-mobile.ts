@@ -12,20 +12,22 @@ import { PropertyMedia } from '../../shared/models/properties';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 import { Common } from '../../shared/common';
 import { GlobalService } from '../../shared/services/global.service';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-upload-from-mobile',
   standalone: true,
-  imports: [QRCodeComponent, UploadedFiles],
+  imports: [QRCodeComponent, UploadedFiles, TranslatePipe],
   template: `<div>
     <section>
       <header class="flex items-center justify-between mb-4 w-2xl">
-        <h3 class="text-sm font-bold">Use Mobile Device</h3>
+        <h3 class="text-sm font-bold">{{ 'upload.mobileTitle' | t }}</h3>
         <span
           class="text-xs  px-3 py-2 hover:bg-gray-100 rounded cursor-pointer"
           (click)="changeMethod.emit(''); disableContinueDetails.emit()"
         >
-          Change method
+          {{ 'upload.changeMethod' | t }}
         </span>
       </header>
       @if (!global.mobilesessionStarted()) {
@@ -39,25 +41,25 @@ import { GlobalService } from '../../shared/services/global.service';
                   <qrcode [qrdata]="qrData" [width]="128" [errorCorrectionLevel]="'M'"></qrcode>
                 } @else {
                   <div class="w-32 h-32 flex items-center justify-center">
-                    <span class="text-xs text-gray-400">Generating QR...</span>
+                    <span class="text-xs text-gray-400">{{ 'upload.generatingQr' | t }}</span>
                   </div>
                 }
-                <p class="text-xs text-gray-500">QR Code</p>
+                <p class="text-xs text-gray-500">{{ 'upload.qrAlt' | t }}</p>
               </div>
             </div>
             <div>
-              <h5 class="text-base font-semibold text-gray-900 mb-2">Scan with Mobile Device</h5>
+              <h5 class="text-base font-semibold text-gray-900 mb-2">{{ 'upload.scan' | t }}</h5>
               <p class="text-sm text-gray-600 mb-4">
-                Open the your mobile device and scan this QR code to upload photos
+                {{ 'upload.scanBody' | t }}
               </p>
             </div>
             <div class="flex items-center gap-4 justify-center">
               <div class="h-px flex-1 bg-gray-300"></div>
-              <span class="text-sm text-gray-500">OR</span>
+              <span class="text-sm text-gray-500">{{ 'upload.or' | t }}</span>
               <div class="h-px flex-1 bg-gray-300"></div>
             </div>
             <div class="bg-white rounded-lg p-4 border border-gray-200">
-              <p class="text-sm text-gray-600 mb-3">Send link to your mobile device:</p>
+              <p class="text-sm text-gray-600 mb-3">{{ 'upload.sendLinkLabel' | t }}</p>
               <div class="flex gap-2">
                 <div class="w-full">
                   <div class="relative">
@@ -69,14 +71,14 @@ import { GlobalService } from '../../shared/services/global.service';
             disabled:bg-gray-50 disabled:text-gray-500
             border px-3 py-2 flex-1
           "
-                      placeholder="Enter phone number"
+                      [placeholder]="'upload.phonePh' | t"
                     />
                   </div>
                 </div>
                 <button
                   class="inline-flex whitespace-nowrap items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-blue-700 text-white hover:bg-blue-800 focus:ring-blue-700 shadow-sm h-10 px-4 py-2 text-sm  "
                 >
-                  Send Link
+                  {{ 'upload.sendLink' | t }}
                 </button>
               </div>
             </div>
@@ -99,7 +101,7 @@ import { GlobalService } from '../../shared/services/global.service';
                 ></path>
                 <circle cx="12" cy="13" r="3"></circle>
               </svg>
-              <span>Take photos or select from gallery</span>
+              <span>{{ 'upload.takePhotos' | t }}</span>
             </div>
           </div>
         </div>
@@ -119,6 +121,7 @@ import { GlobalService } from '../../shared/services/global.service';
   </div>`,
 })
 export class UploadFromMobile {
+  private i18n = inject(I18nService);
   @Output() changeMethod = new EventEmitter<'computer' | 'mobile' | ''>();
   @Output() disableContinueDetails = new EventEmitter<void>();
 
@@ -169,7 +172,7 @@ export class UploadFromMobile {
           this.createMediaSession();
         },
         error: (err) => {
-          this.toast.error('Failed to create property draft');
+          this.toast.error(this.i18n.t('upload.draftError'));
         },
       });
     } else {

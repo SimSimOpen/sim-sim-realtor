@@ -14,10 +14,12 @@ import { ViewProperty } from '../../components/view-property-models/view-propert
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchAndFilterService } from '../../shared/services/search-and-filter.service';
+import { TranslatePipe } from '../../shared/i18n/translate.pipe';
+import { I18nService } from '../../shared/i18n/i18n.service';
 
 @Component({
   selector: 'app-properties',
-  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty, FormsModule],
+  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty, FormsModule, TranslatePipe],
   templateUrl: './properties.html',
   styleUrl: './properties.scss',
   // providers: [PaginationService],
@@ -33,6 +35,7 @@ export class Properties extends BaseModalComponent {
   private productApiService = inject(ProductApiService);
   public productStateService = inject(ProductStateService);
   private toast = inject(ToastrService);
+  private i18n = inject(I18nService);
   public common = inject(Common);
   public pagination = inject(PaginationService);
   private ctr = inject(ChangeDetectorRef);
@@ -58,7 +61,7 @@ export class Properties extends BaseModalComponent {
           this.ctr.detectChanges();
         },
         error: () => {
-          this.toast.error('Error fetching properties', 'Error');
+          this.toast.error(this.i18n.t('properties.loadError'), this.i18n.t('common.error'));
         },
       });
   }
@@ -69,7 +72,7 @@ export class Properties extends BaseModalComponent {
         this.ctr.detectChanges();
       },
       error: () => {
-        this.toast.error('Error fetching properties stats', 'Error');
+        this.toast.error(this.i18n.t('properties.statsError'), this.i18n.t('common.error'));
       },
     });
   }
@@ -77,12 +80,12 @@ export class Properties extends BaseModalComponent {
   deleteProperty(id: any) {
     this.productApiService.deleteProduct(id).subscribe({
       next: (res) => {
-        this.toast.info('Property was deleted!', 'Info');
+        this.toast.info(this.i18n.t('properties.deleted'), this.i18n.t('common.info'));
         this.fetchAllProperties();
         this.fetchPropertiesStats();
       },
       error: () => {
-        this.toast.error('Error fetching properties', 'Error');
+        this.toast.error(this.i18n.t('properties.loadError'), this.i18n.t('common.error'));
       },
     });
   }
