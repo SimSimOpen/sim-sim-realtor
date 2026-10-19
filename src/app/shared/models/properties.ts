@@ -25,6 +25,8 @@ export interface Property {
   ownerContact?: string;
   agent: string;
   agentId: number;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 export interface PropertyLocation {

@@ -128,6 +128,8 @@ export class AddEditProperty {
         address: [''],
       }),
       address: [''],
+      latitude: [null as number | null],
+      longitude: [null as number | null],
       amenities: this.fb.group({
         parking: [false],
         garden: [false],
@@ -148,6 +150,9 @@ export class AddEditProperty {
       }),
     }));
   }
+  onPicked(p: { latitude: number; longitude: number }) {
+    this.propertyForm.patchValue({ latitude: p.latitude, longitude: p.longitude });
+  }
 
   private fillForm(property: any): void {
     this.propertyForm.patchValue({
@@ -164,6 +169,8 @@ export class AddEditProperty {
       type: property.type,
       listingStatus: property.listingStatus,
       occupancyStatus: property.occupancyStatus,
+      latitude: property.latitude ?? null,
+      longitude: property.longitude ?? null,
       location: {
         country: 'Uzbekistan',
         address: (property.location as any[])[3] || '',

@@ -164,7 +164,8 @@
               <div>
                 <div class="text-sm text-gray-500">{{ 'property.rooms' | t }}</div>
                 <div class="font-semibold text-gray-900">
-                  {{ selectedProperty?.numberOfRooms }} {{ 'property.roomsUnit' | t: { count: selectedProperty?.numberOfRooms ?? 0 } }}
+                  {{ selectedProperty?.numberOfRooms }}
+                  {{ 'property.roomsUnit' | t: { count: selectedProperty?.numberOfRooms ?? 0 } }}
                 </div>
               </div>
             </div>
@@ -250,7 +251,9 @@
                   </svg>
                 </div>
                 <div>
-                  <div class="text-sm text-gray-500" data-id="element-318">{{ 'property.available' | t }}</div>
+                  <div class="text-sm text-gray-500" data-id="element-318">
+                    {{ 'property.available' | t }}
+                  </div>
                   <div class="font-semibold text-gray-900" data-id="element-319">
                     {{ selectedProperty?.dateListed | date: 'dd-MM-yyyy' }}
                   </div>
@@ -353,7 +356,13 @@
       </div>
       <app-about-agent [property]="selectedProperty"></app-about-agent>
     </div>
-    <app-yandex-map [address]="fullAddresForMap"> </app-yandex-map>
+    <app-yandex-map
+      [address]="fullAddresForMap"
+      [latitude]="mapLatitude"
+      [longitude]="mapLongitude"
+      [useSavedPoint]="hasSavedPoint"
+    >
+    </app-yandex-map>
   </main>
 </div>
 @if (selectedImageIndex !== null && selectedImage) {

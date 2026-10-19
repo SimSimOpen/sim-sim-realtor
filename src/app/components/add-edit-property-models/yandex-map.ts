@@ -2,10 +2,12 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   inject,
   Input,
   OnChanges,
   OnDestroy,
+  Output,
   signal,
   SimpleChanges,
   ViewChild,
@@ -20,7 +22,10 @@ const GEOCODE_DEBOUNCE_MS = 400;
   selector: 'app-yandex-map',
   imports: [TranslatePipe],
   template: `<div class="relative w-full my-4 aspect-video">
-    <div class="border border-gray-400 rounded-2xl overflow-hidden w-full h-full" #mapContainer></div>
+    <div
+      class="border border-gray-400 rounded-2xl overflow-hidden w-full h-full"
+      #mapContainer
+    ></div>
     @if (error()) {
       <div
         class="absolute inset-0 flex items-center justify-center rounded-2xl bg-gray-50 border border-gray-200 text-sm text-gray-500 text-center px-6"
@@ -35,11 +40,16 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() longitude = 69.2401;
   @Input() zoom = 13;
   @Input() address = '';
+  @Input() selectable = false; // enables click/drag to pick
+  @Output() picked = new EventEmitter<{ latitude: number; longitude: number }>();
+  @Input() useSavedPoint = false; // true when the form already holds saved coordinates
+  private locked = false; // ignore address-driven geocoding until the user picks
 
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef<HTMLElement>;
 
   readonly error = signal<string | null>(null);
 
+  private lastPicked?: { lat: number; lon: number };
   private loader = inject(YandexMapsLoaderService);
   private ymaps: any;
   private mapInstance: any;
@@ -62,15 +72,21 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    // The first value is handled by initMap; later ones (form edits, a different property) re-locate.
     if (!this.mapInstance) return;
+    if (this.locked && changes['address'] && !changes['latitude'] && !changes['longitude']) return;
     if (changes['address'] || changes['latitude'] || changes['longitude']) {
+      if (this.isLastPick(this.longitude, this.latitude) && !changes['address']) return;
       this.locate();
     }
   }
 
+  private isLastPick(lon: number, lat: number): boolean {
+    const p = this.lastPicked;
+    return !!p && Math.abs(p.lon - lon) < 1e-6 && Math.abs(p.lat - lat) < 1e-6;
+  }
+
   private initMap() {
-    const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer } = this.ymaps;
+    const { YMap, YMapDefaultSchemeLayer, YMapDefaultFeaturesLayer, YMapListener } = this.ymaps;
 
     this.mapInstance = new YMap(this.mapContainer.nativeElement, {
       location: {
@@ -82,7 +98,30 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.mapInstance.addChild(new YMapDefaultSchemeLayer());
     this.mapInstance.addChild(new YMapDefaultFeaturesLayer());
 
-    this.locate();
+    if (this.selectable) {
+      this.mapInstance.addChild(
+        new YMapListener({
+          layer: 'any',
+          onClick: (_object: any, event: any) => {
+            const [lon, lat] = event.coordinates;
+            this.pick(lon, lat);
+          },
+        }),
+      );
+    }
+    if (this.useSavedPoint) {
+      this.locked = true;
+      this.showPoint(this.longitude, this.latitude);
+    } else {
+      this.locate();
+    }
+  }
+
+  private pick(lon: number, lat: number) {
+    this.locked = false;
+    this.lastPicked = { lon, lat };
+    this.placeMarker(lon, lat);
+    this.picked.emit({ latitude: lat, longitude: lon });
   }
 
   private locate() {
@@ -128,7 +167,9 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.markerElement = new YMapMarker(
       {
         coordinates: [lon, lat],
-        anchor: [0.5, 1], // bottom-center of the pin tip
+        anchor: [0.5, 1],
+        draggable: this.selectable,
+        onDragEnd: (coords: [number, number]) => this.pick(coords[0], coords[1]),
       },
       this.createMarkerElement(),
     );
@@ -161,6 +202,11 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       if (!coordinates) return;
       const [lon, lat] = coordinates;
       this.showPoint(lon, lat);
+
+      if (this.selectable) {
+        this.lastPicked = { lon, lat };
+        this.picked.emit({ latitude: lat, longitude: lon });
+      }
     } catch (err) {
       console.error('Geocoding error:', err);
     }

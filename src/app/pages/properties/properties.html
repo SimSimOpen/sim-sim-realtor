@@ -290,7 +290,10 @@
 
   <section class="pagination shadow-sm flex justify-between items-center text-gray-600">
     <span>
-      {{ 'common.showing' | t: { from: paginationRange.from, to: paginationRange.to, total: paginationRange.total } }}
+      {{
+        'common.showing'
+          | t: { from: paginationRange.from, to: paginationRange.to, total: paginationRange.total }
+      }}
     </span>
     <div class="flex gap-2">
       <button

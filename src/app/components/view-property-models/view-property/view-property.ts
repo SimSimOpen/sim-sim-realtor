@@ -112,6 +112,18 @@ export class ViewProperty {
   get isPublished() {
     return this.selectedProperty?.listingStatus === ListingStatus.ACTIVE;
   }
+  get mapLatitude(): number {
+    return this.property()?.latitude ?? 41.2995;
+  }
+
+  get mapLongitude(): number {
+    return this.property()?.longitude ?? 69.2401;
+  }
+
+  get hasSavedPoint(): boolean {
+    const p = this.property();
+    return p?.latitude != null && p?.longitude != null;
+  }
 
   ngOnDestroy() {
     this.removeScrollListener();

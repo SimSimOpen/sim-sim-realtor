@@ -3,7 +3,9 @@
     @if (!isEditingProperty) {
       <div class="flex justify-between p-6 items-center">
         <div>
-          <h1 class="text-xl font-bold">{{ 'addEdit.addTitle' | t }} {{ propertyForm.value.id }}</h1>
+          <h1 class="text-xl font-bold">
+            {{ 'addEdit.addTitle' | t }} {{ propertyForm.value.id }}
+          </h1>
           <span class="text-sm text-gray-500">
             @if (steps === 1) {
               {{ 'addEdit.step1' | t }}
@@ -61,7 +63,8 @@
     } @else {
       <div class="flex justify-between p-6 items-center">
         <h1 class="text-xl font-bold">
-          {{ 'addEdit.editTitle' | t }} <span class="text-blue-500">{{ propertyForm.value.title }}</span>
+          {{ 'addEdit.editTitle' | t }}
+          <span class="text-blue-500">{{ propertyForm.value.title }}</span>
           {{ 'addEdit.withId' | t: { id: propertyForm.value.id } }}
         </h1>
       </div>
@@ -301,7 +304,15 @@
                 [placeholder]="'addEdit.addressPh' | t"
               />
             </div>
-            <app-yandex-map [address]="getFullAddresForMap()"> </app-yandex-map>
+            <app-yandex-map
+              [selectable]="true"
+              [address]="getFullAddresForMap()"
+              [latitude]="propertyForm.value.latitude ?? 41.2995"
+              [longitude]="propertyForm.value.longitude ?? 69.2401"
+              [useSavedPoint]="!!propertyForm.value.latitude"
+              (picked)="onPicked($event)"
+            >
+            </app-yandex-map>
           </div>
           <div class="type mt-5" formGroupName="amenities">
             <h6 class="text-left text-lg font-semibold">{{ 'addEdit.amenities' | t }}</h6>
