@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Output, signal } from '@angular/core';
 import { UploadFromComputer } from '../upload-from-computer';
 import { SelectMethod } from '../select-method';
 import { UploadFromMobile } from '../upload-from-mobile';
@@ -25,6 +25,7 @@ import { ProductStateService } from '../../../shared/services/product/state/prod
 import { YandexMapComponent } from '../yandex-map';
 import { TranslatePipe } from '../../../shared/i18n/translate.pipe';
 import { I18nService } from '../../../shared/i18n/i18n.service';
+import { DISTRICT_CENTERS } from '../../../shared/constants/district-centers';
 
 @Component({
   selector: 'app-add-edit-property',
@@ -78,6 +79,8 @@ export class AddEditProperty {
     available: false,
     list: [],
   };
+  /** Center of the district picked in the form; pans the map without touching the marker. */
+  readonly districtCenter = signal<{ lon: number; lat: number } | undefined>(undefined);
 
   propertyForm: FormGroup = this.buildForm();
 
@@ -90,8 +93,13 @@ export class AddEditProperty {
       this.locationService.getRegions().subscribe({
         next: (regions) => {
           this.regions = regions;
-          this.selectRegion((property as any)?.location[0]);
-          this.selectDistrict((property as any)?.location[1]);
+          const saved = (property as any)?.location ?? [];
+          if (saved[0]) {
+            this.selectRegion(saved[0]);
+            this.selectDistrict(saved[1]);
+          } else {
+            this.selectOnlyRegion();
+          }
         },
       });
       this.isEditingProperty = true;
@@ -100,7 +108,6 @@ export class AddEditProperty {
       this.steps = 1;
       this.selectMethod = '';
       this.fetchRegions();
-      this.fetchDistricts(11);
       this.isEditingProperty = false;
     }
   }
@@ -122,7 +129,7 @@ export class AddEditProperty {
       occupancyStatus: [OccupancyStatus.AVAILABLE],
       location: this.fb.group({
         country: ['Uzbekistan'],
-        region_id: [11],
+        region_id: [null],
         district_id: [null],
         place_id: [null],
         address: [''],
@@ -222,12 +229,26 @@ export class AddEditProperty {
     this.locationService.getRegions().subscribe({
       next: (regions) => {
         this.regions = regions;
+        this.selectOnlyRegion();
         this.ctr.detectChanges();
       },
       error: (error) => {
         console.error('Error fetching regions:', error);
       },
     });
+  }
+
+  private selectOnlyRegion() {
+    if (this.regions.length !== 1) return;
+    const regionId = this.regions[0].id;
+    this.propertyForm.patchValue({ location: { region_id: regionId } });
+    this.fetchDistricts(regionId);
+  }
+
+  onDistrictChange($event: Event) {
+    const districtId = Number(($event.target as HTMLSelectElement).value);
+    this.districtCenter.set(DISTRICT_CENTERS[districtId]);
+    this.fetchPlaces(districtId);
   }
 
   selectRegion(region: string) {

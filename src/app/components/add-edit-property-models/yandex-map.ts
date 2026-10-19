@@ -17,6 +17,8 @@ import { YandexMapsLoaderService } from '../../shared/services/yandex-maps-loade
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 /** Waits for the address to stop changing (e.g. while a form is being filled in) before geocoding. */
 const GEOCODE_DEBOUNCE_MS = 400;
+/** Zoom that frames one Tashkent district. */
+const DISTRICT_ZOOM = 12;
 
 @Component({
   selector: 'app-yandex-map',
@@ -43,6 +45,8 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() selectable = false; // enables click/drag to pick
   @Output() picked = new EventEmitter<{ latitude: number; longitude: number }>();
   @Input() useSavedPoint = false; // true when the form already holds saved coordinates
+  /** Pan-only override: recenters the viewport without geocoding or moving the marker. */
+  @Input() center?: { lon: number; lat: number };
   private locked = false; // ignore address-driven geocoding until the user picks
 
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef<HTMLElement>;
@@ -73,6 +77,10 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     if (!this.mapInstance) return;
+    if (changes['center'] && this.center) {
+      this.setCenter(this.center.lon, this.center.lat, DISTRICT_ZOOM);
+      return;
+    }
     if (this.locked && changes['address'] && !changes['latitude'] && !changes['longitude']) return;
     if (changes['address'] || changes['latitude'] || changes['longitude']) {
       if (this.isLastPick(this.longitude, this.latitude) && !changes['address']) return;

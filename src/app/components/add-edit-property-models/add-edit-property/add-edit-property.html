@@ -272,10 +272,10 @@
                   name="district"
                   class="block rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
                   formControlName="district_id"
-                  (change)="fetchPlaces($event)"
+                  (change)="onDistrictChange($event)"
                 >
                   @for (district of districts.list; track $index) {
-                    <option (click)="fetchPlaces(district.id)" value="{{ district.id }}">
+                    <option value="{{ district.id }}">
                       {{ district.name_en }}
                     </option>
                   }
@@ -307,6 +307,7 @@
             <app-yandex-map
               [selectable]="true"
               [address]="getFullAddresForMap()"
+              [center]="districtCenter()"
               [latitude]="propertyForm.value.latitude ?? 41.2995"
               [longitude]="propertyForm.value.longitude ?? 69.2401"
               [useSavedPoint]="!!propertyForm.value.latitude"
