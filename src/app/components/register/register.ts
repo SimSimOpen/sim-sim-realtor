@@ -5,10 +5,11 @@ import { I18nService } from '../../shared/i18n/i18n.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../account/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import { BrandMark } from '../brand-mark';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, BrandMark],
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })

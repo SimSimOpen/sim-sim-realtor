@@ -1,27 +1,7 @@
 <nav class="sidebar-component">
   <section class="header">
     <span class="logo bg-blue-600 p-2 rounded-sm">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="lucide lucide-building2 lucide-building-2 h-5 w-5 text-white"
-        aria-hidden="true"
-      >
-        <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
-        <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
-        <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
-        <path d="M10 6h4"></path>
-        <path d="M10 10h4"></path>
-        <path d="M10 14h4"></path>
-        <path d="M10 18h4"></path>
-      </svg>
+      <app-brand-mark iconClass="h-5 w-5 text-white" />
     </span>
     <span class="text-xl font-bold">SimSim</span>
   </section>
@@ -62,8 +42,10 @@
       </li>
       <li
         class="menu-item"
-        [class.active]="common.activeMenuItem === '/properties'"
-        (click)="common.setActiveMenuItem('/properties'); common.navigateTo('/properties')"
+        [class.active]="
+          common.activeMenuItem === '/products' || common.activeMenuItem === '/properties'
+        "
+        (click)="common.setActiveMenuItem('/products'); common.navigateTo('/products')"
       >
         <span class="p-2">
           <svg
@@ -76,19 +58,17 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="lucide lucide-building2 lucide-building-2 h-5 w-5"
+            class="lucide lucide-package h-5 w-5"
             aria-hidden="true"
-            data-id="element-38"
           >
-            <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
-            <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
-            <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"></path>
-            <path d="M10 6h4"></path>
-            <path d="M10 10h4"></path>
-            <path d="M10 14h4"></path>
-            <path d="M10 18h4"></path>
+            <path
+              d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+            ></path>
+            <path d="M12 22V12"></path>
+            <polyline points="3.29 7 12 12 20.71 7"></polyline>
+            <path d="m7.5 4.27 9 5.15"></path>
           </svg> </span
-        ><span>{{ 'menu.properties' | t }}</span>
+        ><span>{{ 'menu.products' | t }}</span>
       </li>
       <li
         class="menu-item"

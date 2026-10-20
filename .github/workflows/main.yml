@@ -3,6 +3,7 @@ name: CI + Deploy (Angular)
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -41,7 +42,8 @@ jobs:
   deploy:
     name: Deploy to VPS
     needs: ci
-    if: github.ref == 'refs/heads/main'
+    # push a tag (v*) to release; pushes to main only build and test
+    if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
 
     steps:

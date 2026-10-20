@@ -7,10 +7,11 @@ import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
+import { BrandMark } from '../brand-mark';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, BrandMark],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
