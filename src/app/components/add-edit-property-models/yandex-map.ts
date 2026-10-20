@@ -15,8 +15,6 @@ import {
 import { YandexMapsLoaderService } from '../../shared/services/yandex-maps-loader.service';
 
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
-/** Waits for the address to stop changing (e.g. while a form is being filled in) before geocoding. */
-const GEOCODE_DEBOUNCE_MS = 400;
 /** Zoom that frames one Tashkent district. */
 const DISTRICT_ZOOM = 12;
 /** Zoom that frames one quarter / neighborhood. */
@@ -51,7 +49,6 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() center?: { lon: number; lat: number };
   /** Searchable area name (e.g. "quarter, district, city") resolved to recenter the viewport. */
   @Input() focus?: string;
-  private locked = false; // ignore address-driven geocoding until the user picks
 
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef<HTMLElement>;
 
@@ -62,7 +59,6 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   private ymaps: any;
   private mapInstance: any;
   private markerElement: any;
-  private geocodeTimer?: ReturnType<typeof setTimeout>;
   /** Incremented per geocode so a slow, outdated response can't move the marker back. */
   private geocodeRequestId = 0;
   /** Separate counter so an area focus and an address geocode don't cancel each other. */
@@ -91,10 +87,10 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.focusOnArea(this.focus);
       return;
     }
-    if (this.locked && changes['address'] && !changes['latitude'] && !changes['longitude']) return;
-    if (changes['address'] || changes['latitude'] || changes['longitude']) {
-      if (this.isLastPick(this.longitude, this.latitude) && !changes['address']) return;
-      this.locate();
+    // The address is resolved once, at init: typing it in the form must not move the map.
+    if (changes['latitude'] || changes['longitude']) {
+      if (this.isLastPick(this.longitude, this.latitude)) return;
+      this.showPoint(this.longitude, this.latitude);
     }
   }
 
@@ -127,28 +123,17 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
         }),
       );
     }
-    if (this.useSavedPoint) {
-      this.locked = true;
-      this.showPoint(this.longitude, this.latitude);
+    if (!this.useSavedPoint && this.hasAddress()) {
+      this.geocodeAddress(this.address);
     } else {
-      this.locate();
+      this.showPoint(this.longitude, this.latitude);
     }
   }
 
   private pick(lon: number, lat: number) {
-    this.locked = false;
     this.lastPicked = { lon, lat };
     this.placeMarker(lon, lat);
     this.picked.emit({ latitude: lat, longitude: lon });
-  }
-
-  private locate() {
-    clearTimeout(this.geocodeTimer);
-    if (this.hasAddress()) {
-      this.geocodeTimer = setTimeout(() => this.geocodeAddress(this.address), GEOCODE_DEBOUNCE_MS);
-    } else if (this.latitude && this.longitude) {
-      this.showPoint(this.longitude, this.latitude);
-    }
   }
 
   private hasAddress(): boolean {
@@ -250,7 +235,6 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {
     this.destroyed = true;
-    clearTimeout(this.geocodeTimer);
     this.mapInstance?.destroy?.();
   }
 }
