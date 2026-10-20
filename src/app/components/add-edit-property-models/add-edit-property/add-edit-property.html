@@ -287,6 +287,7 @@
                   name="city"
                   class="block rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 sm:text-sm border px-3 py-2"
                   formControlName="place_id"
+                  (change)="onPlaceChange($event)"
                 >
                   @for (place of places.list; track $index) {
                     <option value="{{ place.id }}">{{ place.name_en }}</option>
@@ -308,6 +309,7 @@
               [selectable]="true"
               [address]="getFullAddresForMap()"
               [center]="districtCenter()"
+              [focus]="placeFocus()"
               [latitude]="propertyForm.value.latitude ?? 41.2995"
               [longitude]="propertyForm.value.longitude ?? 69.2401"
               [useSavedPoint]="!!propertyForm.value.latitude"

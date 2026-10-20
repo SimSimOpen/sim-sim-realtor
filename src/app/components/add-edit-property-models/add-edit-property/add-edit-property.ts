@@ -81,6 +81,8 @@ export class AddEditProperty {
   };
   /** Center of the district picked in the form; pans the map without touching the marker. */
   readonly districtCenter = signal<{ lon: number; lat: number } | undefined>(undefined);
+  /** "quarter, district, city" for the picked quarter; the map resolves it and zooms in. */
+  readonly placeFocus = signal<string | undefined>(undefined);
 
   propertyForm: FormGroup = this.buildForm();
 
@@ -248,7 +250,19 @@ export class AddEditProperty {
   onDistrictChange($event: Event) {
     const districtId = Number(($event.target as HTMLSelectElement).value);
     this.districtCenter.set(DISTRICT_CENTERS[districtId]);
+    this.placeFocus.set(undefined);
     this.fetchPlaces(districtId);
+  }
+
+  onPlaceChange($event: Event) {
+    const placeId = Number(($event.target as HTMLSelectElement).value);
+    const place = this.places.list.find((p) => p.id === placeId);
+    if (!place) return;
+    const location = this.propertyForm.value.location;
+    const district = this.districts.list.find((d) => d.id === location?.district_id);
+    const region = this.regions.find((r) => r.id === location?.region_id);
+    // Yandex resolves both the ru and uz spellings, so the UI language's names are fine here.
+    this.placeFocus.set([place.name_en, district?.name_en, region?.name_en].filter(Boolean).join(', '));
   }
 
   selectRegion(region: string) {

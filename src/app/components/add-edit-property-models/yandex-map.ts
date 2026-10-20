@@ -19,6 +19,8 @@ import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 const GEOCODE_DEBOUNCE_MS = 400;
 /** Zoom that frames one Tashkent district. */
 const DISTRICT_ZOOM = 12;
+/** Zoom that frames one quarter / neighborhood. */
+const PLACE_ZOOM = 15;
 
 @Component({
   selector: 'app-yandex-map',
@@ -47,6 +49,8 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() useSavedPoint = false; // true when the form already holds saved coordinates
   /** Pan-only override: recenters the viewport without geocoding or moving the marker. */
   @Input() center?: { lon: number; lat: number };
+  /** Searchable area name (e.g. "quarter, district, city") resolved to recenter the viewport. */
+  @Input() focus?: string;
   private locked = false; // ignore address-driven geocoding until the user picks
 
   @ViewChild('mapContainer', { static: true }) mapContainer!: ElementRef<HTMLElement>;
@@ -61,6 +65,8 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
   private geocodeTimer?: ReturnType<typeof setTimeout>;
   /** Incremented per geocode so a slow, outdated response can't move the marker back. */
   private geocodeRequestId = 0;
+  /** Separate counter so an area focus and an address geocode don't cancel each other. */
+  private focusRequestId = 0;
   private destroyed = false;
 
   async ngAfterViewInit() {
@@ -79,6 +85,10 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (!this.mapInstance) return;
     if (changes['center'] && this.center) {
       this.setCenter(this.center.lon, this.center.lat, DISTRICT_ZOOM);
+      return;
+    }
+    if (changes['focus'] && this.focus) {
+      this.focusOnArea(this.focus);
       return;
     }
     if (this.locked && changes['address'] && !changes['latitude'] && !changes['longitude']) return;
@@ -217,6 +227,24 @@ export class YandexMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       }
     } catch (err) {
       console.error('Geocoding error:', err);
+    }
+  }
+
+  /**
+   * Pans to a named area (quarter, district...) chosen in the form. Unlike geocodeAddress it only
+   * moves the viewport: the marker stays where the agent put it.
+   */
+  private async focusOnArea(text: string) {
+    const requestId = ++this.focusRequestId;
+    try {
+      const results = await this.ymaps.search({ text, limit: 1 });
+      if (requestId !== this.focusRequestId || this.destroyed) return;
+
+      const coordinates = results?.[0]?.geometry?.coordinates;
+      if (!coordinates) return;
+      this.setCenter(coordinates[0], coordinates[1], PLACE_ZOOM);
+    } catch (err) {
+      console.error('Area focus error:', err);
     }
   }
 
