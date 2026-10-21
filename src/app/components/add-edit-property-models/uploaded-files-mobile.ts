@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { PRODUCT_URL } from '../../shared/constants/urls';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
+import { ListingKindService } from '../../shared/services/product/listing-kind.service';
 
 @Component({
   selector: 'app-uploaded-files-mobile',
@@ -128,10 +129,11 @@ export class UploadedFilesMobile {
   private toast = inject(ToastrService);
   private ctr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
+  private listingKind = inject(ListingKindService);
 
   deleteImage(image_id: number) {
     this.http
-      .delete(`${PRODUCT_URL}/v1/property/delete/image/${image_id}`, {
+      .delete(`${PRODUCT_URL}/v1/${this.listingKind.routes().product}/delete/image/${image_id}`, {
         responseType: 'text',
         headers: { Authorization: `Bearer ${this.token}` },
       })

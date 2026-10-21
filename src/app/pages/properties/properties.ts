@@ -16,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchAndFilterService } from '../../shared/services/search-and-filter.service';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
+import { ListingKindService } from '../../shared/services/product/listing-kind.service';
 
 @Component({
   selector: 'app-properties',
@@ -40,8 +41,10 @@ export class Properties extends BaseModalComponent {
   public pagination = inject(PaginationService);
   private ctr = inject(ChangeDetectorRef);
   public searchAndFilterService = inject(SearchAndFilterService);
+  private listingKind = inject(ListingKindService);
 
   ngOnInit() {
+    this.listingKind.kind.set('property');
     this.updateDataset();
   }
 

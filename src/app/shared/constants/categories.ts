@@ -35,6 +35,7 @@ export interface MarketplaceCategoryDTO {
 /** Admin route of each category that already has a management screen. */
 export const SECTION_ROUTES: Partial<Record<CategorySlug, string>> = {
   'real-estate': '/properties',
+  cars: '/cars',
 };
 
 export const CATEGORIES: MarketplaceCategory[] = [
@@ -52,7 +53,7 @@ export const CATEGORIES: MarketplaceCategory[] = [
     tagline: 'Cars, motorcycles & parts',
     description: 'Find new and used vehicles, spare parts and accessories from dealers and owners.',
     accent: 'bg-red-50 text-red-700',
-    available: false,
+    available: true,
   },
   {
     slug: 'second-hand',

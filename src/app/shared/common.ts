@@ -83,8 +83,10 @@ export class Common {
   }
 
   fetchUpdatedProperty() {
+    const id = this.productStateService.editingProperty()?.id;
+    if (!id) return;
     this.productApiService
-      .getPropertyById(this.productStateService.editingProperty()?.id as number)
+      .getPropertyById(id)
       .subscribe({
         next: (property) => {
           this.productStateService.updateEditing(property);

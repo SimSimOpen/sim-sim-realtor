@@ -3,21 +3,26 @@ import { Injectable } from '@angular/core';
 import { MEDIA_SERVICE_URL } from '../constants/urls';
 import { Observable } from 'rxjs';
 import { MediaSession } from '../models/media';
+import { ListingKindService } from './product/listing-kind.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MediaService {
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private listingKind: ListingKindService,
+  ) {}
 
   uploadProductImage(property_id: number | null, files: File[]): Observable<number> {
     const formData: FormData = new FormData();
     files.forEach((file) => {
       formData.append('files', file);
     });
-    const params = new HttpParams().append('property_id', property_id?.toString() || '');
+    const routes = this.listingKind.routes();
+    const params = new HttpParams().append(routes.idParam, property_id?.toString() || '');
 
-    return this.http.post<number>(`${MEDIA_SERVICE_URL}/v1/upload-product-media`, formData, {
+    return this.http.post<number>(`${MEDIA_SERVICE_URL}/v1/${routes.upload}`, formData, {
       params,
     });
   }

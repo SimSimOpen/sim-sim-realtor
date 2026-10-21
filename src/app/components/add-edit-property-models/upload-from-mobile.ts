@@ -1,3 +1,4 @@
+import { ListingKindService } from '../../shared/services/product/listing-kind.service';
 import { ChangeDetectorRef, Component, EventEmitter, inject, Output } from '@angular/core';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { MediaService } from '../../shared/services/media.service';
@@ -140,6 +141,7 @@ export class UploadFromMobile {
   private authService = inject(AuthService);
   public common = inject(Common);
   public global = inject(GlobalService);
+  private listingKind = inject(ListingKindService);
 
   property = this.productStateService.editingProperty;
 
@@ -153,7 +155,7 @@ export class UploadFromMobile {
         this.sessionId = session.sessionId;
         this.userId = session.userId;
         this.expiresAt = session.expiresAt;
-        this.qrData = `${EnvironmentTs.QR_URL}/mobile/camera?session_id=${this.sessionId}&property_id=${this.property_id}&token=${this.authService.getToken()}`;
+        this.qrData = `${EnvironmentTs.QR_URL}/mobile/camera?session_id=${this.sessionId}&property_id=${this.property_id}&kind=${this.listingKind.kind()}&token=${this.authService.getToken()}`;
         console.log('qrData', this.qrData);
         this.cdr.detectChanges(); // force re-render
       },

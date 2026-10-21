@@ -20,6 +20,10 @@ import { Common } from '../../shared/common';
 import { SseService } from '../../shared/services/sse.service';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
+import {
+  LISTING_ROUTES,
+  ListingKindService,
+} from '../../shared/services/product/listing-kind.service';
 
 @Component({
   selector: 'app-mobile-camera-upload',
@@ -50,6 +54,7 @@ export class MobileCameraUpload {
   private authService = inject(AuthService);
   private router = inject(Router);
   private sseService = inject(SseService);
+  private listingKind = inject(ListingKindService);
 
   medias = computed(() => this.productStateService.editingProperty()?.medias ?? []);
   property = this.productStateService.editingProperty();
@@ -134,10 +139,11 @@ export class MobileCameraUpload {
     const formData = new FormData();
     formData.append('files', file);
 
-    const params = new HttpParams().append('property_id', this.property_id?.toString() || '');
+    const routes = this.listingKind.routes();
+    const params = new HttpParams().append(routes.idParam, this.property_id?.toString() || '');
 
     this.http
-      .post<number>(`${MEDIA_SERVICE_URL}/v1/upload-product-media`, formData, {
+      .post<number>(`${MEDIA_SERVICE_URL}/v1/${routes.upload}`, formData, {
         params,
         headers: { Authorization: `Bearer ${this.token}` },
       })
@@ -172,10 +178,11 @@ export class MobileCameraUpload {
       files.forEach((file) => {
         formData.append('files', file);
       });
-      const params = new HttpParams().append('property_id', property_id?.toString() || '');
+      const routes = this.listingKind.routes();
+      const params = new HttpParams().append(routes.idParam, property_id?.toString() || '');
 
       this.http
-        .post<number>(`${MEDIA_SERVICE_URL}/v1/upload-product-media`, formData, {
+        .post<number>(`${MEDIA_SERVICE_URL}/v1/${routes.upload}`, formData, {
           params,
           headers: { Authorization: `Bearer ${this.token}` },
         })
@@ -191,8 +198,9 @@ export class MobileCameraUpload {
     }
   }
   getPropertyIfExists() {
+    if (!this.property_id) return;
     this.http
-      .get<Property>(`${PRODUCT_URL}/v1/property/${this.property_id}`, {
+      .get<Property>(`${PRODUCT_URL}/v1/${this.listingKind.routes().product}/${this.property_id}`, {
         headers: { Authorization: `Bearer ${this.token}` },
       })
       .subscribe({
@@ -209,6 +217,8 @@ export class MobileCameraUpload {
     this.route.queryParams.subscribe((params) => {
       this.sessionId = params['session_id'];
       this.property_id = +params['property_id'];
+      // The QR link names the listing kind; anything unknown falls back to real estate.
+      this.listingKind.kind.set(params['kind'] in LISTING_ROUTES ? params['kind'] : 'property');
       this.token = params['token'];
       this.productStateService.updateEditing({ ...this.property, id: this.property_id });
       this.mediaService.checkSessionStatus(this.sessionId, this.token).subscribe({

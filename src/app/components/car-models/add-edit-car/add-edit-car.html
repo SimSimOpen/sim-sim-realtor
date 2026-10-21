@@ -1,0 +1,247 @@
+<div class="add-property-component">
+  <header class="border-b border-gray-300 flex justify-between p-6 items-center">
+    <div>
+      <h1 class="text-xl font-bold">{{ (isEditing ? 'cars.editTitle' : 'cars.addTitle') | t }}</h1>
+      <span class="text-sm text-gray-500">
+        {{ (steps === 1 ? 'cars.step1' : 'cars.step2') | t }}
+      </span>
+    </div>
+    <div class="flex items-center gap-2 mr-12">
+      <span
+        class="flex items-center justify-center w-8 h-8 rounded-full text-sm"
+        [ngClass]="steps === 1 ? 'bg-blue-600 text-white' : 'bg-green-600 text-white'"
+        >1</span
+      >
+      <span class="w-12 h-0.5 bg-gray-300"></span>
+      <span
+        class="flex items-center justify-center w-8 h-8 rounded-full text-sm"
+        [ngClass]="steps === 2 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-500'"
+        >2</span
+      >
+    </div>
+  </header>
+
+  <main class="p-6">
+    @if (steps === 1) {
+      <div class="flex flex-col items-center gap-6">
+        <div class="text-center">
+          <div class="font-semibold">{{ 'cars.photosTitle' | t }}</div>
+          <span class="text-sm text-gray-500">{{ 'cars.photosSubtitle' | t }}</span>
+        </div>
+        @if (selectMethod === '') {
+          <app-select-method (changeMethod)="changeMethod($event)"></app-select-method>
+        } @else if (selectMethod === 'computer') {
+          <app-upload-from-computer (changeMethod)="changeMethod('')"></app-upload-from-computer>
+        } @else {
+          <app-upload-from-mobile (changeMethod)="changeMethod('')"></app-upload-from-mobile>
+        }
+        @if (photoCount > 0 && selectMethod === '') {
+          <div class="my-6"><app-uploaded-files></app-uploaded-files></div>
+        }
+      </div>
+    } @else {
+      <form [formGroup]="form" class="w-full flex flex-col gap-6">
+        <div class="flex flex-wrap justify-between gap-3">
+          <div class="flex gap-3">
+            @for (type of offerTypes; track type) {
+              <button
+                type="button"
+                class="px-3 py-2 border rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors"
+                [ngClass]="form.value.offerType === type ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+                (click)="setOfferType(type)"
+              >
+                {{ common.formatEnum(type) }}
+              </button>
+            }
+          </div>
+          <div class="flex gap-3">
+            @for (condition of conditions; track condition) {
+              <button
+                type="button"
+                class="px-3 py-2 border rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors"
+                [ngClass]="form.value.condition === condition ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+                (click)="form.patchValue({ condition })"
+              >
+                {{ common.formatEnum(condition) }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <section>
+          <h6 class="text-lg font-semibold">{{ 'cars.vehicle' | t }}</h6>
+          <div class="grid grid-cols-3 gap-5 mt-4">
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'cars.brand' | t }} *</span>
+              <input class="field" type="text" formControlName="brand" [placeholder]="'cars.brandPh' | t" />
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'cars.model' | t }} *</span>
+              <input class="field" type="text" formControlName="model" [placeholder]="'cars.modelPh' | t" />
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'cars.year' | t }} *</span>
+              <input class="field" type="text" inputmode="numeric" maxlength="4" formControlName="year" [placeholder]="'e.g, ' + maxYear" onlyNumbers />
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'table.price' | t }} ($) *</span>
+              <input class="field" type="text" formControlName="price" placeholder="e.g, 12,500" moneyFormat />
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'cars.mileage' | t }}</span>
+              <input class="field" type="text" inputmode="numeric" formControlName="mileage" placeholder="e.g, 45000" onlyNumbers />
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'cars.engineVolume' | t }}</span>
+              <input class="field" type="text" inputmode="decimal" formControlName="engineVolume" placeholder="e.g, 1.5" />
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'cars.color' | t }}</span>
+              <input class="field" type="text" formControlName="color" [placeholder]="'cars.colorPh' | t" />
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'cars.status' | t }}</span>
+              <select class="field" formControlName="occupancyStatus">
+                @for (status of occupancyStatuses; track status) {
+                  <option [value]="status">{{ common.formatEnum(status) }}</option>
+                }
+              </select>
+            </label>
+            <label class="flex items-center gap-2 text-sm cursor-pointer mt-6">
+              <input type="checkbox" class="h-4 w-4" formControlName="customsCleared" />
+              {{ 'cars.customsCleared' | t }}
+            </label>
+          </div>
+        </section>
+
+        @for (group of [
+          { label: 'cars.bodyType', control: 'bodyType', values: bodyTypes },
+          { label: 'cars.fuelType', control: 'fuelType', values: fuelTypes },
+          { label: 'cars.transmission', control: 'transmission', values: transmissions },
+          { label: 'cars.driveType', control: 'driveType', values: driveTypes }
+        ]; track group.control) {
+          <section>
+            <div class="text-sm mb-2">{{ $any(group.label) | t }}</div>
+            <div class="flex flex-wrap gap-2">
+              @for (value of group.values; track value) {
+                <button
+                  type="button"
+                  class="px-3 py-2 border text-nowrap rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors"
+                  [ngClass]="$any(form.value)[group.control] === value ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
+                  (click)="form.get(group.control)?.setValue(value)"
+                >
+                  {{ common.formatEnum(value) }}
+                </button>
+              }
+            </div>
+          </section>
+        }
+
+        <section class="flex flex-col gap-4">
+          <label class="flex flex-col text-sm">
+            <span class="mb-1">{{ 'addEdit.title' | t }}</span>
+            <input class="field" type="text" formControlName="title" [placeholder]="'cars.titlePh' | t" />
+          </label>
+          <label class="flex flex-col text-sm">
+            <span class="mb-1">{{ 'common.description' | t }}</span>
+            <textarea class="field" rows="4" formControlName="description" [placeholder]="'cars.descriptionPh' | t"></textarea>
+          </label>
+          <label class="flex flex-col text-sm">
+            <span class="mb-1">{{ 'cars.contact' | t }}</span>
+            <input class="field" type="tel" formControlName="ownerContact" placeholder="+998 90 123 45 67" />
+          </label>
+        </section>
+
+        <section>
+          <h6 class="text-lg font-semibold">{{ 'addEdit.location' | t }}</h6>
+          <div class="grid grid-cols-3 gap-5 mt-4">
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'addEdit.region' | t }}</span>
+              <select class="field" (change)="onRegionChange($any($event.target).value)">
+                <option value="">—</option>
+                @for (region of regions; track region.id) {
+                  <option [value]="region.id" [selected]="region.id === form.value.regionId">{{ region.name_en }}</option>
+                }
+              </select>
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'addEdit.district' | t }}</span>
+              <select class="field" [disabled]="!districts.length" (change)="onDistrictChange($any($event.target).value)">
+                <option value="">—</option>
+                @for (district of districts; track district.id) {
+                  <option [value]="district.id" [selected]="district.id === form.value.districtId">{{ district.name_en }}</option>
+                }
+              </select>
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'addEdit.place' | t }}</span>
+              <select class="field" [disabled]="!places.length" (change)="onPlaceChange($any($event.target).value)">
+                <option value="">—</option>
+                @for (place of places; track place.id) {
+                  <option [value]="place.id" [selected]="place.id === form.value.placeId">{{ place.name_en }}</option>
+                }
+              </select>
+            </label>
+          </div>
+          <label class="flex flex-col text-sm mt-4">
+            <span class="mb-1">{{ 'addEdit.address' | t }}</span>
+            <input class="field" type="text" formControlName="address" [placeholder]="'addEdit.addressPh' | t" />
+          </label>
+          <app-yandex-map
+            [selectable]="true"
+            [address]="mapAddress"
+            [center]="districtCenter()"
+            [focus]="placeFocus()"
+            [latitude]="mapPoint?.latitude ?? defaultPoint.latitude"
+            [longitude]="mapPoint?.longitude ?? defaultPoint.longitude"
+            [useSavedPoint]="!!mapPoint"
+            (picked)="onPicked($event)"
+          ></app-yandex-map>
+        </section>
+      </form>
+    }
+  </main>
+
+  <footer class="border-t border-gray-300 p-6">
+    @if (steps === 1) {
+      <div class="flex justify-between items-center">
+        <span class="text-sm text-gray-500">{{ 'upload.uploadedFiles' | t: { count: photoCount } }}</span>
+        <button
+          type="button"
+          class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm cursor-pointer hover:bg-blue-700"
+          (click)="nextStep()"
+        >
+          {{ 'cars.continue' | t }}
+        </button>
+      </div>
+    } @else {
+      <div class="flex justify-between">
+        <button
+          type="button"
+          class="px-3 py-2 border rounded-md border-gray-300 text-sm cursor-pointer hover:bg-gray-200"
+          (click)="previousStep()"
+        >
+          ← {{ 'addEdit.backToPhotos' | t }}
+        </button>
+        <div class="flex gap-2">
+          <button
+            type="button"
+            [disabled]="saving"
+            class="px-3 py-2 border rounded-md border-gray-300 text-sm cursor-pointer hover:bg-gray-200"
+            (click)="save('draft')"
+          >
+            {{ 'addEdit.saveDraft' | t }}
+          </button>
+          <button
+            type="button"
+            [disabled]="saving"
+            class="px-3 py-2 rounded-md bg-blue-600 shadow-sm text-white text-sm cursor-pointer hover:bg-blue-700"
+            (click)="save('publish')"
+          >
+            {{ 'cars.publish' | t }}
+          </button>
+        </div>
+      </div>
+    }
+  </footer>
+</div>
