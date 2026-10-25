@@ -60,7 +60,8 @@
     @if (car().description) {
       <section>
         <h6 class="text-lg font-semibold mb-2">{{ 'common.description' | t }}</h6>
-        <p class="text-sm text-gray-700 whitespace-pre-line">{{ car().description }}</p>
+        <!-- Rich text HTML from the editor; Angular sanitizes, .rich-text styles lists/quotes. -->
+        <div class="text-sm text-gray-700 rich-text" [innerHTML]="car().description"></div>
       </section>
     }
 

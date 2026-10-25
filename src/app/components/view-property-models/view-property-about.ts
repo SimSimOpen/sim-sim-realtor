@@ -15,18 +15,17 @@ import { TranslatePipe } from '../../shared/i18n/translate.pipe';
         </div>
       </div>
       <div class="p-6">
-        <p class="text-gray-600 leading-relaxed">
-          <textarea
-            name="description"
-            id="description"
-            rows="4"
-            class="w-full resize-none outline-none cursor-default overflow-hidden"
-            readonly
-          >
-  {{ propertyAddress }}
-  {{ property?.description }}
-        </textarea>
-        </p>
+        @if (propertyAddress) {
+          <p class="text-gray-600 leading-relaxed mb-2">{{ propertyAddress }}</p>
+        }
+        @if (property?.description) {
+          <!-- Descriptions are authored with the rich text editor, so they arrive as HTML.
+               Angular sanitizes the binding; .rich-text restores list/quote/code styles. -->
+          <div
+            class="text-gray-600 leading-relaxed rich-text"
+            [innerHTML]="property?.description"
+          ></div>
+        }
       </div>
     </div>
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm " data-id="element-89">
