@@ -1,11 +1,12 @@
 import { Injectable, signal } from '@angular/core';
 
-export type ListingKind = 'property' | 'car';
+export type ListingKind = 'property' | 'car' | 'second-hand';
 
 /** Backend routes that differ per listing kind; everything else in the media flow is shared. */
 export const LISTING_ROUTES: Record<ListingKind, { product: string; upload: string; idParam: string }> = {
   property: { product: 'property', upload: 'upload-product-media', idParam: 'property_id' },
   car: { product: 'car', upload: 'upload-car-media', idParam: 'car_id' },
+  'second-hand': { product: 'second-hand', upload: 'upload-second-hand-media', idParam: 'item_id' },
 };
 
 /**

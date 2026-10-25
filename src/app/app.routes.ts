@@ -33,6 +33,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/cars/cars').then((m) => m.Cars),
       },
       {
+        path: 'second-hand',
+        loadComponent: () => import('./pages/second-hand/second-hand').then((m) => m.SecondHand),
+      },
+      {
         path: 'agents',
         loadComponent: () => import('./pages/agents/agents').then((m) => m.Agents),
       },

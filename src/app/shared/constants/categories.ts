@@ -36,6 +36,7 @@ export interface MarketplaceCategoryDTO {
 export const SECTION_ROUTES: Partial<Record<CategorySlug, string>> = {
   'real-estate': '/properties',
   cars: '/cars',
+  'second-hand': '/second-hand',
 };
 
 export const CATEGORIES: MarketplaceCategory[] = [
@@ -61,7 +62,7 @@ export const CATEGORIES: MarketplaceCategory[] = [
     tagline: 'Pre-loved items at fair prices',
     description: 'Clothing, books, sports gear and everything else that deserves a second life.',
     accent: 'bg-amber-50 text-amber-700',
-    available: false,
+    available: true,
   },
   {
     slug: 'home-garden',

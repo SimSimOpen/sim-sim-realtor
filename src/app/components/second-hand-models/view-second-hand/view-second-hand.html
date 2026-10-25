@@ -1,0 +1,89 @@
+<div class="add-property-component bg-white w-[min(900px,95vw)]">
+  <header class="flex justify-between items-start p-6 border-b border-gray-200">
+    <div>
+      <h1 class="text-xl font-bold">{{ name() }}</h1>
+      <div class="flex gap-2 mt-2 text-xs">
+        <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">{{ common.formatEnum(item().offerType) }}</span>
+        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">{{ common.formatEnum(item().listingStatus) }}</span>
+        <span class="px-2 py-0.5 rounded-full bg-green-50 text-green-700">{{ 'cars.viewsCount' | t: { count: item().views } }}</span>
+      </div>
+    </div>
+    <div class="text-right">
+      @if (item().price != null) {
+        <div class="text-2xl font-bold">${{ item().price | number }}</div>
+      }
+      <button type="button" class="mt-2 text-sm text-gray-500 hover:text-gray-800 cursor-pointer" (click)="closeModal.emit()">
+        {{ 'common.close' | t }} ✕
+      </button>
+    </div>
+  </header>
+
+  <main class="p-6 flex flex-col gap-6">
+    <section>
+      <img [src]="images()[selected()]" [alt]="name()" class="w-full aspect-video object-cover rounded-xl border border-gray-200" />
+      @if (images().length > 1) {
+        <div class="flex gap-2 mt-3 overflow-x-auto">
+          @for (url of images(); track url; let i = $index) {
+            <img
+              [src]="url"
+              [alt]="name()"
+              class="h-16 w-24 object-cover rounded-lg cursor-pointer border-2"
+              [ngClass]="i === selected() ? 'border-blue-600' : 'border-transparent'"
+              (click)="selected.set(i)"
+            />
+          }
+        </div>
+      }
+    </section>
+
+    @if (specs().length) {
+      <section>
+        <h6 class="text-lg font-semibold mb-3">{{ 'secondHand.specs' | t }}</h6>
+        <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 text-sm">
+          @for (spec of specs(); track spec.label) {
+            <div class="flex justify-between border-b border-gray-100 pb-1">
+              <dt class="text-gray-500">{{ spec.label | t }}</dt>
+              <dd class="font-medium text-gray-900">{{ spec.value }}</dd>
+            </div>
+          }
+        </dl>
+      </section>
+    }
+
+    @if (item().description) {
+      <section>
+        <h6 class="text-lg font-semibold mb-2">{{ 'common.description' | t }}</h6>
+        <!-- Rich text HTML from the editor; Angular sanitizes, .rich-text styles lists/quotes. -->
+        <div class="text-sm text-gray-700 rich-text" [innerHTML]="item().description"></div>
+      </section>
+    }
+
+    <section class="grid grid-cols-2 gap-6 text-sm">
+      <div>
+        <div class="text-gray-500">{{ 'cars.agent' | t }}</div>
+        <div class="font-medium">{{ item().agent }}</div>
+      </div>
+      @if (item().ownerContact) {
+        <div>
+          <div class="text-gray-500">{{ 'secondHand.contact' | t }}</div>
+          <a class="font-medium text-blue-700" [href]="'tel:' + item().ownerContact">{{ item().ownerContact }}</a>
+        </div>
+      }
+    </section>
+
+    @if (address() || hasPoint) {
+      <section>
+        <h6 class="text-lg font-semibold mb-2">{{ 'addEdit.location' | t }}</h6>
+        @if (address()) {
+          <div class="text-sm text-gray-700 mb-2">{{ address() }}</div>
+        }
+        <app-yandex-map
+          [address]="address()"
+          [latitude]="item().latitude ?? 41.2995"
+          [longitude]="item().longitude ?? 69.2401"
+          [useSavedPoint]="hasPoint"
+        ></app-yandex-map>
+      </section>
+    }
+  </main>
+</div>
