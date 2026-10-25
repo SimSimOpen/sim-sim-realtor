@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PRODUCT_URL } from '../../constants/urls';
 import { Page } from '../../models/commont-models';
-import { Car, CarFilter, CarRequest, CarsStats } from '../../models/cars';
+import { Car, CarBrand, CarFilter, CarRequest, CarsStats } from '../../models/cars';
 
 const CAR_URL = `${PRODUCT_URL}/v1/car`;
 
@@ -33,6 +33,11 @@ export class CarApiService {
 
   getStats(): Observable<CarsStats> {
     return this.http.get<CarsStats>(`${CAR_URL}/stats`);
+  }
+
+  /** Brand/model catalog for the add-car form dropdowns. */
+  getBrands(): Observable<CarBrand[]> {
+    return this.http.get<CarBrand[]>(`${CAR_URL}/brands`);
   }
 
   /** The agent's own cars (all cars for an admin); filtered when any criterion is set. */

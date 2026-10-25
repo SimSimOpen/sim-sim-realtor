@@ -20,6 +20,7 @@ import {
 } from '../../../shared/enums/PropertyStatus';
 import { Common } from '../../../shared/common';
 import { UploadedFiles } from '../uploaded-files';
+import { RichTextEditor } from '../rich-text-editor';
 import { ToastrService } from 'ngx-toastr';
 import { ProductStateService } from '../../../shared/services/product/state/product-state.service';
 import { YandexMapComponent } from '../yandex-map';
@@ -39,6 +40,7 @@ import { DISTRICT_CENTERS } from '../../../shared/constants/district-centers';
     MoneyFormatDirective,
     AreaFormatDirective,
     UploadedFiles,
+    RichTextEditor,
     YandexMapComponent,
     TranslatePipe,
   ],
@@ -362,6 +364,12 @@ export class AddEditProperty {
     }
   }
   processUpload() {
+    // The rich text editor emits "<p></p>" when nothing was typed; send an empty string instead
+    // of storing tag-only markup.
+    const description = String(this.propertyForm.value.description ?? '').trim();
+    if (description && !description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()) {
+      this.propertyForm.patchValue({ description: '' });
+    }
     this.productStateService.updateEditing(this.propertyForm.value);
     this.productApiService.updateProperty(this.propertyForm.value).subscribe({
       next: () => {

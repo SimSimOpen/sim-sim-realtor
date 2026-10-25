@@ -6,13 +6,14 @@ import { SelectMethod } from '../../add-edit-property-models/select-method';
 import { UploadFromComputer } from '../../add-edit-property-models/upload-from-computer';
 import { UploadFromMobile } from '../../add-edit-property-models/upload-from-mobile';
 import { UploadedFiles } from '../../add-edit-property-models/uploaded-files';
+import { RichTextEditor } from '../../add-edit-property-models/rich-text-editor';
 import { YandexMapComponent } from '../../add-edit-property-models/yandex-map';
 import { OnlyNumbers } from '../../../shared/utils/only-numbers';
 import { MoneyFormatDirective } from '../../../shared/utils/money-format.directive';
 import { CarApiService } from '../../../shared/services/car/car-api.service';
 import { ProductStateService } from '../../../shared/services/product/state/product-state.service';
 import { LocationService } from '../../../shared/services/location.service';
-import { Car, CarRequest } from '../../../shared/models/cars';
+import { Car, CarBrand, CarRequest } from '../../../shared/models/cars';
 import { District, Place, Property, Region } from '../../../shared/models/properties';
 import { ListingStatus, OccupancyStatus, OfferType } from '../../../shared/enums/PropertyStatus';
 import {
@@ -39,6 +40,7 @@ const DEFAULT_POINT = { latitude: 41.2995, longitude: 69.2401 };
     UploadFromComputer,
     UploadFromMobile,
     UploadedFiles,
+    RichTextEditor,
     YandexMapComponent,
     OnlyNumbers,
     MoneyFormatDirective,
@@ -79,6 +81,8 @@ export class AddEditCar implements OnInit {
   regions: Region[] = [];
   districts: District[] = [];
   places: Place[] = [];
+  /** Brand/model catalog from the backend seed; empty until the request returns. */
+  brands: CarBrand[] = [];
   readonly districtCenter = signal<{ lon: number; lat: number } | undefined>(undefined);
   readonly placeFocus = signal<string | undefined>(undefined);
 
@@ -113,6 +117,10 @@ export class AddEditCar implements OnInit {
     const car = this.editing() as unknown as Car | null;
     this.isEditing = !!car?.id;
     if (car) this.fillForm(car);
+    this.carApi.getBrands().subscribe((brands) => {
+      this.brands = brands;
+      this.ctr.detectChanges();
+    });
     this.locationService.getRegions().subscribe((regions) => {
       this.regions = regions;
       const regionId = car?.regionId ?? (regions.length === 1 ? regions[0].id : null);
@@ -222,6 +230,42 @@ export class AddEditCar implements OnInit {
     return this.editing()?.medias?.length ?? 0;
   }
 
+  /** Brand names for the dropdown; the current value is kept even if the catalog lacks it. */
+  get brandNames(): string[] {
+    const names = this.brands.map((b) => b.brand);
+    const current = this.form.value.brand?.trim();
+    if (current && !names.includes(current)) names.unshift(current);
+    return names;
+  }
+
+  /** Models of the chosen brand; falls back to the free-text value while nothing is picked. */
+  get modelNames(): string[] {
+    const current = this.form.value.model?.trim();
+    const brand = this.brands.find((b) => b.brand === this.form.value.brand?.trim());
+    const names = brand ? [...brand.models] : [];
+    if (current && !names.includes(current)) names.unshift(current);
+    return names;
+  }
+
+  /** Changing brand clears the model, since models belong to one brand. */
+  onBrandChange(value: string) {
+    this.form.patchValue({ brand: value, model: '' });
+    // Zoneless: rebuild the model <option> list right away instead of waiting for another event.
+    this.ctr.detectChanges();
+  }
+
+  onModelChange(value: string) {
+    this.form.patchValue({ model: value });
+  }
+
+  /**
+   * Step 1 -> 2 stays locked until the car has the minimum photos, the same rule publish
+   * enforces. Editing an existing car bypasses the gate so its details stay reachable.
+   */
+  get canContinue(): boolean {
+    return this.isEditing || this.photoCount >= MIN_PHOTOS_TO_PUBLISH;
+  }
+
   /** Occupancy options that make sense for the chosen offer type. */
   get occupancyStatuses(): string[] {
     const offerType = this.form.value.offerType;
@@ -308,7 +352,7 @@ export class AddEditCar implements OnInit {
     return {
       // Listings without their own title are named after the car, e.g. "Chevrolet Cobalt 2022".
       title: v.title?.trim() || [brand, model, year].filter(Boolean).join(' ') || null,
-      description: v.description?.trim() || null,
+      description: descriptionOrNull(v.description),
       price: toNumber(v.price),
       brand,
       model,
@@ -344,4 +388,12 @@ function toNumber(value: string | null | undefined): number | null {
   if (!cleaned) return null;
   const parsed = Number(cleaned);
   return Number.isFinite(parsed) ? parsed : null;
+}
+
+/** The editor emits `<p></p>` when nothing was typed; store null instead of tag-only markup. */
+function descriptionOrNull(html: string | null | undefined): string | null {
+  const value = html?.trim();
+  if (!value) return null;
+  const text = value.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+  return text ? value : null;
 }

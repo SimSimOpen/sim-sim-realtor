@@ -73,11 +73,21 @@
           <div class="grid grid-cols-3 gap-5 mt-4">
             <label class="flex flex-col text-sm">
               <span class="mb-1">{{ 'cars.brand' | t }} *</span>
-              <input class="field" type="text" formControlName="brand" [placeholder]="'cars.brandPh' | t" />
+              <select class="field" (change)="onBrandChange($any($event.target).value)">
+                <option value="">—</option>
+                @for (name of brandNames; track name) {
+                  <option [value]="name" [selected]="name === form.value.brand">{{ name }}</option>
+                }
+              </select>
             </label>
             <label class="flex flex-col text-sm">
               <span class="mb-1">{{ 'cars.model' | t }} *</span>
-              <input class="field" type="text" formControlName="model" [placeholder]="'cars.modelPh' | t" />
+              <select class="field" [disabled]="!form.value.brand" (change)="onModelChange($any($event.target).value)">
+                <option value="">—</option>
+                @for (name of modelNames; track name) {
+                  <option [value]="name" [selected]="name === form.value.model">{{ name }}</option>
+                }
+              </select>
             </label>
             <label class="flex flex-col text-sm">
               <span class="mb-1">{{ 'cars.year' | t }} *</span>
@@ -144,7 +154,7 @@
           </label>
           <label class="flex flex-col text-sm">
             <span class="mb-1">{{ 'common.description' | t }}</span>
-            <textarea class="field" rows="4" formControlName="description" [placeholder]="'cars.descriptionPh' | t"></textarea>
+            <app-rich-text-editor formControlName="description" [placeholder]="'cars.descriptionPh' | t"></app-rich-text-editor>
           </label>
           <label class="flex flex-col text-sm">
             <span class="mb-1">{{ 'cars.contact' | t }}</span>
@@ -205,10 +215,16 @@
   <footer class="border-t border-gray-300 p-6">
     @if (steps === 1) {
       <div class="flex justify-between items-center">
-        <span class="text-sm text-gray-500">{{ 'upload.uploadedFiles' | t: { count: photoCount } }}</span>
+        <span class="text-sm text-gray-500">
+          @if (!canContinue) {
+            <span class="text-red-500">{{ 'cars.minPhotos' | t }}</span>
+          }
+          {{ 'upload.uploadedFiles' | t: { count: photoCount } }}
+        </span>
         <button
           type="button"
-          class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm cursor-pointer hover:bg-blue-700"
+          [disabled]="!canContinue"
+          class="px-4 py-2 rounded-md bg-blue-600 text-white text-sm cursor-pointer hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
           (click)="nextStep()"
         >
           {{ 'cars.continue' | t }}

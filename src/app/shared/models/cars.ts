@@ -59,3 +59,9 @@ export interface CarFilter {
   listingStatus: ListingStatus | null;
   bodyType: CarBodyType | null;
 }
+
+/** One entry of GET /car/brands: a catalog brand with its model names. */
+export interface CarBrand {
+  brand: string;
+  models: string[];
+}
