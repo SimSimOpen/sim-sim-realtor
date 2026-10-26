@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { YandexMapComponent } from '../../add-edit-property-models/yandex-map';
 import { Car } from '../../../shared/models/cars';
 import { Common } from '../../../shared/common';
+import { GlobalService } from '../../../shared/services/global.service';
 import { EnvironmentTs } from '../../../environments/environment';
 import { TranslatePipe } from '../../../shared/i18n/translate.pipe';
 import { TranslationKey } from '../../../shared/i18n/translations';
@@ -11,13 +12,21 @@ import { TranslationKey } from '../../../shared/i18n/translations';
   selector: 'app-view-car',
   imports: [CommonModule, YandexMapComponent, TranslatePipe],
   templateUrl: './view-car.html',
-  styleUrl: '../../add-edit-property-models/add-edit-property/add-edit-property.scss',
+  styleUrl: '../../view-property-models/view-property/view-property.scss',
+  host: {
+    '(document:keydown)': 'handleKeydown($event)',
+  },
 })
 export class ViewCar {
   readonly car = input.required<Car>();
   @Output() closeModal = new EventEmitter<void>();
 
   public common = inject(Common);
+  private global = inject(GlobalService);
+
+  /** Lightbox state, mirroring the property modal so every product zooms the same way. */
+  selectedImageIndex: number | null = null;
+  allImages: string[] = [];
 
   /** Cover first, then the rest in upload order. */
   readonly images = computed(() => {
@@ -58,5 +67,66 @@ export class ViewCar {
 
   get hasPoint(): boolean {
     return this.car().latitude != null && this.car().longitude != null;
+  }
+
+  prev() {
+    this.selected.update((i) => (i - 1 + this.images().length) % this.images().length);
+  }
+
+  next() {
+    this.selected.update((i) => (i + 1) % this.images().length);
+  }
+
+  openLightbox(index: number) {
+    this.allImages = this.images();
+    this.selectedImageIndex = index;
+    document.body.style.overflow = 'hidden';
+    this.global.ProductImageOpened = true;
+  }
+
+  closeLightbox() {
+    this.selectedImageIndex = null;
+    this.allImages = [];
+    document.body.style.overflow = '';
+    this.global.ProductImageOpened = false;
+  }
+
+  prevImage(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.selectedImageIndex !== null && this.selectedImageIndex > 0) {
+      this.selectedImageIndex--;
+    } else {
+      this.selectedImageIndex = this.allImages.length - 1; // wrap around
+    }
+  }
+
+  nextImage(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.selectedImageIndex !== null && this.selectedImageIndex < this.allImages.length - 1) {
+      this.selectedImageIndex++;
+    } else {
+      this.selectedImageIndex = 0; // wrap around
+    }
+  }
+
+  get selectedImage(): string | null {
+    if (this.selectedImageIndex === null) return null;
+    return this.allImages[this.selectedImageIndex] ?? null;
+  }
+
+  /** Arrow keys walk the lightbox; Escape closes it (the modal itself stays open). */
+  handleKeydown(event: Event) {
+    if (!(event instanceof KeyboardEvent) || this.selectedImageIndex === null) return;
+    switch (event.key) {
+      case 'Escape':
+        this.closeLightbox();
+        break;
+      case 'ArrowRight':
+        this.nextImage(new MouseEvent('click', { bubbles: true }));
+        break;
+      case 'ArrowLeft':
+        this.prevImage(new MouseEvent('click', { bubbles: true }));
+        break;
+    }
   }
 }

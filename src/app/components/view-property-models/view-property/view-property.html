@@ -1,5 +1,43 @@
-<div class="view-property-component hide-scrollbar">
-  <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-6">
+<div class="view-property-component hide-scrollbar bg-white">
+  <!-- Phone: the compact header every product modal shows on small screens. -->
+  <header class="flex justify-between items-start gap-4 p-4 border-b border-gray-100 md:hidden">
+    <div class="min-w-0">
+      <h1 class="text-xl font-bold text-gray-900">{{ selectedProperty?.title }}</h1>
+      @if (selectedProperty?.address) {
+        <p class="text-gray-500 text-sm mt-1">{{ selectedProperty?.address }}</p>
+      }
+      <div class="flex flex-wrap gap-2 mt-3 text-xs">
+        <span
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full font-medium border bg-blue-50 text-blue-700 border-blue-200"
+          >{{ common.formatEnum(property().type) }}</span
+        >
+        @if (property().listingStatus === 'ACTIVE') {
+          <span
+            class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full font-medium border bg-green-50 text-green-700 border-green-200"
+            >{{ common.formatEnum(property().occupancyStatus) }}</span
+          >
+        }
+      </div>
+    </div>
+    <div class="text-right shrink-0">
+      <div class="text-2xl font-bold text-gray-900">$ {{ selectedProperty?.price }}</div>
+      @if (isRent) {
+        <div class="text-xs text-gray-500">{{ 'property.perMonth' | t }}</div>
+      }
+      <button
+        type="button"
+        class="mt-2 text-sm text-gray-500 hover:text-gray-900 cursor-pointer"
+        (click)="closeModal.emit()"
+      >
+        {{ 'common.close' | t }} ✕
+      </button>
+    </div>
+  </header>
+
+  <!-- Wide screens: the property header, so every product modal opens the same way. -->
+  <header
+    class="hidden md:flex md:flex-row justify-between items-start md:items-center gap-4 p-6"
+  >
     <a
       class="inline-flex cursor-pointer items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
       (click)="closeModal.emit()"
@@ -71,24 +109,34 @@
       </button>
     </div>
   </header>
-  <main class="p-6">
-    <div class="flex items-center gap-3 mb-2">
-      @if (property().listingStatus === 'ACTIVE') {
+  <main class="p-4 md:p-6">
+    <!-- Wide screens: badges + title + price, laid out like the other product modals. -->
+    <div class="hidden md:flex items-center justify-between mb-2">
+      <div class="flex items-center gap-3">
+        @if (property().listingStatus === 'ACTIVE') {
+          <span
+            class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200"
+          >
+            {{ common.formatEnum(property().occupancyStatus) }}
+          </span>
+        }
         <span
-          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-green-50 text-green-700 border-green-200"
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-blue-50 text-blue-700 border-blue-200"
         >
-          {{ common.formatEnum(property().occupancyStatus) }}
+          {{ common.formatEnum(property().type) }}
         </span>
-      }
-      <span
-        class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-blue-50 text-blue-700 border-blue-200"
-      >
-        {{ common.formatEnum(property().type) }}
-      </span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-indigo-50 text-indigo-700 border-indigo-200"
+        >
+          {{ 'property.views' | t: { count: property().views ?? 0 } }}
+        </span>
+      </div>
     </div>
-    <div class="title flex justify-between">
-      <div class="">
-        <h1 class="text-3xl font-bold text-gray">
+    <div class="title hidden md:flex justify-between gap-4">
+      <div class="min-w-0">
+        <h1 class="text-3xl font-bold text-gray-900">
           {{ selectedProperty?.title }}
         </h1>
         <div class="flex items-center text-gray-500 mt-2">
@@ -110,21 +158,99 @@
             ></path>
             <circle cx="12" cy="10" r="3"></circle>
           </svg>
-          <span>
-            <span class="text-blue-600">{{ selectedProperty?.district }} </span> •
-            <span class="text-green-600">{{ selectedProperty?.region }}</span> •
+          <span class="flex flex-row items-center">
+            <span class="text-blue-600">{{ selectedProperty?.district }}</span>
+            <span class="mx-1">•</span>
+            <span class="text-green-600">{{ selectedProperty?.region }}</span>
+            <span class="mx-1">•</span>
             <span class="text-purple-600">{{ selectedProperty?.place }}</span>
           </span>
         </div>
       </div>
-      <div class="text-left md:text-right">
+      <div class="text-right shrink-0">
         <div class="text-3xl font-bold text-gray-900">$ {{ selectedProperty?.price }}</div>
         @if (isRent) {
           <div class="text-sm text-gray-500">{{ 'property.perMonth' | t }}</div>
         }
       </div>
     </div>
-    <div class="grid md:grid-cols-3 grid-cols-1 gap-4 mt-3">
+    <!-- Phone: one image with arrows, a counter and a strip of thumbnails. -->
+    <div class="md:hidden">
+      <div class="relative">
+        <img
+          [src]="images[selected()]"
+          [alt]="'property.image' | t"
+          class="w-full aspect-video object-cover rounded-xl bg-gray-100 cursor-pointer"
+          (click)="openLightbox(selected())"
+        />
+        @if (images.length > 1) {
+          <button
+            type="button"
+            aria-label="Previous photo"
+            class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-9 h-9 shadow flex items-center justify-center"
+            (click)="prev()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-left h-4 w-4 text-gray-700"
+              aria-hidden="true"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label="Next photo"
+            class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-9 h-9 shadow flex items-center justify-center"
+            (click)="next()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-right h-4 w-4 text-gray-700"
+              aria-hidden="true"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+          <span
+            class="absolute bottom-3 right-3 bg-black/60 text-white text-xs rounded px-2 py-0.5"
+            >{{ selected() + 1 }} / {{ images.length }}</span
+          >
+        }
+      </div>
+      @if (images.length > 1) {
+        <div class="flex gap-2 mt-3 overflow-x-auto hide-scrollbar">
+          @for (url of images; track url; let i = $index) {
+            <img
+              [src]="url"
+              [alt]="'property.image' | t"
+              class="h-16 w-24 shrink-0 object-cover rounded-lg cursor-pointer border-2"
+              [ngClass]="i === selected() ? 'border-blue-600' : 'border-transparent'"
+              (click)="selected.set(i)"
+            />
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Wide screens: hero image with the key facts floating on it, plus a thumbnail rail. -->
+    <div class="hidden md:grid md:grid-cols-3 gap-4 w-full mt-3">
       <div class="relative col-span-2">
         <img
           [src]="propertiesCoverImage"
@@ -267,15 +393,15 @@
       @if (medias && medias.length > 1) {
         <div
           #scrollContainer
-          class="flex md:flex-col gap-4 md:h-96 md:overflow-y-scroll sm:overflow-x-scroll hide-scrollbar relative"
+          class="flex flex-col gap-4 h-96 overflow-y-scroll hide-scrollbar relative"
         >
           @for (image of medias; track $index) {
             @if (!image.isCoverImage) {
               <img
                 [src]="image?.mediaUrl"
                 [alt]="('property.image' | t) + ' ' + ($index + 1)"
-                class="md:w-full md:h-auto sm:w-auto h-48 object-cover rounded-lg border border-gray-300"
-                (click)="openLightbox($index + 1)"
+                class="w-full h-auto object-cover rounded-lg border border-gray-300"
+                (click)="openLightbox(lightboxIndexOf(image?.mediaUrl))"
               />
             }
           }
@@ -350,19 +476,56 @@
         </div>
       }
     </div>
-    <div class="grid md:grid-cols-3 grid-cols-1 mt-6 gap-4">
-      <div class="col-span-2">
-        <app-about-property [property]="selectedProperty"></app-about-property>
+    <div class="grid md:grid-cols-3 grid-cols-1 mt-6 md:gap-4 gap-6 w-full">
+      <div class="md:col-span-2 flex flex-col gap-6">
+        <!-- Phone: the facts that float on the hero image in the wide layout. -->
+        <section class="bg-white rounded-lg border border-gray-200 shadow-sm md:hidden">
+          <div class="px-6 py-4 border-b border-gray-100">
+            <h3 class="text-lg font-medium text-gray-900">{{ 'property.details' | t }}</h3>
+          </div>
+          <div class="p-6">
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div class="flex items-center justify-between gap-3 border-b border-gray-100 pb-2">
+                <dt class="text-gray-500">{{ 'property.rooms' | t }}</dt>
+                <dd class="font-medium text-gray-900">{{ selectedProperty?.numberOfRooms }}</dd>
+              </div>
+              <div class="flex items-center justify-between gap-3 border-b border-gray-100 pb-2">
+                <dt class="text-gray-500">{{ 'property.floor' | t }}</dt>
+                <dd class="font-medium text-gray-900">
+                  {{ selectedProperty?.floor }} / {{ selectedProperty?.totalFloors }}
+                </dd>
+              </div>
+              <div class="flex items-center justify-between gap-3 border-b border-gray-100 pb-2">
+                <dt class="text-gray-500">{{ 'property.area' | t }}</dt>
+                <dd class="font-medium text-gray-900">{{ selectedProperty?.area }} m²</dd>
+              </div>
+              @if (isPublished) {
+                <div class="flex items-center justify-between gap-3 border-b border-gray-100 pb-2">
+                  <dt class="text-gray-500">{{ 'property.available' | t }}</dt>
+                  <dd class="font-medium text-gray-900">
+                    {{ selectedProperty?.dateListed | date: 'dd-MM-yyyy' }}
+                  </dd>
+                </div>
+              }
+            </dl>
+          </div>
+        </section>
+        <app-about-property
+          class="flex flex-col flex-1"
+          [property]="selectedProperty"
+        ></app-about-property>
       </div>
-      <app-about-agent [property]="selectedProperty"></app-about-agent>
+      <app-about-agent class="flex flex-col" [property]="selectedProperty"></app-about-agent>
     </div>
-    <app-yandex-map
-      [address]="fullAddresForMap"
-      [latitude]="mapLatitude"
-      [longitude]="mapLongitude"
-      [useSavedPoint]="hasSavedPoint"
-    >
-    </app-yandex-map>
+    <div class="mt-6">
+      <app-yandex-map
+        [address]="fullAddresForMap"
+        [latitude]="mapLatitude"
+        [longitude]="mapLongitude"
+        [useSavedPoint]="hasSavedPoint"
+      >
+      </app-yandex-map>
+    </div>
   </main>
 </div>
 @if (selectedImageIndex !== null && selectedImage) {

@@ -6,8 +6,8 @@ import { TranslatePipe } from '../../shared/i18n/translate.pipe';
   selector: 'app-about-agent',
   imports: [TranslatePipe],
   standalone: true,
-  template: ` <div class="space-y-6">
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm sticky top-24">
+  template: ` <div class="flex flex-1 flex-col">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm flex-1">
       <div class="p-6">
         <div class="space-y-6" data-id="element-329">
           <div data-id="element-330">

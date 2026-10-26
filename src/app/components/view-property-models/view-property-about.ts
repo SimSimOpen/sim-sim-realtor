@@ -7,7 +7,7 @@ import { TranslatePipe } from '../../shared/i18n/translate.pipe';
   selector: 'app-about-property',
   imports: [TranslatePipe],
   standalone: true,
-  template: ` <div>
+  template: ` <div class="flex flex-1 flex-col gap-6">
     <div class="bg-white rounded-lg border border-gray-200 shadow-sm">
       <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
         <div data-id="element-91">
@@ -28,7 +28,7 @@ import { TranslatePipe } from '../../shared/i18n/translate.pipe';
         }
       </div>
     </div>
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm " data-id="element-89">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm flex-1" data-id="element-89">
       <div
         class="px-6 py-4 border-b border-gray-100 flex items-center justify-between"
         data-id="element-90"

@@ -9,6 +9,7 @@ import {
   Input,
   NgZone,
   Output,
+  signal,
   ViewChild,
 } from '@angular/core';
 import { Property } from '../../../shared/models/properties';
@@ -21,12 +22,16 @@ import { AboutProperty } from '../view-property-about';
 import { ProductStateService } from '../../../shared/services/product/state/product-state.service';
 import { YandexMapComponent } from '../../add-edit-property-models/yandex-map';
 import { TranslatePipe } from '../../../shared/i18n/translate.pipe';
+import { GlobalService } from '../../../shared/services/global.service';
 
 @Component({
   selector: 'app-view-property',
   imports: [CommonModule, AboutAgent, AboutProperty, YandexMapComponent, TranslatePipe],
   templateUrl: './view-property.html',
   styleUrl: './view-property.scss',
+  host: {
+    '(document:keydown)': 'handleKeydown($event)',
+  },
 })
 export class ViewProperty {
   @Output() closeModal = new EventEmitter<any>();
@@ -51,6 +56,10 @@ export class ViewProperty {
   private productStateService = inject(ProductStateService);
   private ctr = inject(ChangeDetectorRef);
   public common = inject(Common);
+  private global = inject(GlobalService);
+
+  /** Phone carousel position; the wide layout keeps the fixed hero plus thumbnail rail. */
+  readonly selected = signal(0);
 
   property = computed(() => this.productStateService.editingProperty() as Property);
 
@@ -106,6 +115,33 @@ export class ViewProperty {
     }
     return defaultPath;
   }
+
+  /** Cover first, then the rest in upload order — the same list the lightbox walks. */
+  get images(): string[] {
+    const medias = this.selectedProperty?.medias ?? [];
+    const sorted = [
+      ...medias.filter((media) => media.isCoverImage),
+      ...medias.filter((media) => !media.isCoverImage),
+    ];
+    return sorted.length
+      ? sorted.map((media) => media.mediaUrl)
+      : [`${EnvironmentTs.MEDIA_URL}/real-estate-media/default/house.png`];
+  }
+
+  /** Position of a rail thumbnail inside the cover-first `images` list. */
+  lightboxIndexOf(mediaUrl?: string): number {
+    const index = mediaUrl ? this.images.indexOf(mediaUrl) : -1;
+    return index < 0 ? 0 : index;
+  }
+
+  prev() {
+    this.selected.update((i) => (i - 1 + this.images.length) % this.images.length);
+  }
+
+  next() {
+    this.selected.update((i) => (i + 1) % this.images.length);
+  }
+
   get isRent() {
     return this.selectedProperty?.offerType === OfferType.FOR_RENT;
   }
@@ -130,20 +166,18 @@ export class ViewProperty {
   }
 
   openLightbox(index: number) {
-    // Build full image list: cover image first, then gallery images
-    this.allImages = [
-      this.propertiesCoverImage,
-      ...(this.selectedProperty?.medias?.filter((m) => !m.isCoverImage).map((m) => m.mediaUrl) ??
-        []),
-    ];
+    // The lightbox walks the same cover-first list as the carousel and the hero image.
+    this.allImages = this.images;
     this.selectedImageIndex = index;
     document.body.style.overflow = 'hidden';
+    this.global.ProductImageOpened = true;
   }
 
   closeLightbox() {
     this.selectedImageIndex = null;
     this.allImages = [];
     document.body.style.overflow = '';
+    this.global.ProductImageOpened = false;
   }
 
   prevImage(event: MouseEvent) {
@@ -167,5 +201,21 @@ export class ViewProperty {
   get selectedImage(): string | null {
     if (this.selectedImageIndex === null) return null;
     return this.allImages[this.selectedImageIndex] ?? null;
+  }
+
+  /** Keyboard navigation for the lightbox; Escape closes the zoom, not the modal. */
+  handleKeydown(event: Event) {
+    if (!(event instanceof KeyboardEvent) || this.selectedImageIndex === null) return;
+    switch (event.key) {
+      case 'Escape':
+        this.closeLightbox();
+        break;
+      case 'ArrowRight':
+        this.nextImage(new MouseEvent('click', { bubbles: true }));
+        break;
+      case 'ArrowLeft':
+        this.prevImage(new MouseEvent('click', { bubbles: true }));
+        break;
+    }
   }
 }

@@ -1,96 +1,641 @@
-<div class="add-property-component bg-white w-[min(900px,95vw)]">
-  <header class="flex justify-between items-start p-6 border-b border-gray-200">
-    <div>
-      <h1 class="text-xl font-bold">{{ name() }}</h1>
+<div class="view-property-component hide-scrollbar bg-white">
+  <!-- Phone: the compact header every product modal shows on small screens. -->
+  <header class="flex justify-between items-start gap-4 p-4 border-b border-gray-100 md:hidden">
+    <div class="min-w-0">
+      <h1 class="text-xl font-bold text-gray-900">{{ name() }}</h1>
       @if (car().title && car().title !== name()) {
-        <div class="text-sm text-gray-600">{{ car().title }}</div>
+        <p class="text-gray-600 text-sm mt-1">{{ car().title }}</p>
       }
-      <div class="flex gap-2 mt-2 text-xs">
-        <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">{{ common.formatEnum(car().offerType) }}</span>
-        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">{{ common.formatEnum(car().listingStatus) }}</span>
-        <span class="px-2 py-0.5 rounded-full bg-green-50 text-green-700">{{ 'cars.viewsCount' | t: { count: car().views } }}</span>
+      @if (address()) {
+        <p class="text-gray-500 text-sm mt-1">{{ address() }}</p>
+      }
+      <div class="flex flex-wrap gap-2 mt-3 text-xs">
+        <span
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full font-medium border bg-purple-50 text-purple-700 border-purple-200"
+          >{{ common.formatEnum(car().offerType) }}</span
+        >
+        <span
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full font-medium border bg-gray-100 text-gray-700 border-gray-200"
+          >{{ common.formatEnum(car().listingStatus) }}</span
+        >
+        <span
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full font-medium border bg-indigo-50 text-indigo-700 border-indigo-200"
+          >{{ 'cars.viewsCount' | t: { count: car().views } }}</span
+        >
       </div>
     </div>
-    <div class="text-right">
+    <div class="text-right shrink-0">
       @if (car().price != null) {
-        <div class="text-2xl font-bold">${{ car().price | number }}</div>
+        <div class="text-2xl font-bold text-gray-900">${{ car().price | number }}</div>
       }
-      <button type="button" class="mt-2 text-sm text-gray-500 hover:text-gray-800 cursor-pointer" (click)="closeModal.emit()">
+      <button
+        type="button"
+        class="mt-2 text-sm text-gray-500 hover:text-gray-900 cursor-pointer"
+        (click)="closeModal.emit()"
+      >
         {{ 'common.close' | t }} ✕
       </button>
     </div>
   </header>
 
-  <main class="p-6 flex flex-col gap-6">
-    <section>
-      <img [src]="images()[selected()]" [alt]="name()" class="w-full aspect-video object-cover rounded-xl border border-gray-200" />
+  <!-- Wide screens: the property header, so every product modal opens the same way. -->
+  <header class="hidden md:flex justify-between items-center gap-4 p-6">
+    <a
+      class="inline-flex cursor-pointer items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+      (click)="closeModal.emit()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-arrow-left mr-2 h-4 w-4"
+        aria-hidden="true"
+      >
+        <path d="m12 19-7-7 7-7"></path>
+        <path d="M19 12H5"></path>
+      </svg>
+      {{ 'property.back' | t }}
+    </a>
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-10 px-4 py-2 text-sm gap-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-share2 lucide-share-2 h-4 w-4"
+          aria-hidden="true"
+        >
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+          <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+        </svg>
+        {{ 'property.share' | t }}
+      </button>
+      <button
+        type="button"
+        class="inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-10 px-4 py-2 text-sm gap-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-heart h-4 w-4"
+          aria-hidden="true"
+        >
+          <path
+            d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"
+          ></path>
+        </svg>
+        {{ 'property.save' | t }}
+      </button>
+    </div>
+  </header>
+
+  <main class="p-4 md:p-6">
+    <!-- Wide screens: badges + title + price, laid out like the property modal. -->
+    <div class="hidden md:block">
+      <div class="flex items-center gap-3 mb-2">
+        <span
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-purple-50 text-purple-700 border-purple-200"
+          >{{ common.formatEnum(car().offerType) }}</span
+        >
+        <span
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-gray-100 text-gray-700 border-gray-200"
+          >{{ common.formatEnum(car().listingStatus) }}</span
+        >
+        <span
+          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-indigo-50 text-indigo-700 border-indigo-200"
+          >{{ 'cars.viewsCount' | t: { count: car().views } }}</span
+        >
+      </div>
+      <div class="flex justify-between gap-4">
+        <div class="min-w-0">
+          <h1 class="text-3xl font-bold text-gray-900">{{ name() }}</h1>
+          @if (car().title && car().title !== name()) {
+            <div class="text-sm text-gray-600 mt-1">{{ car().title }}</div>
+          }
+          @if (address()) {
+            <div class="flex items-center text-gray-500 mt-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="lucide lucide-map-pin h-4 w-4 mr-1.5"
+                aria-hidden="true"
+              >
+                <path
+                  d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+                ></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span class="text-blue-600">{{ address() }}</span>
+            </div>
+          }
+        </div>
+        @if (car().price != null) {
+          <div class="text-right shrink-0">
+            <div class="text-3xl font-bold text-gray-900">$ {{ car().price | number }}</div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Phone: single image with arrows, counter and a strip of thumbnails. -->
+    <div class="md:hidden">
+      <div class="relative">
+        <img
+          [src]="images()[selected()]"
+          [alt]="name()"
+          class="w-full aspect-video object-cover rounded-xl bg-gray-100 cursor-pointer"
+          (click)="openLightbox(selected())"
+        />
+        @if (images().length > 1) {
+          <button
+            type="button"
+            aria-label="Previous photo"
+            class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-9 h-9 shadow flex items-center justify-center"
+            (click)="prev()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-left h-4 w-4 text-gray-700"
+              aria-hidden="true"
+            >
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-label="Next photo"
+            class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 rounded-full w-9 h-9 shadow flex items-center justify-center"
+            (click)="next()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-chevron-right h-4 w-4 text-gray-700"
+              aria-hidden="true"
+            >
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+          <span
+            class="absolute bottom-3 right-3 bg-black/60 text-white text-xs rounded px-2 py-0.5"
+            >{{ selected() + 1 }} / {{ images().length }}</span
+          >
+        }
+      </div>
       @if (images().length > 1) {
-        <div class="flex gap-2 mt-3 overflow-x-auto">
+        <div class="flex gap-2 mt-3 overflow-x-auto hide-scrollbar">
           @for (url of images(); track url; let i = $index) {
             <img
               [src]="url"
               [alt]="name()"
-              class="h-16 w-24 object-cover rounded-lg cursor-pointer border-2"
+              class="h-16 w-24 shrink-0 object-cover rounded-lg cursor-pointer border-2"
               [ngClass]="i === selected() ? 'border-blue-600' : 'border-transparent'"
               (click)="selected.set(i)"
             />
           }
         </div>
       }
-    </section>
+    </div>
 
-    <section>
-      <h6 class="text-lg font-semibold mb-3">{{ 'cars.specs' | t }}</h6>
-      <dl class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 text-sm">
-        @for (spec of specs(); track spec.label) {
-          <div class="flex justify-between border-b border-gray-100 pb-1">
-            <dt class="text-gray-500">{{ spec.label | t }}</dt>
-            <dd class="font-medium text-gray-900">{{ spec.value }}</dd>
+    <!-- Wide screens: hero image with the key specs floating on it, plus a thumbnail rail. -->
+    <div class="hidden md:grid md:grid-cols-3 gap-4 w-full mt-3">
+      <div class="relative col-span-2">
+        <img
+          [src]="images()[selected()]"
+          [alt]="name()"
+          class="w-full h-full max-h-96 object-cover rounded-xl border border-gray-300 cursor-pointer"
+          (click)="openLightbox(selected())"
+        />
+        <div class="absolute bottom-2 flex justify-center w-full text-sm">
+          <div
+            class="bg-white rounded-xl border border-gray-200 p-3 flex justify-between gap-3 shadow-sm"
+          >
+            @if (car().year != null) {
+              <div class="flex items-center gap-3">
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-calendar h-6 w-6"
+                    aria-hidden="true"
+                  >
+                    <path d="M8 2v4"></path>
+                    <path d="M16 2v4"></path>
+                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-sm text-gray-500">{{ 'cars.year' | t }}</div>
+                  <div class="font-semibold text-gray-900">{{ car().year }}</div>
+                </div>
+              </div>
+            }
+            @if (car().mileage != null) {
+              <div class="flex items-center gap-3">
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-clock h-6 w-6"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-sm text-gray-500">{{ 'cars.mileage' | t }}</div>
+                  <div class="font-semibold text-gray-900">{{ car().mileage | number }}</div>
+                </div>
+              </div>
+            }
+            @if (car().transmission) {
+              <div class="flex items-center gap-3">
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-settings h-6 w-6"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+                    ></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-sm text-gray-500">{{ 'cars.transmission' | t }}</div>
+                  <div class="font-semibold text-gray-900">
+                    {{ common.formatEnum(car().transmission) }}
+                  </div>
+                </div>
+              </div>
+            }
           </div>
-        }
-        @if (car().customsCleared != null) {
-          <div class="flex justify-between border-b border-gray-100 pb-1">
-            <dt class="text-gray-500">{{ 'cars.customsCleared' | t }}</dt>
-            <dd class="font-medium text-gray-900">{{ (car().customsCleared ? 'cars.yes' : 'cars.no') | t }}</dd>
-          </div>
-        }
-      </dl>
-    </section>
-
-    @if (car().description) {
-      <section>
-        <h6 class="text-lg font-semibold mb-2">{{ 'common.description' | t }}</h6>
-        <!-- Rich text HTML from the editor; Angular sanitizes, .rich-text styles lists/quotes. -->
-        <div class="text-sm text-gray-700 rich-text" [innerHTML]="car().description"></div>
-      </section>
-    }
-
-    <section class="grid grid-cols-2 gap-6 text-sm">
-      <div>
-        <div class="text-gray-500">{{ 'cars.agent' | t }}</div>
-        <div class="font-medium">{{ car().agent }}</div>
+        </div>
       </div>
-      @if (car().ownerContact) {
-        <div>
-          <div class="text-gray-500">{{ 'cars.contact' | t }}</div>
-          <a class="font-medium text-blue-700" [href]="'tel:' + car().ownerContact">{{ car().ownerContact }}</a>
+      @if (images().length > 1) {
+        <div class="flex flex-col gap-4 h-96 overflow-y-scroll hide-scrollbar relative">
+          @for (url of images(); track url; let i = $index) {
+            <img
+              [src]="url"
+              [alt]="name()"
+              class="w-full h-auto object-cover rounded-lg border cursor-pointer"
+              [ngClass]="i === selected() ? 'border-blue-600' : 'border-gray-300'"
+              (click)="selected.set(i)"
+            />
+          }
+          <div
+            class="absolute top-2 right-2 bg-white rounded-full border border-gray-200 px-3 py-1 text-xs font-medium shadow-sm flex items-center gap-1"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="icon icon-tabler icons-tabler-outline icon-tabler-camera"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path
+                d="M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2"
+              />
+              <path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+            </svg>
+            {{ 'property.imagesCount' | t: { count: images().length } }}
+          </div>
         </div>
       }
-    </section>
+    </div>
 
-    @if (address() || hasPoint) {
-      <section>
-        <h6 class="text-lg font-semibold mb-2">{{ 'addEdit.location' | t }}</h6>
-        @if (address()) {
-          <div class="text-sm text-gray-700 mb-2">{{ address() }}</div>
+    <!-- Description and specs take the wide left column; the agent card sits beside them. -->
+    <div class="grid md:grid-cols-3 grid-cols-1 mt-6 md:gap-4 gap-6 w-full">
+      <div class="md:col-span-2 flex flex-col gap-6">
+        @if (car().description) {
+          <section class="bg-white rounded-lg border border-gray-200 shadow-sm">
+            <div class="px-6 py-4 border-b border-gray-100">
+              <h3 class="text-lg font-medium text-gray-900">{{ 'common.description' | t }}</h3>
+            </div>
+            <div class="p-6">
+              <!-- Rich text HTML from the editor; Angular sanitizes, .rich-text styles lists/quotes. -->
+              <div
+                class="text-gray-600 leading-relaxed rich-text"
+                [innerHTML]="car().description"
+              ></div>
+            </div>
+          </section>
         }
+        <section class="bg-white rounded-lg border border-gray-200 shadow-sm flex-1">
+          <div class="px-6 py-4 border-b border-gray-100">
+            <h3 class="text-lg font-medium text-gray-900">{{ 'cars.specs' | t }}</h3>
+          </div>
+          <div class="p-6">
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              @for (spec of specs(); track spec.label) {
+                <div class="flex items-center justify-between gap-3 border-b border-gray-100 pb-2">
+                  <dt class="text-gray-500">{{ spec.label | t }}</dt>
+                  <dd class="font-medium text-gray-900 text-right">{{ spec.value }}</dd>
+                </div>
+              }
+              @if (car().customsCleared != null) {
+                <div class="flex items-center justify-between gap-3 border-b border-gray-100 pb-2">
+                  <dt class="text-gray-500">{{ 'cars.customsCleared' | t }}</dt>
+                  <dd class="font-medium text-gray-900 text-right">
+                    {{ (car().customsCleared ? 'cars.yes' : 'cars.no') | t }}
+                  </dd>
+                </div>
+              }
+            </dl>
+          </div>
+        </section>
+      </div>
+
+      <aside class="flex flex-col">
+        <section class="bg-white rounded-lg border border-gray-200 shadow-sm flex-1">
+          <div class="p-6">
+            <div class="space-y-6">
+              @if (car().price != null) {
+                <div>
+                  <div class="text-2xl font-bold text-gray-900">$ {{ car().price | number }}</div>
+                  <div class="text-sm text-gray-500 capitalize">{{ common.formatEnum(car().offerType) }}</div>
+                </div>
+              }
+              <div class="space-y-3">
+                <a
+                  [href]="'tel:' + car().ownerContact"
+                  class="flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 bg-blue-700 text-white hover:bg-blue-800 focus:ring-blue-700 shadow-sm h-10 px-4 py-2 text-sm w-full gap-2"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-phone h-4 w-4"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"
+                    ></path>
+                  </svg>
+                  {{ 'property.call' | t }}
+                </a>
+              </div>
+              <div class="pt-4 border-t border-gray-100">
+                <div class="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-shield-check h-4 w-4 text-green-500"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+                    ></path>
+                    <path d="m9 12 2 2 4-4"></path>
+                  </svg>
+                  <span>{{ 'property.verified' | t }}</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <img
+                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=800&amp;q=80"
+                    [alt]="car().agent"
+                    class="h-12 w-12 rounded-full object-cover border border-gray-200"
+                  />
+                  <div>
+                    <div class="font-medium text-gray-900">{{ car().agent }}</div>
+                    <div class="text-xs text-gray-500">{{ 'cars.agent' | t }}</div>
+                  </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-2">
+                  <a
+                    [href]="'tel:' + car().ownerContact"
+                    class="flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-8 px-3 text-xs gap-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-phone h-3.5 w-3.5"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"
+                      ></path>
+                    </svg>
+                    {{ 'property.call' | t }}
+                  </a>
+                  <button
+                    type="button"
+                    class="flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 h-8 px-3 text-xs gap-2"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-mail h-3.5 w-3.5"
+                      aria-hidden="true"
+                    >
+                      <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path>
+                      <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    </svg>
+                    Telegram
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <!-- Full-width row, matching the property view: a map squeezed into the 2/3 column reads too small. -->
+    @if (address() || hasPoint) {
+      <div class="mt-6">
         <app-yandex-map
           [address]="address()"
           [latitude]="car().latitude ?? 41.2995"
           [longitude]="car().longitude ?? 69.2401"
           [useSavedPoint]="hasPoint"
         ></app-yandex-map>
-      </section>
+      </div>
     }
   </main>
 </div>
+@if (selectedImageIndex !== null && selectedImage) {
+  <div
+    class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+    (click)="closeLightbox()"
+  >
+    <button
+      type="button"
+      class="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 rounded-full p-2 transition z-10"
+      (click)="closeLightbox()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    </button>
+
+    <button
+      type="button"
+      class="absolute left-4 text-white bg-white/10 hover:bg-white/25 rounded-full p-3 transition z-10"
+      (click)="prevImage($event)"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m15 18-6-6 6-6" />
+      </svg>
+    </button>
+
+    <img
+      [src]="selectedImage"
+      [alt]="'property.fullSize' | t"
+      class="max-w-[80vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
+      (click)="$event.stopPropagation()"
+    />
+
+    <button
+      type="button"
+      class="absolute right-4 text-white bg-white/10 hover:bg-white/25 rounded-full p-3 transition z-10"
+      (click)="nextImage($event)"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="m9 18 6-6-6-6" />
+      </svg>
+    </button>
+
+    <div
+      class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm bg-black/40 px-4 py-1.5 rounded-full"
+    >
+      {{ selectedImageIndex + 1 }} / {{ allImages.length }}
+    </div>
+  </div>
+}
