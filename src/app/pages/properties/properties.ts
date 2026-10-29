@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { AddEditProperty } from '../../components/add-edit-property-models/add-edit-property/add-edit-property';
@@ -42,10 +43,21 @@ export class Properties extends BaseModalComponent {
   private ctr = inject(ChangeDetectorRef);
   public searchAndFilterService = inject(SearchAndFilterService);
   private listingKind = inject(ListingKindService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   ngOnInit() {
     this.listingKind.kind.set('property');
     this.updateDataset();
+    // Arriving from the dashboard's Add Product picker: open the add form straight away.
+    if (this.route.snapshot.queryParamMap.get('new') === '1') {
+      this.openAddPropertyModal();
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { new: null },
+        replaceUrl: true,
+      });
+    }
   }
 
   updateDataset() {

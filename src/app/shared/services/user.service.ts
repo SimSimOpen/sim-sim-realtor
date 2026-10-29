@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { AuthResponse, UserData, UserProfile } from '../models/auth';
+import { UserData, UserDetailsResponse, UserProfile } from '../models/auth';
 import { Observable } from 'rxjs';
-import { AUTH_URL } from '../constants/urls';
+import { AUTH_URL, PROFILE_URL } from '../constants/urls';
 /** A website (CLIENT) account, from GET /api/auth/v1/admin/clients. */
 export interface ClientResponse {
   id: number;
@@ -37,7 +37,16 @@ export class UserService {
     return this.http.get<PageResponse<ClientResponse>>(`${AUTH_URL}/v1/admin/clients`, { params });
   }
 
-  updateUserData(userData: Omit<UserData, 'description'>): Observable<AuthResponse> {
-    return this.http.put<AuthResponse>(`${AUTH_URL}/v1/update-user`, userData);
+  updateUserData(userData: Omit<UserData, 'description'>): Observable<UserDetailsResponse> {
+    return this.http.put<UserDetailsResponse>(`${AUTH_URL}/v1/update-user`, userData);
+  }
+
+  /**
+   * The profile module is the only place that prefixes the media base URL, so this is the source
+   * of truth for an absolute avatar URL (the auth endpoints return the stored relative path or no
+   * profile at all).
+   */
+  getProfile(profileId: number): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${PROFILE_URL}/v1/${profileId}`);
   }
 }

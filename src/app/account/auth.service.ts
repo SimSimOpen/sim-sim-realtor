@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { AuthResponse } from '../shared/models/auth';
+import { AuthResponse, UserDetailsResponse } from '../shared/models/auth';
 import { Observable } from 'rxjs';
 import { AUTH_URL } from '../shared/constants/urls';
 
@@ -34,8 +34,12 @@ export class AuthService {
     return this.http.get<boolean>(`${AUTH_URL}/access/validate-token`);
   }
 
-  getUserData(): Observable<any> {
-    return this.http.get<any>(`${AUTH_URL}/check-token`);
+  /**
+   * Account fields of the signed-in user. The auth mapper never fills `profile` here, so the
+   * avatar and profile data have to come from the profile module (UserService.getProfile).
+   */
+  getUserData(): Observable<UserDetailsResponse> {
+    return this.http.get<UserDetailsResponse>(`${AUTH_URL}/v1/details`);
   }
 
   isAuthenticated(): boolean {

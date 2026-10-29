@@ -1,9 +1,10 @@
 import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Common } from '../../shared/common';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { ModalComponent } from '../../components/modal/modal.component';
-import { AddEditProperty } from '../../components/add-edit-property-models/add-edit-property/add-edit-property';
+import { CategoryIcon } from '../../components/category-icon';
 import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
 import { ColumnChart, ColumnDatum } from '../../components/column-chart/column-chart';
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
@@ -21,6 +22,8 @@ import { Property } from '../../shared/models/properties';
 import { EnvironmentTs } from '../../environments/environment';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
+import { CategoryService } from '../../shared/services/category.service';
+import { CategorySlug, SECTION_ROUTES } from '../../shared/constants/categories';
 
 const RECENT_PROPERTIES = 5;
 const ACTIVITY_ITEMS = 8;
@@ -29,12 +32,12 @@ const PRESENCE_REFRESH_MS = 30_000;
 
 @Component({
   selector: 'app-dashboard',
-  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty, TranslatePipe, ColumnChart],
+  imports: [ModalComponent, CommonModule, ViewProperty, TranslatePipe, ColumnChart, CategoryIcon],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard extends BaseModalComponent implements OnInit {
-  isAddPropertyModalVisible = false;
+  isTypePickerVisible = false;
   isViewPropertyModalVisible = false;
 
   public common = inject(Common);
@@ -45,6 +48,15 @@ export class Dashboard extends BaseModalComponent implements OnInit {
   private i18n = inject(I18nService);
   private ctr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
+  private router = inject(Router);
+  public categoryService = inject(CategoryService);
+
+  /** The types offered by the dashboard's Add Product picker, in display order. */
+  private readonly pickerSlugs: CategorySlug[] = ['real-estate', 'cars', 'second-hand', 'services'];
+
+  get pickerCategories() {
+    return this.categoryService.categories().filter((c) => this.pickerSlugs.includes(c.slug));
+  }
 
   /** Account numbers are admin-only on the backend, so agents never ask for them. */
   readonly isAdmin = (this.authService.getUserDataFromStorage()?.authorities ?? []).some(
@@ -190,11 +202,21 @@ export class Dashboard extends BaseModalComponent implements OnInit {
   }
 
   override openModal(): void {
-    this.isAddPropertyModalVisible = true;
+    this.isTypePickerVisible = true;
+  }
+
+  /**
+   * Adding happens on the product's own manage page, so picking a type lands there with its
+   * add form already open (`?new=1` is consumed and cleared by that page).
+   */
+  chooseType(slug: CategorySlug) {
+    this.isTypePickerVisible = false;
+    const route = SECTION_ROUTES[slug];
+    if (route) this.router.navigate([route], { queryParams: { new: '1' } });
   }
 
   override closeModal(): void {
-    this.isAddPropertyModalVisible = false;
+    this.isTypePickerVisible = false;
     this.isViewPropertyModalVisible = false;
     this.productStateService.clearEditing();
     // A property may have been added or changed in the modal.

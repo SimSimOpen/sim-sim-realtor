@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -37,6 +38,8 @@ export class SecondHand implements OnInit, OnDestroy {
   private i18n = inject(I18nService);
   private ctr = inject(ChangeDetectorRef);
   public common = inject(Common);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   readonly statuses = Object.values(ListingStatus);
   readonly subCategories = Object.values(SecondHandCategory);
@@ -55,6 +58,15 @@ export class SecondHand implements OnInit, OnDestroy {
     // The shared photo components upload to whatever kind this says.
     this.listingKind.kind.set('second-hand');
     this.refresh();
+    // Arriving from the dashboard's Add Product picker: open the add form straight away.
+    if (this.route.snapshot.queryParamMap.get('new') === '1') {
+      this.openAdd();
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { new: null },
+        replaceUrl: true,
+      });
+    }
   }
 
   ngOnDestroy() {

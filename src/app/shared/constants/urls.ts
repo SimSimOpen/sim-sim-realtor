@@ -7,3 +7,5 @@ export const PRODUCT_URL = `${EnvironmentTs.URL}/api/product`;
 export const MEDIA_URL = `http://localhost:9000`;
 
 export const MEDIA_SERVICE_URL = `${EnvironmentTs.URL}/api/media`;
+
+export const PROFILE_URL = `${EnvironmentTs.URL}/api/profile`;
