@@ -45,7 +45,9 @@
         [class.active]="
           common.activeMenuItem === '/products' ||
           common.activeMenuItem === '/properties' ||
-          common.activeMenuItem === '/cars'
+          common.activeMenuItem === '/cars' ||
+          common.activeMenuItem === '/second-hand' ||
+          common.activeMenuItem === '/services'
         "
         (click)="common.setActiveMenuItem('/products'); common.navigateTo('/products')"
       >

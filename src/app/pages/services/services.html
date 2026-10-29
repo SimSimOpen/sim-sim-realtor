@@ -1,0 +1,215 @@
+<div class="properties-page">
+  <section class="title flex justify-between">
+    <div>
+      <h1 class="text-2xl text-black font-bold">{{ 'services.title' | t }}</h1>
+      <span>{{ 'services.subtitle' | t }}</span>
+    </div>
+    <div class="flex items-center">
+      <button
+        class="border border-gray-300 bg-white text-gray-700 shadow-sm py-2 px-5 font-semibold hover:bg-gray-100 mr-2"
+        (click)="backToProducts()"
+      >
+        {{ 'products.back' | t }}
+      </button>
+      <button
+        class="bg-blue-700 text-white shadow-sm py-2 px-5 font-semibold hover:shadow-md hover:bg-blue-800"
+        (click)="openAdd()"
+      >
+        {{ 'services.add' | t }}
+      </button>
+    </div>
+  </section>
+
+  <section class="header-cards">
+    <div class="card">
+      <div>{{ 'properties.total' | t }}</div>
+      <div class="text-2xl font-bold">{{ stats?.total_count || 0 }}</div>
+    </div>
+    <div class="card">
+      <div>{{ 'enum.ACTIVE' | t }}</div>
+      <div class="text-2xl font-bold text-green-500">{{ stats?.active_count || 0 }}</div>
+    </div>
+    <div class="card">
+      <div>{{ 'enum.DRAFT' | t }}</div>
+      <div class="text-2xl font-bold">{{ stats?.draft_count || 0 }}</div>
+    </div>
+    <div class="card">
+      <div>{{ 'enum.OFFERING' | t }}</div>
+      <div class="text-2xl font-bold text-blue-600">{{ stats?.offering_count || 0 }}</div>
+    </div>
+    <div class="card">
+      <div>{{ 'enum.SEEKING' | t }}</div>
+      <div class="text-2xl font-bold text-amber-600">{{ stats?.seeking_count || 0 }}</div>
+    </div>
+  </section>
+
+  <section class="search-filter p-5 flex justify-between items-center">
+    <div class="search-bar flex items-center">
+      <form class="w-full" (submit)="onSearch(); $event.preventDefault()">
+        <div class="search-group">
+          <input
+            type="text"
+            name="search"
+            [placeholder]="'services.searchPh' | t"
+            [(ngModel)]="filter.search"
+          />
+        </div>
+      </form>
+    </div>
+    <div class="filter-dropdown">
+      <select (change)="onFilterChange('kind', $any($event.target).value)">
+        <option value="all" selected>{{ 'services.allKinds' | t }}</option>
+        @for (kind of kinds; track kind) {
+          <option [value]="kind">{{ common.formatEnum(kind) }}</option>
+        }
+      </select>
+      <select (change)="onFilterChange('listingStatus', $any($event.target).value)">
+        <option value="all" selected>{{ 'properties.allStatus' | t }}</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ common.formatEnum(status) }}</option>
+        }
+      </select>
+      <select (change)="onFilterChange('category', $any($event.target).value)">
+        <option value="all" selected>{{ 'services.allCategories' | t }}</option>
+        @for (category of categories; track category) {
+          <option [value]="category">{{ common.formatEnum(category) }}</option>
+        }
+      </select>
+    </div>
+  </section>
+
+  <section class="properties-table shadow-sm">
+    <table class="w-full">
+      <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
+        <tr class="text-left">
+          <th>{{ 'services.listing' | t }}</th>
+          <th>{{ 'services.kind' | t }}</th>
+          <th>{{ 'services.category' | t }}</th>
+          <th>{{ 'services.price' | t }}</th>
+          <th>{{ 'table.status' | t }}</th>
+          <th>{{ 'table.views' | t }}</th>
+          <th>{{ 'table.date' | t }}</th>
+          <th>{{ 'table.actions' | t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items; track item.id) {
+          <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50">
+            <td>
+              <div class="flex items-center gap-4">
+                <img
+                  class="h-16 w-24 object-cover rounded-lg border border-gray-200"
+                  [src]="coverImage(item)"
+                  [alt]="itemName(item)"
+                />
+                <div>
+                  <div class="text-md font-medium text-gray-900">{{ itemName(item) }}</div>
+                  @if (place(item)) {
+                    <div class="text-gray-500 text-xs mt-1">{{ place(item) }}</div>
+                  }
+                </div>
+              </div>
+            </td>
+            <td>
+              <span
+                class="px-2 py-0.5 rounded-full text-xs font-medium"
+                [ngClass]="kindClasses(item)"
+              >
+                {{ common.formatEnum(item.kind) }}
+              </span>
+            </td>
+            <td class="text-sm text-gray-700">{{ common.formatEnum(item.category) }}</td>
+            <td class="text-sm font-semibold text-gray-900">
+              {{ priceLabel(item) }}
+              @if (isSeeking(item)) {
+                <div class="text-xs font-normal text-gray-500">{{ 'services.budget' | t }}</div>
+              }
+            </td>
+            <td class="text-sm text-gray-700">{{ common.formatEnum(item.listingStatus) }}</td>
+            <td>{{ item.views }}</td>
+            <td>
+              @if (item.listingStatus === 'ACTIVE') {
+                {{ item.updatedAt ?? item.createdAt | date: 'dd-MM-yyyy' }}
+              }
+            </td>
+            <td>
+              <div class="flex gap-1 items-center">
+                <button
+                  class="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-blue-50 rounded-md"
+                  [title]="'cars.view' | t"
+                  (click)="view(item)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+                    <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+                <button
+                  class="p-2 cursor-pointer text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md"
+                  [title]="'cars.edit' | t"
+                  (click)="edit(item)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+                    <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
+                  </svg>
+                </button>
+                <button
+                  class="p-2 cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"
+                  [title]="'cars.delete' | t"
+                  (click)="delete(item)"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="8" class="text-center text-gray-500 py-10">{{ 'services.empty' | t }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <section class="pagination shadow-sm flex justify-between items-center text-gray-600">
+    <span>{{ 'common.showing' | t: range }}</span>
+    <div class="flex gap-2">
+      <button
+        [disabled]="page === 0"
+        class="border rounded px-2 py-1 cursor-pointer border-gray-300 disabled:opacity-50"
+        (click)="prevPage()"
+      >
+        {{ 'common.prev' | t }}
+      </button>
+      <button
+        [disabled]="page + 1 >= totalPages"
+        class="border rounded px-2 py-1 cursor-pointer border-gray-300 disabled:opacity-50"
+        (click)="nextPage()"
+      >
+        {{ 'common.next' | t }}
+      </button>
+    </div>
+  </section>
+</div>
+
+<app-modal [isVisible]="isAddEditVisible" (close)="closeModals()" [closeOnBackdropClick]="true">
+  @if (isAddEditVisible) {
+    <app-add-edit-services (closeModal)="closeModals()" (saved)="refresh()"></app-add-edit-services>
+  }
+</app-modal>
+
+<app-modal
+  [isVisible]="!!viewedItem"
+  (close)="closeModals()"
+  [closeOnBackdropClick]="true"
+  [showCloseButton]="false"
+>
+  @if (viewedItem) {
+    <app-view-services [item]="viewedItem" (closeModal)="closeModals()"></app-view-services>
+  }
+</app-modal>

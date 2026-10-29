@@ -37,6 +37,7 @@ export const SECTION_ROUTES: Partial<Record<CategorySlug, string>> = {
   'real-estate': '/properties',
   cars: '/cars',
   'second-hand': '/second-hand',
+  services: '/services',
 };
 
 export const CATEGORIES: MarketplaceCategory[] = [
@@ -78,7 +79,7 @@ export const CATEGORIES: MarketplaceCategory[] = [
     tagline: 'Repairs, cleaning, tutoring & more',
     description: 'Hire trusted local professionals for repairs, moving, cleaning, lessons and more.',
     accent: 'bg-violet-50 text-violet-700',
-    available: false,
+    available: true,
   },
   {
     slug: 'electronics',

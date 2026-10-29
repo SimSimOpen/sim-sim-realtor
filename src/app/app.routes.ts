@@ -39,6 +39,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/second-hand/second-hand').then((m) => m.SecondHand),
       },
       {
+        path: 'services',
+        loadComponent: () => import('./pages/services/services').then((m) => m.Services),
+      },
+      {
         path: 'agents',
         canActivate: [adminOnlyGuard],
         loadComponent: () => import('./pages/agents/agents').then((m) => m.Agents),
