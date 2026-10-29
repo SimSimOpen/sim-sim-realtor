@@ -41,19 +41,8 @@
       </div>
     } @else {
       <form [formGroup]="form" class="w-full flex flex-col gap-6">
-        <div class="flex flex-wrap justify-between gap-3">
-          <div class="flex gap-3">
-            @for (type of offerTypes; track type) {
-              <button
-                type="button"
-                class="px-3 py-2 border rounded-md border-blue-400 text-sm cursor-pointer hover:bg-blue-500 hover:text-white transition-colors"
-                [ngClass]="form.value.offerType === type ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'"
-                (click)="form.patchValue({ offerType: type })"
-              >
-                {{ common.formatEnum(type) }}
-              </button>
-            }
-          </div>
+        <!-- Condition only: second-hand items are always for sale, so there is no offer-type choice. -->
+        <div class="flex flex-wrap gap-3">
           <div class="flex gap-3">
             @for (condition of conditions; track condition) {
               <button
@@ -70,7 +59,7 @@
 
         <section>
           <h6 class="text-lg font-semibold">{{ 'secondHand.item' | t }}</h6>
-          <div class="grid grid-cols-3 gap-5 mt-4">
+          <div class="grid grid-cols-4 gap-5 mt-4">
             <label class="flex flex-col text-sm">
               <span class="mb-1">{{ 'secondHand.subCategory' | t }} *</span>
               <select class="field" formControlName="subCategory">
@@ -82,6 +71,14 @@
             <label class="flex flex-col text-sm col-span-2">
               <span class="mb-1">{{ 'table.price' | t }} ($) *</span>
               <input class="field" type="text" formControlName="price" placeholder="e.g, 120" moneyFormat />
+            </label>
+            <label class="flex flex-col text-sm">
+              <span class="mb-1">{{ 'secondHand.availability' | t }}</span>
+              <select class="field" formControlName="occupancyStatus">
+                @for (status of occupancyStatuses; track status) {
+                  <option [value]="status">{{ common.formatEnum(status) }}</option>
+                }
+              </select>
             </label>
           </div>
         </section>

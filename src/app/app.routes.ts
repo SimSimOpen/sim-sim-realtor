@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Auth } from './pages/auth/auth';
+import { adminOnlyGuard, authGuard } from './account/auth.guard';
 
 export const routes: Routes = [
   {
@@ -14,6 +15,7 @@ export const routes: Routes = [
   },
   {
     path: '',
+    canActivate: [authGuard],
     loadComponent: () => import('./layouts/agent-main/agent-main').then((m) => m.AgentMain),
     children: [
       {
@@ -38,10 +40,12 @@ export const routes: Routes = [
       },
       {
         path: 'agents',
+        canActivate: [adminOnlyGuard],
         loadComponent: () => import('./pages/agents/agents').then((m) => m.Agents),
       },
       {
         path: 'users',
+        canActivate: [adminOnlyGuard],
         loadComponent: () => import('./pages/users/users').then((m) => m.Users),
       },
       {

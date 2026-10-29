@@ -7,10 +7,12 @@
         <p class="text-gray-500 text-sm mt-1">{{ address() }}</p>
       }
       <div class="flex flex-wrap gap-2 mt-3 text-xs">
-        <span
-          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full font-medium border bg-purple-50 text-purple-700 border-purple-200"
-          >{{ common.formatEnum(item().offerType) }}</span
-        >
+        @if (item().occupancyStatus === 'SOLD') {
+          <span
+            class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full font-medium border bg-red-50 text-red-700 border-red-200"
+            >{{ 'enum.SOLD' | t }}</span
+          >
+        }
         <span
           class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full font-medium border bg-gray-100 text-gray-700 border-gray-200"
           >{{ common.formatEnum(item().listingStatus) }}</span
@@ -115,10 +117,12 @@
     <!-- Wide screens: badges + title + price, laid out like the property modal. -->
     <div class="hidden md:block">
       <div class="flex items-center gap-3 mb-2">
-        <span
-          class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-purple-50 text-purple-700 border-purple-200"
-          >{{ common.formatEnum(item().offerType) }}</span
-        >
+        @if (item().occupancyStatus === 'SOLD') {
+          <span
+            class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-red-50 text-red-700 border-red-200"
+            >{{ 'enum.SOLD' | t }}</span
+          >
+        }
         <span
           class="capitalize inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-gray-100 text-gray-700 border-gray-200"
           >{{ common.formatEnum(item().listingStatus) }}</span
@@ -395,7 +399,9 @@
               @if (item().price != null) {
                 <div>
                   <div class="text-2xl font-bold text-gray-900">$ {{ item().price | number }}</div>
-                  <div class="text-sm text-gray-500 capitalize">{{ common.formatEnum(item().offerType) }}</div>
+                  @if (item().occupancyStatus === 'SOLD') {
+                    <div class="text-sm font-medium text-red-600 capitalize">{{ 'enum.SOLD' | t }}</div>
+                  }
                 </div>
               }
               <div class="space-y-3">

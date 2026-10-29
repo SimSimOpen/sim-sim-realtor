@@ -4,6 +4,9 @@ import { AuthResponse, UserDetailsResponse } from '../shared/models/auth';
 import { Observable } from 'rxjs';
 import { AUTH_URL } from '../shared/constants/urls';
 
+/** Roles that see the whole admin, matching the backend's `hasAnyAuthority('ADMIN','MANAGER')`. */
+export const ADMIN_ROLES = ['ADMIN', 'MANAGER'];
+
 @Injectable({
   providedIn: 'root',
 })
@@ -30,25 +33,53 @@ export class AuthService {
     });
   }
 
-  checkTokenValidity(): Observable<boolean> {
-    return this.http.get<boolean>(`${AUTH_URL}/access/validate-token`);
-  }
-
   /**
-   * Account fields of the signed-in user. The auth mapper never fills `profile` here, so the
-   * avatar and profile data have to come from the profile module (UserService.getProfile).
+   * Account fields of the signed-in user.
    */
   getUserData(): Observable<UserDetailsResponse> {
     return this.http.get<UserDetailsResponse>(`${AUTH_URL}/v1/details`);
   }
 
   isAuthenticated(): boolean {
-    const token = this.getToken();
-    return !!token;
+    return !this.isTokenExpired();
   }
 
-  isAdmin(): Observable<boolean> {
-    return this.http.get<boolean>(`${AUTH_URL}/access/is-admin`);
+  /** True while the stored token exists and has not passed its `exp` claim. */
+  isTokenExpired(): boolean {
+    const token = this.getToken();
+    if (!token) {
+      return true;
+    }
+    const exp = this.decodeTokenPayload(token)?.['exp'];
+    // No exp claim means a token we cannot date, so let the API be the judge instead of blocking.
+    return typeof exp === 'number' ? exp * 1000 <= Date.now() : false;
+  }
+
+  /** Roles of the signed-in user as stored at login; empty for an anonymous or legacy session. */
+  getRoles(): string[] {
+    return this.getUserDataFromStorage()?.authorities ?? [];
+  }
+
+  hasAnyRole(roles: string[]): boolean {
+    const owned = this.getRoles();
+    return roles.some((role) => owned.includes(role));
+  }
+
+  /** ADMIN and MANAGER see every menu; AGENT sees its own products, reports, analytics, settings. */
+  isAdminRole(): boolean {
+    return this.hasAnyRole(ADMIN_ROLES);
+  }
+
+  private decodeTokenPayload(token: string): Record<string, unknown> | null {
+    const payload = token.split('.')[1];
+    if (!payload) {
+      return null;
+    }
+    try {
+      return JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    } catch {
+      return null;
+    }
   }
 
   storeToken(token: string) {

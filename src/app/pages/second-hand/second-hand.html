@@ -24,6 +24,10 @@
       <div class="text-2xl font-bold text-green-500">{{ stats?.active_count || 0 }}</div>
     </div>
     <div class="card">
+      <div>{{ 'enum.SOLD' | t }}</div>
+      <div class="text-2xl font-bold text-red-500">{{ stats?.sold_count || 0 }}</div>
+    </div>
+    <div class="card">
       <div>{{ 'enum.DRAFT' | t }}</div>
       <div class="text-2xl font-bold">{{ stats?.draft_count || 0 }}</div>
     </div>
@@ -97,7 +101,18 @@
                 ${{ item.price | number }}
               }
             </td>
-            <td class="text-sm text-gray-700">{{ common.formatEnum(item.listingStatus) }}</td>
+            <td class="text-sm text-gray-700">
+              <div class="flex items-center gap-2">
+                <span>{{ common.formatEnum(item.listingStatus) }}</span>
+                @if (isSold(item)) {
+                  <span
+                    class="px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200"
+                  >
+                    {{ 'enum.SOLD' | t }}
+                  </span>
+                }
+              </div>
+            </td>
             <td>{{ item.views }}</td>
             <td>
               @if (item.listingStatus === 'ACTIVE') {
@@ -106,6 +121,29 @@
             </td>
             <td>
               <div class="flex gap-1 items-center">
+                <button
+                  class="p-2 cursor-pointer rounded-md"
+                  [ngClass]="
+                    isSold(item)
+                      ? 'text-green-600 hover:bg-green-50'
+                      : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
+                  "
+                  [title]="isSold(item) ? ('secondHand.markAvailable' | t) : ('secondHand.markSold' | t)"
+                  (click)="toggleSold(item)"
+                >
+                  @if (isSold(item)) {
+                    <!-- Sold already: clicking puts the item back on sale. -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="m9 12 2 2 4-4"></path>
+                    </svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+                      <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42z"></path>
+                      <path d="M7 7h.01"></path>
+                    </svg>
+                  }
+                </button>
                 <button
                   class="p-2 cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-blue-50 rounded-md"
                   [title]="'cars.view' | t"

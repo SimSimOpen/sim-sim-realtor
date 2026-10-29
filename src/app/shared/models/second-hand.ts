@@ -1,4 +1,4 @@
-import { ListingStatus, OfferType } from '../enums/PropertyStatus';
+import { ListingStatus, OccupancyStatus, OfferType } from '../enums/PropertyStatus';
 import { ItemCondition, SecondHandCategory } from '../enums/SecondHand';
 import { PropertyMedia } from './properties';
 
@@ -12,8 +12,11 @@ export interface SecondHandItem {
 
   subCategory: SecondHandCategory | null;
   condition: ItemCondition | null;
+  /** Kept for items created before the field was dropped from the form; new items send null. */
   offerType: OfferType | null;
   listingStatus: ListingStatus;
+  /** AVAILABLE or SOLD; null on older rows and treated as available. */
+  occupancyStatus: OccupancyStatus | null;
 
   ownerContact: string | null;
   agent: string;
@@ -41,6 +44,7 @@ export type SecondHandRequest = Partial<
 export interface SecondHandStats {
   total_count: number;
   active_count: number;
+  sold_count: number;
   draft_count: number;
 }
 

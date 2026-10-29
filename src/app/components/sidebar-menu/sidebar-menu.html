@@ -1,5 +1,5 @@
 <nav class="sidebar-component">
-  <section class="header">
+  <section class="header hover:cursor-pointer" (click)="redirectToClientPage()">
     <span class="logo bg-blue-600 p-2 rounded-sm">
       <app-brand-mark iconClass="h-5 w-5 text-white" />
     </span>
@@ -72,64 +72,66 @@
           </svg> </span
         ><span>{{ 'menu.products' | t }}</span>
       </li>
-      <li
-        class="menu-item"
-        [class.active]="common.activeMenuItem === '/agents'"
-        (click)="common.setActiveMenuItem('/agents'); common.navigateTo('/agents')"
-      >
-        <span class="p-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-users h-5 w-5"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
-            <path d="M6 21v-2a4 4 0 0 1 4 -4h2.5" />
-            <path d="M17.001 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
-            <path d="M19.001 15.5v1.5" />
-            <path d="M19.001 21v1.5" />
-            <path d="M22.032 17.25l-1.299 .75" />
-            <path d="M17.27 20l-1.3 .75" />
-            <path d="M15.97 17.25l1.3 .75" />
-            <path d="M20.733 20l1.3 .75" />
-          </svg>
-        </span>
-        <span>{{ 'menu.agents' | t }}</span>
-      </li>
-      <li
-        class="menu-item"
-        [class.active]="common.activeMenuItem === '/users'"
-        (click)="common.setActiveMenuItem('/users'); common.navigateTo('/users')"
-      >
-        <span class="p-2"
-          ><svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="lucide lucide-users h-5 w-5"
-            aria-hidden="true"
-            data-id="element-38"
-          >
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-            <path d="M16 3.128a4 4 0 0 1 0 7.744"></path>
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-            <circle cx="9" cy="7" r="4"></circle></svg></span
-        ><span>{{ 'menu.users' | t }}</span>
-      </li>
+      @if (isAdmin) {
+        <li
+          class="menu-item"
+          [class.active]="common.activeMenuItem === '/agents'"
+          (click)="common.setActiveMenuItem('/agents'); common.navigateTo('/agents')"
+        >
+          <span class="p-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-users h-5 w-5"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+              <path d="M6 21v-2a4 4 0 0 1 4 -4h2.5" />
+              <path d="M17.001 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+              <path d="M19.001 15.5v1.5" />
+              <path d="M19.001 21v1.5" />
+              <path d="M22.032 17.25l-1.299 .75" />
+              <path d="M17.27 20l-1.3 .75" />
+              <path d="M15.97 17.25l1.3 .75" />
+              <path d="M20.733 20l1.3 .75" />
+            </svg>
+          </span>
+          <span>{{ 'menu.agents' | t }}</span>
+        </li>
+        <li
+          class="menu-item"
+          [class.active]="common.activeMenuItem === '/users'"
+          (click)="common.setActiveMenuItem('/users'); common.navigateTo('/users')"
+        >
+          <span class="p-2"
+            ><svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-users h-5 w-5"
+              aria-hidden="true"
+              data-id="element-38"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+              <path d="M16 3.128a4 4 0 0 1 0 7.744"></path>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+              <circle cx="9" cy="7" r="4"></circle></svg></span
+          ><span>{{ 'menu.users' | t }}</span>
+        </li>
+      }
       <li
         class="menu-item"
         [class.active]="common.activeMenuItem === '/reports'"

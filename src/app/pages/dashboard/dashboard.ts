@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Common } from '../../shared/common';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { ModalComponent } from '../../components/modal/modal.component';
@@ -49,6 +49,7 @@ export class Dashboard extends BaseModalComponent implements OnInit {
   private ctr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   public categoryService = inject(CategoryService);
 
   /** The types offered by the dashboard's Add Product picker, in display order. */
@@ -59,9 +60,7 @@ export class Dashboard extends BaseModalComponent implements OnInit {
   }
 
   /** Account numbers are admin-only on the backend, so agents never ask for them. */
-  readonly isAdmin = (this.authService.getUserDataFromStorage()?.authorities ?? []).some(
-    (role) => role === 'ADMIN' || role === 'MANAGER',
-  );
+  readonly isAdmin = this.authService.isAdminRole();
 
   listings = signal<ListingDashboard | null>(null);
   users = signal<UserDashboard | null>(null);
@@ -102,6 +101,15 @@ export class Dashboard extends BaseModalComponent implements OnInit {
       this.loadPresence();
       const timer = setInterval(() => !document.hidden && this.loadPresence(), PRESENCE_REFRESH_MS);
       this.destroyRef.onDestroy(() => clearInterval(timer));
+    }
+    // Arriving from the client app's "Post ad" button: open the Add Product picker straight away.
+    if (this.route.snapshot.queryParamMap.get('add') === '1') {
+      this.openModal();
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { add: null },
+        replaceUrl: true,
+      });
     }
   }
 

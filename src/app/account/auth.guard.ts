@@ -1,51 +1,31 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, RedirectCommand, Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import { catchError, map, of } from 'rxjs';
 
-export const authGuard: CanActivateFn = (route, state) => {
+/**
+ * Keeps anonymous visitors on the login screen. The check is local (token presence plus its `exp`
+ * claim) so guarding a route costs no extra request; an expired token is dropped with the session.
+ */
+export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  if (!authService.isAuthenticated()) {
-    const loginPath = router.parseUrl('/');
+  if (authService.isTokenExpired()) {
     authService.clearStorage();
-    return new RedirectCommand(loginPath);
+    return new RedirectCommand(router.parseUrl('/'));
   }
-
-  return authService.checkTokenValidity().pipe(
-    map(() => {
-      return true;
-    }),
-    catchError(() => {
-      const loginPath = router.parseUrl('/');
-      authService.clearStorage();
-      return of(new RedirectCommand(loginPath));
-    })
-  );
+  return true;
 };
 
-export const isAdminGuard: CanActivateFn = (route, state) => {
+/**
+ * Admin-only pages (Agents, Users). An agent who deep-links here stays inside the app and lands on
+ * the dashboard rather than being signed out, because their token is perfectly valid.
+ */
+export const adminOnlyGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  if (!authService.isAuthenticated()) {
-    const homePath = router.parseUrl('/');
-    return new RedirectCommand(homePath);
+  if (authService.isTokenExpired()) {
+    authService.clearStorage();
+    return new RedirectCommand(router.parseUrl('/'));
   }
-  authService.checkTokenValidity().pipe(
-    map(() => {
-      return true;
-    }),
-    catchError(() => {
-      const loginPath = router.parseUrl('/');
-      authService.clearStorage();
-      return of(new RedirectCommand(loginPath));
-    })
-  );
-  return authService
-    .isAdmin()
-    .pipe(
-      map((isAdmin) =>
-        isAdmin ? true : new RedirectCommand(router.parseUrl('/'))
-      )
-    );
+  return authService.isAdminRole() ? true : new RedirectCommand(router.parseUrl('/dashboard'));
 };

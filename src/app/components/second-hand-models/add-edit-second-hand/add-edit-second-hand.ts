@@ -14,7 +14,7 @@ import { ProductStateService } from '../../../shared/services/product/state/prod
 import { LocationService } from '../../../shared/services/location.service';
 import { SecondHandItem, SecondHandRequest } from '../../../shared/models/second-hand';
 import { District, Place, Property, Region } from '../../../shared/models/properties';
-import { ListingStatus, OfferType } from '../../../shared/enums/PropertyStatus';
+import { ListingStatus, OccupancyStatus } from '../../../shared/enums/PropertyStatus';
 import { ItemCondition, SecondHandCategory } from '../../../shared/enums/SecondHand';
 import { DISTRICT_CENTERS } from '../../../shared/constants/district-centers';
 import { Common } from '../../../shared/common';
@@ -57,7 +57,8 @@ export class AddEditSecondHand implements OnInit {
   /** Shared with the photo components: they upload into, and refresh, this slot. */
   editing = this.productState.editingProperty;
 
-  readonly offerTypes = [OfferType.FOR_SALE, OfferType.FOR_RENT];
+  /** Second-hand items are either still on the market or sold; renting is not a thing here. */
+  readonly occupancyStatuses = [OccupancyStatus.AVAILABLE, OccupancyStatus.SOLD];
   readonly subCategories = Object.values(SecondHandCategory);
   readonly conditions = Object.values(ItemCondition);
 
@@ -78,7 +79,7 @@ export class AddEditSecondHand implements OnInit {
     price: [''],
     subCategory: [SecondHandCategory.OTHER as string],
     condition: [ItemCondition.USED as string],
-    offerType: [OfferType.FOR_SALE as string],
+    occupancyStatus: [OccupancyStatus.AVAILABLE as string],
     ownerContact: [''],
     regionId: [null as number | null],
     districtId: [null as number | null],
@@ -110,7 +111,7 @@ export class AddEditSecondHand implements OnInit {
       price: item.price != null ? String(item.price) : '',
       subCategory: item.subCategory ?? SecondHandCategory.OTHER,
       condition: item.condition ?? ItemCondition.USED,
-      offerType: item.offerType ?? OfferType.FOR_SALE,
+      occupancyStatus: item.occupancyStatus ?? OccupancyStatus.AVAILABLE,
       ownerContact: item.ownerContact ?? '',
       address: item.location?.[3] ?? '',
       latitude: item.latitude,
@@ -267,8 +268,8 @@ export class AddEditSecondHand implements OnInit {
       price: toNumber(v.price),
       subCategory: v.subCategory as SecondHandCategory,
       condition: v.condition as ItemCondition,
-      offerType: v.offerType as OfferType,
       listingStatus,
+      occupancyStatus: v.occupancyStatus as OccupancyStatus,
       ownerContact: v.ownerContact?.trim() || null,
       regionId: v.regionId,
       districtId: v.districtId,

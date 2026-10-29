@@ -15,7 +15,7 @@ import { Property } from '../../shared/models/properties';
 import { SecondHandApiService } from '../../shared/services/second-hand/second-hand-api.service';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 import { ListingKindService } from '../../shared/services/product/listing-kind.service';
-import { ListingStatus } from '../../shared/enums/PropertyStatus';
+import { ListingStatus, OccupancyStatus } from '../../shared/enums/PropertyStatus';
 import { SecondHandCategory } from '../../shared/enums/SecondHand';
 import { Common } from '../../shared/common';
 import { EnvironmentTs } from '../../environments/environment';
@@ -159,6 +159,25 @@ export class SecondHand implements OnInit, OnDestroy {
         this.refresh();
       },
       error: () => this.toast.error(this.i18n.t('secondHand.deleteError'), this.i18n.t('common.error')),
+    });
+  }
+
+  isSold(item: SecondHandItem): boolean {
+    return item.occupancyStatus === OccupancyStatus.SOLD;
+  }
+
+  /**
+   * One-click flip between on-sale and sold. Only occupancyStatus is sent; the backend ignores
+   * nulls, so the rest of the item is left exactly as it is.
+   */
+  toggleSold(item: SecondHandItem) {
+    const occupancyStatus = this.isSold(item) ? OccupancyStatus.AVAILABLE : OccupancyStatus.SOLD;
+    this.itemApi.update(item.id, { occupancyStatus }).subscribe({
+      next: () => {
+        this.toast.success(this.i18n.t('secondHand.saved'));
+        this.refresh();
+      },
+      error: () => this.toast.error(this.i18n.t('secondHand.saveError'), this.i18n.t('common.error')),
     });
   }
 

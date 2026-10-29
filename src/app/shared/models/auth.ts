@@ -4,13 +4,14 @@ export interface AuthResponse {
   email: string;
   authorities: string[];
   token: string;
-  profile: UserProfile;
+  profile: UserProfile | null;
   refreshToken: string;
 }
 
 /**
- * Shape of GET /api/auth/v1/details and PUT /api/auth/v1/update-user. The auth mapper never fills
- * `profile`, so it always arrives null — the profile module is the source of profile data.
+ * Shape of GET /api/auth/v1/details and PUT /api/auth/v1/update-user. `profile` is null only for an
+ * account that has no profile row yet; the avatar URL it carries is relative, so the profile module
+ * (UserService.getProfile) is still the place to read the absolute minio URL from.
  */
 export interface UserDetailsResponse {
   id: number;
