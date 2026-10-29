@@ -80,7 +80,12 @@ export class ProductApiService {
     size: number,
     sort?: string,
   ): Observable<Page<Property>> {
-    let params = new HttpParams().append('page', page.toString()).append('size', size.toString());
+    // `mine` tells the backend this is the panel's own list: an agent gets his listings in any
+    // status, an admin gets everything. The client browse does not send it and stays public.
+    let params = new HttpParams()
+      .append('page', page.toString())
+      .append('size', size.toString())
+      .append('mine', 'true');
     if (filter.search) {
       params = params.append('search', filter.search);
     }

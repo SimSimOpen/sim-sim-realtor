@@ -131,6 +131,11 @@ export class Cars implements OnInit, OnDestroy {
     this.isAddEditVisible = true;
   }
 
+  /** Back to the product-type picker this section was opened from. */
+  backToProducts() {
+    this.router.navigate(['/products']);
+  }
+
   edit(car: Car) {
     // The shared photo components read id and medias from the editing slot.
     this.productState.startEditing(car as unknown as Property);

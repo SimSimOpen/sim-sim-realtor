@@ -135,6 +135,11 @@ export class SecondHand implements OnInit, OnDestroy {
     this.isAddEditVisible = true;
   }
 
+  /** Back to the product-type picker this section was opened from. */
+  backToProducts() {
+    this.router.navigate(['/products']);
+  }
+
   edit(item: SecondHandItem) {
     // The shared photo components read id and medias from the editing slot.
     this.productState.startEditing(item as unknown as Property);

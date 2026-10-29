@@ -6,6 +6,12 @@
     </div>
     <div class="flex items-center">
       <button
+        class="border border-gray-300 bg-white text-gray-700 shadow-sm py-2 px-5 font-semibold hover:bg-gray-100 mr-2 flex items-center space-x-1"
+        (click)="backToProducts()"
+      >
+        {{ 'products.back' | t }}
+      </button>
+      <button
         class="bg-blue-700 text-white shadow-sm py-2 px-5 font-semibold hover:shadow-md hover:bg-blue-800 flex items-center space-x-1"
         (click)="openAddPropertyModal()"
       >

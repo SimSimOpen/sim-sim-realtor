@@ -51,6 +51,9 @@ export class CarApiService {
     if (filter.search) params = params.append('search', filter.search);
     if (filter.listingStatus) params = params.append('listingStatus', filter.listingStatus);
     if (filter.bodyType) params = params.append('bodyTypes', filter.bodyType);
+    // Same scoping as agents-all above: the backend only narrows the list to the caller when the
+    // request says it is the panel's own list, so the client browse stays public.
+    params = params.append('mine', 'true');
     return this.http.get<Page<Car>>(`${CAR_URL}/filter`, { params });
   }
 }

@@ -120,6 +120,10 @@ export class Properties extends BaseModalComponent {
   openAddPropertyModal(): void {
     this.isAddEditPropertyModalVisible = true;
   }
+  /** Back to the product-type picker this section was opened from. */
+  backToProducts(): void {
+    this.router.navigate(['/products']);
+  }
   editProperty(property: Property): void {
     this.productStateService.startEditing(property);
     this.isAddEditPropertyModalVisible = true;
