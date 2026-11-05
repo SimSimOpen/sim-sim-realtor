@@ -12,7 +12,7 @@ import { BrandMark } from '../brand-mark';
   styleUrl: './sidebar-menu.scss',
 })
 export class SidebarMenu {
-  /** Agents and Users manage other accounts, so only ADMIN and MANAGER see those two entries. */
+  /** Agents manages other accounts, so only ADMIN and MANAGER see that entry. */
   readonly isAdmin: boolean;
 
   constructor(

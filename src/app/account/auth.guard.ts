@@ -17,7 +17,7 @@ export const authGuard: CanActivateFn = () => {
 };
 
 /**
- * Admin-only pages (Agents, Users). An agent who deep-links here stays inside the app and lands on
+ * Admin-only pages (Agents). An agent who deep-links here stays inside the app and lands on
  * the dashboard rather than being signed out, because their token is perfectly valid.
  */
 export const adminOnlyGuard: CanActivateFn = () => {

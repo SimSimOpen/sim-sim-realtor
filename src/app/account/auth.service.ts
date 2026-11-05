@@ -65,7 +65,7 @@ export class AuthService {
     return roles.some((role) => owned.includes(role));
   }
 
-  /** ADMIN and MANAGER see every menu; AGENT sees its own products, reports, analytics, settings. */
+  /** ADMIN and MANAGER see every menu; AGENT sees its own products and settings. */
   isAdminRole(): boolean {
     return this.hasAnyRole(ADMIN_ROLES);
   }
