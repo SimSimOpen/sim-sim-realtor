@@ -257,13 +257,13 @@
   <section class="properties-table shadow-sm">
     <div class="flex justify-between p-5 border-b border-gray-300 mb-5">
       <div>
-        <h2 class="font-bold">{{ 'dash.recentProperties' | t }}</h2>
-        <span class="text-gray-600 text-sm">{{ 'dash.recentPropertiesSub' | t }}</span>
+        <h2 class="font-bold">{{ 'dash.recentProducts' | t }}</h2>
+        <span class="text-gray-600 text-sm">{{ 'dash.recentProductsSub' | t }}</span>
       </div>
       <div>
         <button
           class="border rounded border-gray-300 text-sm px-3 py-1 cursor-pointer hover:bg-gray-100 hover:shadow-sm transition-shadow"
-          (click)="common.setActiveMenuItem('/properties'); common.navigateTo('/properties')"
+          (click)="common.setActiveMenuItem('/products'); common.navigateTo('/products')"
         >
           {{ 'common.viewAll' | t }}
         </button>
@@ -273,7 +273,7 @@
       <table class="w-full">
         <thead class="text-gray-500 text-xs text-light uppercase border-b border-gray-300">
           <tr class="text-left">
-            <th>{{ 'table.property' | t }}</th>
+            <th>{{ 'table.product' | t }}</th>
             <th>{{ 'table.type' | t }}</th>
             <th>{{ 'table.details' | t }}</th>
             <th>{{ 'table.price' | t }}</th>
@@ -284,42 +284,41 @@
           </tr>
         </thead>
         <tbody>
-          @for (property of recentProperties; track property.id) {
+          @for (row of recentProducts(); track row.kind + row.item.id) {
             <tr class="border-b border-gray-300 last:border-b-0 hover:bg-gray-50 cursor-default">
               <td>
                 <div class="flex items-center gap-4">
                   <img
                     class="h-8 w-12 object-cover rounded-lg border border-gray-200"
-                    [src]="getPropertiesCoverImage(property)"
+                    [src]="productCover(row)"
                     [alt]="'property.image' | t"
                   />
                   <div>
-                    <div>{{ property.title || ('dash.untitledDraft' | t: { id: property.id ?? '' }) }}</div>
+                    <div>{{ productTitle(row) }}</div>
                     <div class="text-xs text-gray-500">
-                      {{ property?.address || ('common.noAddress' | t) }}
+                      {{ productPlace(row) || ('common.noAddress' | t) }}
                     </div>
                   </div>
                 </div>
               </td>
-              <td class="text-sm text-gray-700">{{ common.formatEnum(property.type) }}</td>
-              <td>
-                {{ property.numberOfRooms }} / {{ property.floor ?? '—' }} / {{ property.totalFloors ?? '—' }}
+              <td class="text-sm text-gray-700">
+                <div>{{ productCategory(row) }}</div>
+                <div class="text-xs text-gray-500">{{ productSubtype(row) }}</div>
               </td>
+              <td class="text-sm text-gray-700">{{ productDetails(row) || '—' }}</td>
               <td>
-                @if (property.price) {
-                  ${{ property.price }}
-                  <span class="text-xs text-gray-500">{{ common.formatEnum(property.offerType) }}</span>
-                } @else {
-                  —
+                {{ productPrice(row) || '—' }}
+                @if (row.kind === 'property' && row.item.price != null) {
+                  <span class="text-xs text-gray-500">{{ common.formatEnum(row.item.offerType) }}</span>
                 }
               </td>
-              <td class="text-sm text-gray-700">{{ common.formatEnum(property.listingStatus) }}</td>
-              <td>{{ property.views ?? 0 }}</td>
-              <td>{{ property.dateListed | date: 'dd-MM-yyyy' }}</td>
+              <td class="text-sm text-gray-700">{{ common.formatEnum(row.item.listingStatus) }}</td>
+              <td>{{ row.item.views ?? 0 }}</td>
+              <td>{{ row.item.createdAt | date: 'dd-MM-yyyy' }}</td>
               <td class="flex gap-1">
                 <button
                   class="p-2 cursor-pointer text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                  (click)="openViewPropertyModal(property)"
+                  (click)="openProduct(row)"
                   [attr.aria-label]="'common.view' | t"
                 >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
@@ -412,5 +411,38 @@
 >
   @if (isViewPropertyModalVisible) {
     <app-view-property (closeModal)="closeModal()"></app-view-property>
+  }
+</app-modal>
+
+<app-modal
+  [isVisible]="!!viewedCar"
+  (close)="closeModal()"
+  [closeOnBackdropClick]="true"
+  [showCloseButton]="false"
+>
+  @if (viewedCar) {
+    <app-view-car [car]="viewedCar" (closeModal)="closeModal()"></app-view-car>
+  }
+</app-modal>
+
+<app-modal
+  [isVisible]="!!viewedSecondHand"
+  (close)="closeModal()"
+  [closeOnBackdropClick]="true"
+  [showCloseButton]="false"
+>
+  @if (viewedSecondHand) {
+    <app-view-second-hand [item]="viewedSecondHand" (closeModal)="closeModal()"></app-view-second-hand>
+  }
+</app-modal>
+
+<app-modal
+  [isVisible]="!!viewedService"
+  (close)="closeModal()"
+  [closeOnBackdropClick]="true"
+  [showCloseButton]="false"
+>
+  @if (viewedService) {
+    <app-view-services [item]="viewedService" (closeModal)="closeModal()"></app-view-services>
   }
 </app-modal>

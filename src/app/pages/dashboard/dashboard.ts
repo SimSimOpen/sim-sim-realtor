@@ -1,14 +1,21 @@
-import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import { Common } from '../../shared/common';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { CategoryIcon } from '../../components/category-icon';
 import { ViewProperty } from '../../components/view-property-models/view-property/view-property';
+import { ViewCar } from '../../components/car-models/view-car/view-car';
+import { ViewSecondHand } from '../../components/second-hand-models/view-second-hand/view-second-hand';
+import { ViewServices } from '../../components/services-models/view-services/view-services';
 import { ColumnChart, ColumnDatum } from '../../components/column-chart/column-chart';
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
+import { CarApiService } from '../../shared/services/car/car-api.service';
+import { SecondHandApiService } from '../../shared/services/second-hand/second-hand-api.service';
+import { ServicesApiService } from '../../shared/services/services/services-api.service';
 import {
   ActivityItem,
   DashboardService,
@@ -19,34 +26,63 @@ import {
 } from '../../shared/services/dashboard.service';
 import { AuthService } from '../../account/auth.service';
 import { Property } from '../../shared/models/properties';
+import { Car } from '../../shared/models/cars';
+import { SecondHandItem } from '../../shared/models/second-hand';
+import { ServiceItem } from '../../shared/models/services';
+import { PriceMode } from '../../shared/enums/Services';
 import { EnvironmentTs } from '../../environments/environment';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
 import { CategoryService } from '../../shared/services/category.service';
-import { CategorySlug, SECTION_ROUTES } from '../../shared/constants/categories';
+import { CategorySlug, findCategory, SECTION_ROUTES } from '../../shared/constants/categories';
 
-const RECENT_PROPERTIES = 5;
+const RECENT_PRODUCTS = 5;
 const ACTIVITY_ITEMS = 8;
 /** Matches the frontends' heartbeat, so the number is never more than one beat stale. */
 const PRESENCE_REFRESH_MS = 30_000;
 
+/** The property DTO carries these too, but the shared Property model does not declare them. */
+type PropertyListing = Property & { createdAt?: string; updatedAt?: string | null; location?: string[] };
+
+/** One row of the latest-products table; `kind` says which API and view modal it belongs to. */
+type RecentProduct =
+  | { kind: 'property'; slug: 'real-estate'; item: PropertyListing }
+  | { kind: 'car'; slug: 'cars'; item: Car }
+  | { kind: 'second-hand'; slug: 'second-hand'; item: SecondHandItem }
+  | { kind: 'services'; slug: 'services'; item: ServiceItem };
+
 @Component({
   selector: 'app-dashboard',
-  imports: [ModalComponent, CommonModule, ViewProperty, TranslatePipe, ColumnChart, CategoryIcon],
+  imports: [
+    ModalComponent,
+    CommonModule,
+    ViewProperty,
+    ViewCar,
+    ViewSecondHand,
+    ViewServices,
+    TranslatePipe,
+    ColumnChart,
+    CategoryIcon,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard extends BaseModalComponent implements OnInit {
   isTypePickerVisible = false;
   isViewPropertyModalVisible = false;
+  viewedCar: Car | null = null;
+  viewedSecondHand: SecondHandItem | null = null;
+  viewedService: ServiceItem | null = null;
 
   public common = inject(Common);
   private productApiService = inject(ProductApiService);
+  private carApi = inject(CarApiService);
+  private secondHandApi = inject(SecondHandApiService);
+  private servicesApi = inject(ServicesApiService);
   private productStateService = inject(ProductStateService);
   private dashboardService = inject(DashboardService);
   private authService = inject(AuthService);
   private i18n = inject(I18nService);
-  private ctr = inject(ChangeDetectorRef);
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -67,7 +103,7 @@ export class Dashboard extends BaseModalComponent implements OnInit {
   presence = signal<PresenceStats | null>(null);
   loadError = signal(false);
   chartSeries = signal<'listings' | 'signups'>('listings');
-  recentProperties: Property[] = [];
+  recentProducts = signal<RecentProduct[]>([]);
 
   readonly chartData = computed<ColumnDatum[]>(() => {
     const months =
@@ -96,7 +132,7 @@ export class Dashboard extends BaseModalComponent implements OnInit {
 
   ngOnInit() {
     this.loadDashboard();
-    this.fetchRecentProperties();
+    this.fetchRecentProducts();
     if (this.isAdmin) {
       this.loadPresence();
       const timer = setInterval(() => !document.hidden && this.loadPresence(), PRESENCE_REFRESH_MS);
@@ -135,18 +171,125 @@ export class Dashboard extends BaseModalComponent implements OnInit {
     }
   }
 
-  fetchRecentProperties() {
-    this.productApiService.getAgentsProperties(0, RECENT_PROPERTIES, 'createdAt,desc').subscribe({
-      next: (properties) => {
-        this.recentProperties = properties.content.map((property) => {
-          property.dateListed = (property as any)['updatedAt'] ?? (property as any)['createdAt'];
-          property.address = (property as any)['location']?.[3] || '';
-          return property;
-        });
-        this.ctr.detectChanges();
-      },
-      error: (error) => console.error('Error fetching properties:', error),
+  /**
+   * There is no cross-category endpoint, so take the newest few of each type and merge them: the
+   * overall newest rows are always among those. A type that fails to load only drops its own rows.
+   */
+  fetchRecentProducts() {
+    const sort = 'createdAt,desc';
+    const load = (rows: Observable<RecentProduct[]>) =>
+      rows.pipe(
+        catchError((error) => {
+          console.error('Error fetching recent products:', error);
+          return of<RecentProduct[]>([]);
+        }),
+      );
+    forkJoin([
+      load(
+        this.productApiService.getAgentsProperties(0, RECENT_PRODUCTS, sort).pipe(
+          map((page) =>
+            page.content.map((item: PropertyListing): RecentProduct => {
+              item.dateListed = item.updatedAt ?? item.createdAt;
+              item.address = item.location?.[3] || '';
+              return { kind: 'property', slug: 'real-estate', item };
+            }),
+          ),
+        ),
+      ),
+      load(
+        this.carApi
+          .list({ search: '', listingStatus: null, bodyType: null }, 0, RECENT_PRODUCTS, sort)
+          .pipe(map((page) => page.content.map((item): RecentProduct => ({ kind: 'car', slug: 'cars', item })))),
+      ),
+      load(
+        this.secondHandApi
+          .list({ search: '', listingStatus: null, subCategory: null }, 0, RECENT_PRODUCTS, sort)
+          .pipe(
+            map((page) =>
+              page.content.map((item): RecentProduct => ({ kind: 'second-hand', slug: 'second-hand', item })),
+            ),
+          ),
+      ),
+      load(
+        this.servicesApi
+          .list({ search: '', listingStatus: null, kind: null, category: null }, 0, RECENT_PRODUCTS, sort)
+          .pipe(
+            map((page) =>
+              page.content.map((item): RecentProduct => ({ kind: 'services', slug: 'services', item })),
+            ),
+          ),
+      ),
+    ]).subscribe((groups) => {
+      const addedAt = (row: RecentProduct) => new Date(row.item.createdAt ?? 0).getTime();
+      this.recentProducts.set(
+        groups
+          .flat()
+          .sort((a, b) => addedAt(b) - addedAt(a))
+          .slice(0, RECENT_PRODUCTS),
+      );
     });
+  }
+
+  productCategory(row: RecentProduct): string {
+    const category = findCategory(row.slug);
+    return category ? this.categoryService.text(category, 'title') : '';
+  }
+
+  productTitle(row: RecentProduct): string {
+    if (row.kind === 'car') {
+      const name = [row.item.brand, row.item.model, row.item.year].filter(Boolean).join(' ');
+      if (name) return name;
+    }
+    return row.item.title || this.i18n.t('dash.untitledDraft', { id: row.item.id ?? '' });
+  }
+
+  productPlace(row: RecentProduct): string {
+    const location = row.item.location ?? [];
+    return location[3] || location.slice(0, 3).filter(Boolean).join(' • ');
+  }
+
+  productSubtype(row: RecentProduct): string {
+    switch (row.kind) {
+      case 'property':
+        return this.common.formatEnum(row.item.type);
+      case 'car':
+        return this.common.formatEnum(row.item.bodyType);
+      case 'second-hand':
+        return this.common.formatEnum(row.item.subCategory);
+      case 'services':
+        return this.common.formatEnum(row.item.category);
+    }
+  }
+
+  productDetails(row: RecentProduct): string {
+    switch (row.kind) {
+      case 'property':
+        return `${row.item.numberOfRooms ?? '—'} / ${row.item.floor ?? '—'} / ${row.item.totalFloors ?? '—'}`;
+      case 'car':
+        return [
+          row.item.mileage != null
+            ? `${row.item.mileage.toLocaleString(this.i18n.lang())} ${this.i18n.t('cars.km')}`
+            : '',
+          this.common.formatEnum(row.item.transmission),
+        ]
+          .filter(Boolean)
+          .join(' · ');
+      case 'second-hand':
+        return this.common.formatEnum(row.item.condition);
+      case 'services':
+        return this.common.formatEnum(row.item.kind);
+    }
+  }
+
+  productPrice(row: RecentProduct): string {
+    if (row.kind === 'services' && (row.item.price == null || row.item.priceMode === PriceMode.NEGOTIABLE)) {
+      return this.i18n.t('services.negotiable');
+    }
+    if (row.item.price == null) return '';
+    const amount = `$${row.item.price.toLocaleString(this.i18n.lang())}`;
+    return row.kind === 'services' && row.item.priceMode === PriceMode.HOURLY
+      ? `${amount} ${this.i18n.t('services.perHour')}`
+      : amount;
   }
 
   activityText(item: ActivityItem): string {
@@ -203,10 +346,10 @@ export class Dashboard extends BaseModalComponent implements OnInit {
     };
   }
 
-  getPropertiesCoverImage(property: Property) {
-    const defaultPath = `${EnvironmentTs.MEDIA_URL}/real-estate-media/default/house.png`;
-    const cover = property.medias?.find((media) => media.isCoverImage === true);
-    return cover ? cover.mediaUrl : defaultPath;
+  productCover(row: RecentProduct): string {
+    const medias = row.item.medias;
+    const cover = medias?.find((media) => media.isCoverImage === true) ?? medias?.[0];
+    return cover?.mediaUrl ?? `${EnvironmentTs.MEDIA_URL}/real-estate-media/default/house.png`;
   }
 
   override openModal(): void {
@@ -226,14 +369,30 @@ export class Dashboard extends BaseModalComponent implements OnInit {
   override closeModal(): void {
     this.isTypePickerVisible = false;
     this.isViewPropertyModalVisible = false;
+    this.viewedCar = null;
+    this.viewedSecondHand = null;
+    this.viewedService = null;
     this.productStateService.clearEditing();
-    // A property may have been added or changed in the modal.
+      // A product may have been added or changed in the modal.
     this.loadDashboard();
-    this.fetchRecentProperties();
+    this.fetchRecentProducts();
   }
 
-  openViewPropertyModal(property: Property): void {
-    this.productStateService.startEditing(property);
-    this.isViewPropertyModalVisible = true;
+  openProduct(row: RecentProduct): void {
+    switch (row.kind) {
+      case 'property':
+        this.productStateService.startEditing(row.item);
+        this.isViewPropertyModalVisible = true;
+        break;
+      case 'car':
+        this.viewedCar = row.item;
+        break;
+      case 'second-hand':
+        this.viewedSecondHand = row.item;
+        break;
+      case 'services':
+        this.viewedService = row.item;
+        break;
+    }
   }
 }
