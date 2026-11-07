@@ -15,6 +15,10 @@ export class UserService {
     return this.http.put<UserDetailsResponse>(`${AUTH_URL}/v1/update-user`, userData);
   }
 
+  getDetails(): Observable<UserDetailsResponse> {
+    return this.http.get<UserDetailsResponse>(`${AUTH_URL}/v1/details`);
+  }
+
   /**
    * The profile module is the only place that prefixes the media base URL, so this is the source
    * of truth for an absolute avatar URL (the auth endpoints return the stored relative path or no

@@ -446,6 +446,13 @@
           }
         </div>
 
+        <div>
+          <app-telegram-username-field
+            inputId="edit-telegram"
+            [control]="editAgentForm.controls.telegramUsername"
+          />
+        </div>
+
         <div class="flex justify-end gap-2 pt-4">
           <button
             type="button"
@@ -498,6 +505,7 @@
           <div><dt class="text-gray-500">{{ 'common.username' | t }}</dt><dd class="font-medium text-gray-900 break-all">{{ agent.raw.username }}</dd></div>
           <div><dt class="text-gray-500">{{ 'common.email' | t }}</dt><dd class="font-medium text-gray-900 break-all">{{ agent.raw.email }}</dd></div>
           <div><dt class="text-gray-500">{{ 'common.phone' | t }}</dt><dd class="font-medium text-gray-900">{{ agent.raw.phoneNumber || '-' }}</dd></div>
+          <div><dt class="text-gray-500">{{ 'telegram.label' | t }}</dt><dd class="font-medium text-gray-900">{{ agent.raw.telegramUsername ? '@' + agent.raw.telegramUsername : '-' }}</dd></div>
           <div><dt class="text-gray-500">{{ 'agents.propertiesAssigned' | t }}</dt><dd class="font-medium text-gray-900">{{ agent.properties }}</dd></div>
           <div><dt class="text-gray-500">{{ 'common.joined' | t }}</dt><dd class="font-medium text-gray-900">{{ agent.raw.createdAt ? (agent.raw.createdAt | date: 'medium') : '-' }}</dd></div>
           @if (agent.raw.deletedAt) {

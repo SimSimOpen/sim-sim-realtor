@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { AuthService } from '../../account/auth.service';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserData, UserDetailsResponse, UserProfile } from '../../shared/models/auth';
 import { UserService } from '../../shared/services/user.service';
@@ -8,6 +8,8 @@ import { ToastrService } from 'ngx-toastr';
 import { MediaService } from '../../shared/services/media.service';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
+import { telegramUsernameValidator } from '../../shared/services/telegram.service';
+import { TelegramUsernameField } from '../../components/telegram-username-field/telegram-username-field';
 
 /** The avatar upload is async server-side; poll the profile this many times, once a second. */
 const AVATAR_POLL_ATTEMPTS = 9;
@@ -15,7 +17,7 @@ const AVATAR_POLL_MS = 1000;
 
 @Component({
   selector: 'app-settings',
-  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, TelegramUsernameField],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
 })
@@ -40,6 +42,13 @@ export class Settings {
   private fb = inject(FormBuilder);
   private cdr = inject(ChangeDetectorRef);
 
+  readonly telegramControl = new FormControl('', {
+    nonNullable: true,
+    validators: [telegramUsernameValidator],
+  });
+  /** Until the saved username has loaded, saving must not overwrite it with the empty field. */
+  private telegramLoaded = false;
+
   userForm: FormGroup = this.buildForm();
 
   ngOnInit() {
@@ -55,6 +64,12 @@ export class Settings {
       this.authService.getUserDataFromStorage()?.profile?.profileImageUrl || this.profileImageUrl;
     // The stored copy can predate the current avatar, so the profile is re-read on every open.
     this.loadProfile();
+    this.userService.getDetails().subscribe({
+      next: (details) => {
+        this.telegramControl.setValue(details.telegramUsername ?? '');
+        this.telegramLoaded = true;
+      },
+    });
   }
   private buildForm(): FormGroup {
     return this.fb.group({
@@ -62,15 +77,21 @@ export class Settings {
       email: [''],
       phoneNumber: [''],
       fullName: [''],
+      telegramUsername: this.telegramControl,
     });
   }
 
   updateUserData() {
+    if (this.telegramControl.invalid) {
+      this.telegramControl.markAsTouched();
+      return;
+    }
     const updatedData: Omit<UserData, 'description'> = {
       username: this.userForm.value.username,
       email: this.userForm.value.email,
       phoneNumber: this.userForm.value.phoneNumber,
       fullName: this.userForm.value.fullName,
+      telegramUsername: this.telegramLoaded ? this.telegramControl.value : null,
     };
     this.userService.updateUserData(updatedData).subscribe({
       next: (response) => {

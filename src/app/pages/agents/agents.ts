@@ -15,6 +15,8 @@ import { ModalComponent } from '../../components/modal/modal.component';
 import { AgentResponse, AgentService } from '../../shared/services/agent.service';
 import { MediaService } from '../../shared/services/media.service';
 import { formatPhone, PHONE_PATTERN, PhoneMask } from '../../shared/utils/phone-mask.directive';
+import { telegramUsernameValidator } from '../../shared/services/telegram.service';
+import { TelegramUsernameField } from '../../components/telegram-username-field/telegram-username-field';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
 
@@ -41,7 +43,7 @@ const passwordsMatch = (group: AbstractControl): ValidationErrors | null => {
 
 @Component({
   selector: 'app-agents',
-  imports: [CommonModule, ReactiveFormsModule, ModalComponent, PhoneMask, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent, PhoneMask, TranslatePipe, TelegramUsernameField],
   templateUrl: './agents.html',
   styleUrl: './agents.scss',
 })
@@ -89,6 +91,7 @@ export class Agents implements OnInit {
     firstName: [''],
     lastName: [''],
     phoneNumber: ['', [Validators.pattern(PHONE_PATTERN)]],
+    telegramUsername: ['', [telegramUsernameValidator]],
   });
 
   agents = signal<Agent[]>([]);
@@ -190,6 +193,7 @@ export class Agents implements OnInit {
       firstName: agent.firstName,
       lastName: agent.lastName,
       phoneNumber: agent.phone === '-' ? '' : formatPhone(agent.phone),
+      telegramUsername: agent.raw.telegramUsername ?? '',
     });
     this.setAvatarFile(null);
     this.avatarPreview.set(agent.avatarUrl);
@@ -247,7 +251,8 @@ export class Agents implements OnInit {
       return;
     }
 
-    const { username, email, firstName, lastName, phoneNumber } = this.editAgentForm.getRawValue();
+    const { username, email, firstName, lastName, phoneNumber, telegramUsername } =
+      this.editAgentForm.getRawValue();
     this.isUpdating.set(true);
 
     this.agentService
@@ -257,6 +262,7 @@ export class Agents implements OnInit {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         phoneNumber: phoneNumber.trim(),
+        telegramUsername,
       })
       .pipe(finalize(() => this.isUpdating.set(false)))
       .subscribe({

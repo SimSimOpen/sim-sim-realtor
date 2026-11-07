@@ -11,6 +11,7 @@ export interface AgentUpdateRequest {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  telegramUsername: string;
 }
 
 /** Shape returned by GET /api/auth/v1/admin/agents (same fields as AuthResponse, minus tokens). */
@@ -19,6 +20,7 @@ export interface AgentResponse {
   username: string;
   email: string;
   phoneNumber?: string | null;
+  telegramUsername?: string | null;
   authorities: string[];
   enabled?: boolean;
   propertiesCount?: number;

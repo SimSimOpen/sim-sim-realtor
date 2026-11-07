@@ -17,6 +17,7 @@ export interface UserDetailsResponse {
   id: number;
   username: string;
   email: string;
+  telegramUsername?: string | null;
   roles: string[];
   profile: UserProfile | null;
 }
@@ -40,4 +41,6 @@ export interface UserData {
   phoneNumber: string;
   fullName: string;
   description: string;
+  /** null leaves the saved username alone; an empty string clears it. */
+  telegramUsername: string | null;
 }
