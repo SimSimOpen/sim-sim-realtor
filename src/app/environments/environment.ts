@@ -1,6 +1,8 @@
 export const EnvironmentTs = {
   production: false,
   URL: 'http://localhost:8080',
+  /** The public site, for opening a listing from a chat. */
+  CLIENT_URL: 'http://localhost:4200',
   QR_URL: 'http://localhost:4200',
   // Yandex Maps JavaScript API v3 key. Restricted by HTTP Referer in the Yandex developer cabinet,
   // so every domain this app is served from (including localhost) must be on its allow-list.

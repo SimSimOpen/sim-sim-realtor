@@ -21,6 +21,12 @@ export class SseService {
   private eventSource?: EventSource;
   private notificationSubject = new Subject<string>();
   public notification$ = this.notificationSubject.asObservable();
+  /** Raw JSON of `chat` events: new messages in the agent's listing chats. */
+  private chatSubject = new Subject<string>();
+  public chat$ = this.chatSubject.asObservable();
+  /** Emits on every successful (re)connect, so listeners can catch up on what they missed. */
+  private connectedSubject = new Subject<void>();
+  public connected$ = this.connectedSubject.asObservable();
 
   private connectionStateSubject = new BehaviorSubject<ConnectionState>(
     ConnectionState.DISCONNECTED,
@@ -131,8 +137,13 @@ export class SseService {
         // this.toastr.success('[SSE] ✓ Connection opened', 'Success');
         this.reconnectAttempts = 0;
         this.connectionStateSubject.next(ConnectionState.CONNECTED);
+        this.connectedSubject.next();
       });
     };
+
+    this.eventSource.addEventListener('chat', (event: any) => {
+      this.ngZone.run(() => this.chatSubject.next(event.data));
+    });
 
     this.eventSource.addEventListener('connected', (event: any) => {
       this.ngZone.run(() => {
