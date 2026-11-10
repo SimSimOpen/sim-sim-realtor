@@ -10,9 +10,12 @@ import { SsoService } from './account/sso.service';
   styleUrl: './app.scss',
 })
 export class App {
+  protected readonly sso = inject(SsoService);
+
   constructor() {
-    // A token handed over by the client app has to be stored before the presence heartbeat starts.
-    inject(SsoService).consumeHandoff();
+    // A token handed over by the client app has to be stored before the presence heartbeat starts;
+    // this also starts the router's first navigation (see SsoService.start).
+    this.sso.start();
     inject(PresenceService).start();
   }
 
