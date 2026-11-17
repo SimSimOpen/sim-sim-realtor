@@ -21,8 +21,10 @@ export interface ChatMessage {
 /** A conversation as the signed-in agent sees it; `counterpartName` is the client. */
 export interface Conversation {
   id: number;
-  kind: ListingKind;
-  listingId: number;
+  /** A "Talk to admin" chat from the public site: no listing; every admin sees it. */
+  support: boolean;
+  kind: ListingKind | null;
+  listingId: number | null;
   listingTitle: string | null;
   role: ChatRole;
   counterpartName: string | null;

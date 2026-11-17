@@ -53,7 +53,11 @@ const PAGE_SLUG: Record<ListingKind, string> = {
                 <div class="truncate text-sm font-semibold text-gray-900">
                   {{ c.counterpartName || ('chat.client' | t) }}
                 </div>
-                <div class="truncate text-xs text-blue-700">{{ c.listingTitle }}</div>
+                @if (c.support) {
+                  <div class="truncate text-xs text-violet-700">{{ 'chat.support' | t }}</div>
+                } @else {
+                  <div class="truncate text-xs text-blue-700">{{ c.listingTitle }}</div>
+                }
                 @if (c.lastMessage) {
                   <div class="truncate text-xs text-gray-500">
                     @if (c.lastSenderRole === c.role) {
@@ -91,15 +95,19 @@ const PAGE_SLUG: Record<ListingKind, string> = {
                 </svg>
               </button>
               <div class="min-w-0 flex-1">
-                <a
-                  class="block truncate text-sm font-semibold text-gray-900 hover:text-blue-700 hover:underline"
-                  [href]="listingUrl(c.kind, c.listingId)"
-                  target="_blank"
-                  rel="noopener"
-                  [title]="'chat.openListing' | t"
-                >
-                  {{ c.listingTitle }}
-                </a>
+                @if (c.support) {
+                  <div class="truncate text-sm font-semibold text-violet-700">{{ 'chat.support' | t }}</div>
+                } @else {
+                  <a
+                    class="block truncate text-sm font-semibold text-gray-900 hover:text-blue-700 hover:underline"
+                    [href]="listingUrl(c.kind!, c.listingId!)"
+                    target="_blank"
+                    rel="noopener"
+                    [title]="'chat.openListing' | t"
+                  >
+                    {{ c.listingTitle }}
+                  </a>
+                }
                 <div class="truncate text-xs text-gray-500">{{ c.counterpartName }}</div>
               </div>
             </header>
