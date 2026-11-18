@@ -1,4 +1,6 @@
 import { ChangeDetectorRef, Component, EventEmitter, inject, OnInit, Output, signal } from '@angular/core';
+import { ListingOwnerPicker } from '../../add-edit-property-models/listing-owner-picker';
+import { ListingOwnerService } from '../../../shared/services/listing-owner.service';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
@@ -34,6 +36,7 @@ const DEFAULT_POINT = { latitude: 41.2995, longitude: 69.2401 };
 @Component({
   selector: 'app-add-edit-car',
   imports: [
+    ListingOwnerPicker,
     CommonModule,
     ReactiveFormsModule,
     SelectMethod,
@@ -50,6 +53,7 @@ const DEFAULT_POINT = { latitude: 41.2995, longitude: 69.2401 };
   styleUrl: '../../add-edit-property-models/add-edit-property/add-edit-property.scss',
 })
 export class AddEditCar implements OnInit {
+  private listingOwner = inject(ListingOwnerService);
   @Output() closeModal = new EventEmitter<void>();
   @Output() saved = new EventEmitter<void>();
 
@@ -293,7 +297,7 @@ export class AddEditCar implements OnInit {
       return;
     }
     // Photos can be added later, so a car may start as an empty draft.
-    this.carApi.createDraft().subscribe({
+    this.carApi.createDraft(this.listingOwner.agentId()).subscribe({
       next: (car) => {
         this.productState.startEditing(car as unknown as Property);
         this.steps = 2;

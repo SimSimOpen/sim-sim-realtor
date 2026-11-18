@@ -28,6 +28,7 @@
           <div class="font-semibold">{{ 'secondHand.photosTitle' | t }}</div>
           <span class="text-sm text-gray-500">{{ 'secondHand.photosSubtitle' | t }}</span>
         </div>
+        <app-listing-owner-picker></app-listing-owner-picker>
         @if (selectMethod === '') {
           <app-select-method (changeMethod)="changeMethod($event)"></app-select-method>
         } @else if (selectMethod === 'computer') {

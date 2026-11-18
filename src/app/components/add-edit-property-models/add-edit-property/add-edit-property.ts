@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, inject, Output, signal } from '@angular/core';
+import { ListingOwnerPicker } from '../listing-owner-picker';
 import { UploadFromComputer } from '../upload-from-computer';
 import { SelectMethod } from '../select-method';
 import { UploadFromMobile } from '../upload-from-mobile';
@@ -31,6 +32,7 @@ import { DISTRICT_CENTERS } from '../../../shared/constants/district-centers';
 @Component({
   selector: 'app-add-edit-property',
   imports: [
+    ListingOwnerPicker,
     UploadFromComputer,
     UploadFromMobile,
     SelectMethod,

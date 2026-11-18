@@ -11,8 +11,10 @@ const SERVICES_URL = `${PRODUCT_URL}/v1/services`;
 export class ServicesApiService {
   private http = inject(HttpClient);
 
-  createDraft(): Observable<ServiceItem> {
-    return this.http.post<ServiceItem>(`${SERVICES_URL}/create-draft`, {});
+  /** `agentId` (admin only) creates the draft in that agent's name. */
+  createDraft(agentId?: number | null): Observable<ServiceItem> {
+    const params = agentId != null ? { agentId } : undefined;
+    return this.http.post<ServiceItem>(`${SERVICES_URL}/create-draft`, {}, { params });
   }
 
   update(id: number, item: ServiceRequest): Observable<ServiceItem> {

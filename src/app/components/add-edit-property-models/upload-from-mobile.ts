@@ -1,5 +1,6 @@
 import { ListingKindService } from '../../shared/services/product/listing-kind.service';
 import { ChangeDetectorRef, Component, EventEmitter, inject, Output } from '@angular/core';
+import { ListingOwnerService } from '../../shared/services/listing-owner.service';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { MediaService } from '../../shared/services/media.service';
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
@@ -122,6 +123,7 @@ import { I18nService } from '../../shared/i18n/i18n.service';
   </div>`,
 })
 export class UploadFromMobile {
+  private listingOwner = inject(ListingOwnerService);
   private i18n = inject(I18nService);
   @Output() changeMethod = new EventEmitter<'computer' | 'mobile' | ''>();
   @Output() disableContinueDetails = new EventEmitter<void>();
@@ -167,7 +169,7 @@ export class UploadFromMobile {
 
   ngOnInit() {
     if (!this.property()) {
-      this.productApiService.createDraft().subscribe({
+      this.productApiService.createDraft(this.listingOwner.agentId()).subscribe({
         next: (property) => {
           this.productStateService.updateEditing(property);
           this.property_id = property.id as number;

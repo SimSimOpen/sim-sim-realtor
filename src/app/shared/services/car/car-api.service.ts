@@ -11,8 +11,10 @@ const CAR_URL = `${PRODUCT_URL}/v1/car`;
 export class CarApiService {
   private http = inject(HttpClient);
 
-  createDraft(): Observable<Car> {
-    return this.http.post<Car>(`${CAR_URL}/create-draft`, {});
+  /** `agentId` (admin only) creates the draft in that agent's name. */
+  createDraft(agentId?: number | null): Observable<Car> {
+    const params = agentId != null ? { agentId } : undefined;
+    return this.http.post<Car>(`${CAR_URL}/create-draft`, {}, { params });
   }
 
   update(id: number, car: CarRequest): Observable<Car> {

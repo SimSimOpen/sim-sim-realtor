@@ -8,11 +8,13 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { map, Observable, of, switchMap, tap } from 'rxjs';
 import { MediaService } from '../../shared/services/media.service';
 import { Property } from '../../shared/models/properties';
 import { UploadedFiles } from './uploaded-files';
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
+import { ListingOwnerService } from '../../shared/services/listing-owner.service';
 import { Common } from '../../shared/common';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
@@ -103,15 +105,27 @@ export class UploadFromComputer {
   private toast = inject(ToastrService);
   private productStateService = inject(ProductStateService);
   private common = inject(Common);
+  private productApiService = inject(ProductApiService);
+  private listingOwner = inject(ListingOwnerService);
 
   property = this.productStateService.editingProperty;
 
   uploadFile(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      const files = input.files;
-      const property_id = this.property()?.id as number;
-      this.mediaService.uploadProductImage(property_id, Array.from(files)).subscribe({
+      const files = Array.from(input.files);
+      const property_id = this.property()?.id;
+      const agentId = this.listingOwner.agentId();
+      // The media service creates a missing draft for the caller, so a draft meant for another
+      // agent has to exist before the first upload.
+      const draftId$: Observable<number | null> =
+        !property_id && agentId != null
+          ? this.productApiService.createDraft(agentId).pipe(
+              tap((draft) => this.productStateService.updateEditing(draft)),
+              map((draft) => draft.id as number),
+            )
+          : of(property_id ?? null);
+      draftId$.pipe(switchMap((id) => this.mediaService.uploadProductImage(id, files))).subscribe({
         next: (response) => {
           this.toast.success(this.i18n.t('upload.uploaded'));
           this.productStateService.setPropertyId(response);

@@ -16,8 +16,10 @@ const SECOND_HAND_URL = `${PRODUCT_URL}/v1/second-hand`;
 export class SecondHandApiService {
   private http = inject(HttpClient);
 
-  createDraft(): Observable<SecondHandItem> {
-    return this.http.post<SecondHandItem>(`${SECOND_HAND_URL}/create-draft`, {});
+  /** `agentId` (admin only) creates the draft in that agent's name. */
+  createDraft(agentId?: number | null): Observable<SecondHandItem> {
+    const params = agentId != null ? { agentId } : undefined;
+    return this.http.post<SecondHandItem>(`${SECOND_HAND_URL}/create-draft`, {}, { params });
   }
 
   update(id: number, item: SecondHandRequest): Observable<SecondHandItem> {

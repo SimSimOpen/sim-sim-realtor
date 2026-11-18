@@ -65,8 +65,10 @@ export class ProductApiService {
     });
   }
 
-  createDraft(): Observable<Property> {
-    return this.http.post<Property>(`${this.listingUrl}/create-draft`, {});
+  /** `agentId` (admin only) creates the draft in that agent's name. */
+  createDraft(agentId?: number | null): Observable<Property> {
+    const params = agentId != null ? { agentId } : undefined;
+    return this.http.post<Property>(`${this.listingUrl}/create-draft`, {}, { params });
   }
   deleteProduct(property_id: number) {
     return this.http.delete(`${PRODUCT_URL}/v1/property/${property_id}`, {

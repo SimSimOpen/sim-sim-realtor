@@ -79,6 +79,7 @@
             {{ 'addEdit.photosSubtitle' | t }}
           </span>
         </div>
+        <app-listing-owner-picker></app-listing-owner-picker>
         @if (selectMethod === '') {
           <app-select-method (changeMethod)="changeMethod($event)"></app-select-method>
         } @else if (selectMethod == 'computer') {
