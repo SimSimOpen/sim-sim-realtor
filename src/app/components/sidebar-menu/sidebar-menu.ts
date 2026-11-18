@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../account/auth.service';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { BrandMark } from '../brand-mark';
+import { EnvironmentTs } from '../../environments/environment';
 
 @Component({
   selector: 'app-sidebar-menu',
@@ -33,6 +34,6 @@ export class SidebarMenu {
     this.authService.clearStorage();
   }
   redirectToClientPage() {
-    window.open('https://simsim.fit', '_self');
+    window.open(EnvironmentTs.CLIENT_URL, '_self');
   }
 }

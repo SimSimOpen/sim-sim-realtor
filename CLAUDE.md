@@ -1,6 +1,6 @@
 # SimSim admin / agent panel
 
-Angular 21 (standalone components, signals) + Tailwind 4. Served at admin.simsim.fit; the build
+Angular 21 (standalone components, signals) + Tailwind 4. Served at admin.simsim-open.uz; the build
 output folder is `dist/sim-sim-admin`. Backend: `new-backend` repo; public site: `sim-sim-client`.
 
 ## Workflow — read first

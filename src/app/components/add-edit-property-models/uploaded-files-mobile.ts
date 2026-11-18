@@ -6,6 +6,7 @@ import { PRODUCT_URL } from '../../shared/constants/urls';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
 import { ListingKindService } from '../../shared/services/product/listing-kind.service';
+import { EnvironmentTs } from '../../environments/environment';
 
 @Component({
   selector: 'app-uploaded-files-mobile',
@@ -17,8 +18,7 @@ import { ListingKindService } from '../../shared/services/product/listing-kind.s
       >
         <img
           [src]="
-            medias[0]?.mediaUrl ??
-            'https://api.media.simsim.fit/real-estate-media/default/house.png'
+            medias[0]?.mediaUrl ?? defaultCoverUrl
           "
           [alt]="'upload.cover' | t"
           class="object-cover"
@@ -121,6 +121,7 @@ import { ListingKindService } from '../../shared/services/product/listing-kind.s
   </div>`,
 })
 export class UploadedFilesMobile {
+  readonly defaultCoverUrl = `${EnvironmentTs.MEDIA_URL}/real-estate-media/default/house.png`;
   private i18n = inject(I18nService);
   @Input() medias: PropertyMedia[] = [];
   @Input() token!: string;
