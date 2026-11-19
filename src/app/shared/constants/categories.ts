@@ -66,20 +66,20 @@ export const CATEGORIES: MarketplaceCategory[] = [
     available: true,
   },
   {
-    slug: 'home-garden',
-    title: 'Home & Garden',
-    tagline: 'Furniture, decor & appliances',
-    description: 'Furnish your space with furniture, home appliances, decor and garden supplies.',
-    accent: 'bg-emerald-50 text-emerald-700',
-    available: false,
-  },
-  {
     slug: 'services',
     title: 'Services',
     tagline: 'Repairs, cleaning, tutoring & more',
     description: 'Hire trusted local professionals for repairs, moving, cleaning, lessons and more.',
     accent: 'bg-violet-50 text-violet-700',
     available: true,
+  },
+  {
+    slug: 'home-garden',
+    title: 'Home & Garden',
+    tagline: 'Furniture, decor & appliances',
+    description: 'Furnish your space with furniture, home appliances, decor and garden supplies.',
+    accent: 'bg-emerald-50 text-emerald-700',
+    available: false,
   },
   {
     slug: 'electronics',

@@ -59,6 +59,10 @@ export class CategoryService {
           sortOrder: dto.sortOrder,
         };
       })
-      .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+      // Live categories first, then the inactive ones; the backend's sortOrder within each group.
+      .sort(
+        (a, b) =>
+          Number(b.available) - Number(a.available) || (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
+      );
   }
 }
