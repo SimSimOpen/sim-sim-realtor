@@ -79,12 +79,16 @@ const MAX_BAR = 24;
           <div class="font-semibold text-gray-900">{{ valueText()(d.value) }}</div>
         </div>
       }
-      <table class="sr-only">
-        <caption>{{ ariaLabel() }}</caption>
-        @for (d of data(); track d.fullLabel) {
-          <tr><th scope="row">{{ d.fullLabel }}</th><td>{{ d.value }}</td></tr>
-        }
-      </table>
+      <!-- sr-only on a wrapper, not the table: on a <table> it clips only the table box, and
+           Firefox then paints the <caption> over the chart. -->
+      <div class="sr-only">
+        <table>
+          <caption>{{ ariaLabel() }}</caption>
+          @for (d of data(); track d.fullLabel) {
+            <tr><th scope="row">{{ d.fullLabel }}</th><td>{{ d.value }}</td></tr>
+          }
+        </table>
+      </div>
     </div>
   `,
   styles: `
