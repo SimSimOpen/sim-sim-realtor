@@ -25,6 +25,8 @@ export interface Property {
   ownerContact?: string;
   agent: string;
   agentId: number;
+  /** What the backend actually sends (agentId above is never filled). */
+  agentID?: number;
   latitude?: number | null;
   longitude?: number | null;
 }

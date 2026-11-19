@@ -19,12 +19,15 @@ import { Common } from '../../shared/common';
 import { EnvironmentTs } from '../../environments/environment';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
+import { AgentDirectoryService } from '../../shared/services/agent-directory.service';
+import { ListingAgentCell } from '../../components/listing-agent-cell';
 
 const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-second-hand',
   imports: [
+    ListingAgentCell,
     CommonModule,
     FormsModule,
     ModalComponent,
@@ -37,6 +40,10 @@ const PAGE_SIZE = 10;
   styleUrl: '../properties/properties.scss',
 })
 export class SecondHand implements OnInit, OnDestroy {
+  private agentDirectory = inject(AgentDirectoryService);
+  /** Admins see every agent's listings, so their table names each listing's agent. */
+  readonly showAgent = this.agentDirectory.showsAllListings();
+
   private itemApi = inject(SecondHandApiService);
   private productState = inject(ProductStateService);
   private listingKind = inject(ListingKindService);
@@ -61,6 +68,7 @@ export class SecondHand implements OnInit, OnDestroy {
   viewedItem: SecondHandItem | null = null;
 
   ngOnInit() {
+    this.agentDirectory.load();
     // The shared photo components upload to whatever kind this says.
     this.listingKind.kind.set('second-hand');
     this.refresh();

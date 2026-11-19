@@ -19,11 +19,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SearchAndFilterService } from '../../shared/services/search-and-filter.service';
 import { TranslatePipe } from '../../shared/i18n/translate.pipe';
 import { I18nService } from '../../shared/i18n/i18n.service';
+import { AgentDirectoryService } from '../../shared/services/agent-directory.service';
+import { ListingAgentCell } from '../../components/listing-agent-cell';
 import { ListingKindService } from '../../shared/services/product/listing-kind.service';
 
 @Component({
   selector: 'app-properties',
   imports: [
+    ListingAgentCell,
     ModalComponent,
     ConfirmDelete,
     AddEditProperty,
@@ -37,6 +40,10 @@ import { ListingKindService } from '../../shared/services/product/listing-kind.s
   // providers: [PaginationService],
 })
 export class Properties extends BaseModalComponent {
+  private agentDirectory = inject(AgentDirectoryService);
+  /** Admins see every agent's listings, so their table names each listing's agent. */
+  readonly showAgent = this.agentDirectory.showsAllListings();
+
   isAddEditPropertyModalVisible: boolean = false;
   isViewPropertyModalVisible: boolean = false;
 
@@ -57,6 +64,7 @@ export class Properties extends BaseModalComponent {
   private router = inject(Router);
 
   ngOnInit() {
+    this.agentDirectory.load();
     this.listingKind.kind.set('property');
     this.updateDataset();
     // Arriving from the dashboard's Add Product picker: open the add form straight away.

@@ -112,6 +112,9 @@
           <th>{{ 'table.details' | t }}</th>
           <th>{{ 'table.price' | t }}</th>
           <th>{{ 'table.status' | t }}</th>
+          @if (showAgent) {
+            <th>{{ 'table.agent' | t }}</th>
+          }
           <th>{{ 'table.views' | t }}</th>
           <th>{{ 'table.date' | t }}</th>
           <th>{{ 'table.actions' | t }}</th>
@@ -210,6 +213,9 @@
             </td>
             <td class="text-sm font-semibold text-gray-900">${{ property.price }}</td>
             <td class="text-sm text-gray-700">{{ common.formatEnum(property.offerType || '') }}</td>
+            @if (showAgent) {
+              <td><app-listing-agent-cell [agentId]="property.agentID" [fallback]="property.agent" /></td>
+            }
             <td>{{ property.views }}</td>
             <td>{{ publishedDate(property) | date: 'dd-MM-yyyy' }}</td>
             <td>

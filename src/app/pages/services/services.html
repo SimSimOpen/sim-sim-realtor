@@ -87,6 +87,9 @@
           <th>{{ 'services.category' | t }}</th>
           <th>{{ 'services.price' | t }}</th>
           <th>{{ 'table.status' | t }}</th>
+          @if (showAgent) {
+            <th>{{ 'table.agent' | t }}</th>
+          }
           <th>{{ 'table.views' | t }}</th>
           <th>{{ 'table.date' | t }}</th>
           <th>{{ 'table.actions' | t }}</th>
@@ -126,6 +129,9 @@
               }
             </td>
             <td class="text-sm text-gray-700">{{ common.formatEnum(item.listingStatus) }}</td>
+            @if (showAgent) {
+              <td><app-listing-agent-cell [agentId]="item.agentID" [fallback]="item.agent" /></td>
+            }
             <td>{{ item.views }}</td>
             <td>
               @if (item.listingStatus === 'ACTIVE') {
@@ -169,7 +175,7 @@
           </tr>
         } @empty {
           <tr>
-            <td colspan="8" class="text-center text-gray-500 py-10">{{ 'services.empty' | t }}</td>
+            <td [attr.colspan]="showAgent ? 9 : 8" class="text-center text-gray-500 py-10">{{ 'services.empty' | t }}</td>
           </tr>
         }
       </tbody>
