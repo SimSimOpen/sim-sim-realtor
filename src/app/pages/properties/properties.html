@@ -263,7 +263,8 @@
                 </button>
                 <button
                   class="p-2 cursor-pointer text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                  (click)="deleteProperty(property.id)"
+                  [title]="'cars.delete' | t"
+                  (click)="askDelete(property)"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -343,3 +344,12 @@
     <app-view-property (closeModal)="closeModal()"></app-view-property>
   }
 </app-modal>
+
+<app-confirm-delete
+  [visible]="!!pendingDelete()"
+  [name]="pendingDelete()?.title"
+  message="properties.confirmDelete"
+  [busy]="isDeleting()"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+></app-confirm-delete>

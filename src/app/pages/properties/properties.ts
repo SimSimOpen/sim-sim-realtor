@@ -1,7 +1,9 @@
-import { ChangeDetectorRef, Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core';
+import { finalize } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BaseModalComponent } from '../../components/modal/baseModal';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { ConfirmDelete } from '../../components/confirm-delete/confirm-delete';
 import { AddEditProperty } from '../../components/add-edit-property-models/add-edit-property/add-edit-property';
 import { PropertiesStats, Property, PropertyFilter } from '../../shared/models/properties';
 import { ProductApiService } from '../../shared/services/product/state/product-api.service';
@@ -21,7 +23,15 @@ import { ListingKindService } from '../../shared/services/product/listing-kind.s
 
 @Component({
   selector: 'app-properties',
-  imports: [ModalComponent, AddEditProperty, CommonModule, ViewProperty, FormsModule, TranslatePipe],
+  imports: [
+    ModalComponent,
+    ConfirmDelete,
+    AddEditProperty,
+    CommonModule,
+    ViewProperty,
+    FormsModule,
+    TranslatePipe,
+  ],
   templateUrl: './properties.html',
   styleUrl: './properties.scss',
   // providers: [PaginationService],
@@ -92,17 +102,36 @@ export class Properties extends BaseModalComponent {
     });
   }
 
-  deleteProperty(id: any) {
-    this.productApiService.deleteProduct(id).subscribe({
-      next: (res) => {
-        this.toast.info(this.i18n.t('properties.deleted'), this.i18n.t('common.info'));
-        this.fetchAllProperties();
-        this.fetchPropertiesStats();
-      },
-      error: () => {
-        this.toast.error(this.i18n.t('properties.loadError'), this.i18n.t('common.error'));
-      },
-    });
+  /** Listing waiting for the user to confirm its deletion; drives the confirm dialog. */
+  pendingDelete = signal<Property | null>(null);
+  isDeleting = signal(false);
+
+  askDelete(property: Property) {
+    this.pendingDelete.set(property);
+  }
+
+  cancelDelete() {
+    if (!this.isDeleting()) this.pendingDelete.set(null);
+  }
+
+  confirmDelete() {
+    const property = this.pendingDelete();
+    if (property?.id == null || this.isDeleting()) return;
+    this.isDeleting.set(true);
+    this.productApiService
+      .deleteProduct(property.id)
+      .pipe(finalize(() => this.isDeleting.set(false)))
+      .subscribe({
+        next: () => {
+          this.pendingDelete.set(null);
+          this.toast.info(this.i18n.t('properties.deleted'), this.i18n.t('common.info'));
+          this.fetchAllProperties();
+          this.fetchPropertiesStats();
+        },
+        error: () => {
+          this.toast.error(this.i18n.t('properties.deleteError'), this.i18n.t('common.error'));
+        },
+      });
   }
 
   getPropertiesCoverImage(property: Property) {

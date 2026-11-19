@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { ConfirmDelete } from '../../components/confirm-delete/confirm-delete';
 import { AddEditCar } from '../../components/car-models/add-edit-car/add-edit-car';
 import { ViewCar } from '../../components/car-models/view-car/view-car';
 import { Car, CarFilter, CarsStats } from '../../shared/models/cars';
@@ -22,7 +24,15 @@ const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-cars',
-  imports: [CommonModule, FormsModule, ModalComponent, AddEditCar, ViewCar, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ModalComponent,
+    ConfirmDelete,
+    AddEditCar,
+    ViewCar,
+    TranslatePipe,
+  ],
   templateUrl: './cars.html',
   styleUrl: '../properties/properties.scss',
 })
@@ -152,15 +162,33 @@ export class Cars implements OnInit, OnDestroy {
     this.productState.clearEditing();
   }
 
+  /** Listing waiting for the user to confirm its deletion; drives the confirm dialog. */
+  pendingDelete = signal<Car | null>(null);
+  isDeleting = signal(false);
+
   delete(car: Car) {
-    if (!confirm(this.i18n.t('cars.confirmDelete'))) return;
-    this.carApi.delete(car.id).subscribe({
-      next: () => {
-        this.toast.info(this.i18n.t('cars.deleted'), this.i18n.t('common.info'));
-        this.refresh();
-      },
-      error: () => this.toast.error(this.i18n.t('cars.deleteError'), this.i18n.t('common.error')),
-    });
+    this.pendingDelete.set(car);
+  }
+
+  cancelDelete() {
+    if (!this.isDeleting()) this.pendingDelete.set(null);
+  }
+
+  confirmDelete() {
+    const car = this.pendingDelete();
+    if (!car || this.isDeleting()) return;
+    this.isDeleting.set(true);
+    this.carApi
+      .delete(car.id)
+      .pipe(finalize(() => this.isDeleting.set(false)))
+      .subscribe({
+        next: () => {
+          this.pendingDelete.set(null);
+          this.toast.info(this.i18n.t('cars.deleted'), this.i18n.t('common.info'));
+          this.refresh();
+        },
+        error: () => this.toast.error(this.i18n.t('cars.deleteError'), this.i18n.t('common.error')),
+      });
   }
 
   coverImage(car: Car): string {

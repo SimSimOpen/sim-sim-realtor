@@ -1,16 +1,14 @@
-import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { ConfirmDelete } from '../../components/confirm-delete/confirm-delete';
 import { AddEditSecondHand } from '../../components/second-hand-models/add-edit-second-hand/add-edit-second-hand';
 import { ViewSecondHand } from '../../components/second-hand-models/view-second-hand/view-second-hand';
-import {
-  SecondHandFilter,
-  SecondHandItem,
-  SecondHandStats,
-} from '../../shared/models/second-hand';
+import { SecondHandFilter, SecondHandItem, SecondHandStats } from '../../shared/models/second-hand';
 import { Property } from '../../shared/models/properties';
 import { SecondHandApiService } from '../../shared/services/second-hand/second-hand-api.service';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
@@ -26,7 +24,15 @@ const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-second-hand',
-  imports: [CommonModule, FormsModule, ModalComponent, AddEditSecondHand, ViewSecondHand, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ModalComponent,
+    ConfirmDelete,
+    AddEditSecondHand,
+    ViewSecondHand,
+    TranslatePipe,
+  ],
   templateUrl: './second-hand.html',
   styleUrl: '../properties/properties.scss',
 })
@@ -81,7 +87,8 @@ export class SecondHand implements OnInit, OnDestroy {
         this.stats = stats;
         this.ctr.detectChanges();
       },
-      error: () => this.toast.error(this.i18n.t('secondHand.statsError'), this.i18n.t('common.error')),
+      error: () =>
+        this.toast.error(this.i18n.t('secondHand.statsError'), this.i18n.t('common.error')),
     });
   }
 
@@ -93,7 +100,8 @@ export class SecondHand implements OnInit, OnDestroy {
         this.totalCount = page.totalElements;
         this.ctr.detectChanges();
       },
-      error: () => this.toast.error(this.i18n.t('secondHand.loadError'), this.i18n.t('common.error')),
+      error: () =>
+        this.toast.error(this.i18n.t('secondHand.loadError'), this.i18n.t('common.error')),
     });
   }
 
@@ -156,15 +164,34 @@ export class SecondHand implements OnInit, OnDestroy {
     this.productState.clearEditing();
   }
 
+  /** Listing waiting for the user to confirm its deletion; drives the confirm dialog. */
+  pendingDelete = signal<SecondHandItem | null>(null);
+  isDeleting = signal(false);
+
   delete(item: SecondHandItem) {
-    if (!confirm(this.i18n.t('secondHand.confirmDelete'))) return;
-    this.itemApi.delete(item.id).subscribe({
-      next: () => {
-        this.toast.info(this.i18n.t('secondHand.deleted'), this.i18n.t('common.info'));
-        this.refresh();
-      },
-      error: () => this.toast.error(this.i18n.t('secondHand.deleteError'), this.i18n.t('common.error')),
-    });
+    this.pendingDelete.set(item);
+  }
+
+  cancelDelete() {
+    if (!this.isDeleting()) this.pendingDelete.set(null);
+  }
+
+  confirmDelete() {
+    const item = this.pendingDelete();
+    if (!item || this.isDeleting()) return;
+    this.isDeleting.set(true);
+    this.itemApi
+      .delete(item.id)
+      .pipe(finalize(() => this.isDeleting.set(false)))
+      .subscribe({
+        next: () => {
+          this.pendingDelete.set(null);
+          this.toast.info(this.i18n.t('secondHand.deleted'), this.i18n.t('common.info'));
+          this.refresh();
+        },
+        error: () =>
+          this.toast.error(this.i18n.t('secondHand.deleteError'), this.i18n.t('common.error')),
+      });
   }
 
   isSold(item: SecondHandItem): boolean {
@@ -182,7 +209,8 @@ export class SecondHand implements OnInit, OnDestroy {
         this.toast.success(this.i18n.t('secondHand.saved'));
         this.refresh();
       },
-      error: () => this.toast.error(this.i18n.t('secondHand.saveError'), this.i18n.t('common.error')),
+      error: () =>
+        this.toast.error(this.i18n.t('secondHand.saveError'), this.i18n.t('common.error')),
     });
   }
 

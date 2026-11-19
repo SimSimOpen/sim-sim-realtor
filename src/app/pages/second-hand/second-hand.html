@@ -229,3 +229,12 @@
     <app-view-second-hand [item]="viewedItem" (closeModal)="closeModals()"></app-view-second-hand>
   }
 </app-modal>
+
+<app-confirm-delete
+  [visible]="!!pendingDelete()"
+  [name]="pendingDelete() ? itemName(pendingDelete()!) : ''"
+  message="secondHand.confirmDelete"
+  [busy]="isDeleting()"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+></app-confirm-delete>

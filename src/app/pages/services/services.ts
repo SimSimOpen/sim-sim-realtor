@@ -1,9 +1,11 @@
-import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { ConfirmDelete } from '../../components/confirm-delete/confirm-delete';
 import { AddEditServices } from '../../components/services-models/add-edit-services/add-edit-services';
 import { ViewServices } from '../../components/services-models/view-services/view-services';
 import { ServiceFilter, ServiceItem, ServiceStats } from '../../shared/models/services';
@@ -22,7 +24,15 @@ const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-services',
-  imports: [CommonModule, FormsModule, ModalComponent, AddEditServices, ViewServices, TranslatePipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ModalComponent,
+    ConfirmDelete,
+    AddEditServices,
+    ViewServices,
+    TranslatePipe,
+  ],
   templateUrl: './services.html',
   styleUrl: '../properties/properties.scss',
 })
@@ -78,7 +88,8 @@ export class Services implements OnInit, OnDestroy {
         this.stats = stats;
         this.ctr.detectChanges();
       },
-      error: () => this.toast.error(this.i18n.t('services.statsError'), this.i18n.t('common.error')),
+      error: () =>
+        this.toast.error(this.i18n.t('services.statsError'), this.i18n.t('common.error')),
     });
   }
 
@@ -153,15 +164,34 @@ export class Services implements OnInit, OnDestroy {
     this.productState.clearEditing();
   }
 
+  /** Listing waiting for the user to confirm its deletion; drives the confirm dialog. */
+  pendingDelete = signal<ServiceItem | null>(null);
+  isDeleting = signal(false);
+
   delete(item: ServiceItem) {
-    if (!confirm(this.i18n.t('services.confirmDelete'))) return;
-    this.itemApi.delete(item.id).subscribe({
-      next: () => {
-        this.toast.info(this.i18n.t('services.deleted'), this.i18n.t('common.info'));
-        this.refresh();
-      },
-      error: () => this.toast.error(this.i18n.t('services.deleteError'), this.i18n.t('common.error')),
-    });
+    this.pendingDelete.set(item);
+  }
+
+  cancelDelete() {
+    if (!this.isDeleting()) this.pendingDelete.set(null);
+  }
+
+  confirmDelete() {
+    const item = this.pendingDelete();
+    if (!item || this.isDeleting()) return;
+    this.isDeleting.set(true);
+    this.itemApi
+      .delete(item.id)
+      .pipe(finalize(() => this.isDeleting.set(false)))
+      .subscribe({
+        next: () => {
+          this.pendingDelete.set(null);
+          this.toast.info(this.i18n.t('services.deleted'), this.i18n.t('common.info'));
+          this.refresh();
+        },
+        error: () =>
+          this.toast.error(this.i18n.t('services.deleteError'), this.i18n.t('common.error')),
+      });
   }
 
   /** Someone needing a service reads the price as their budget, so it is labelled as one. */

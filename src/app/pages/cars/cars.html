@@ -200,3 +200,12 @@
     <app-view-car [car]="viewedCar" (closeModal)="closeModals()"></app-view-car>
   }
 </app-modal>
+
+<app-confirm-delete
+  [visible]="!!pendingDelete()"
+  [name]="pendingDelete() ? carName(pendingDelete()!) : ''"
+  message="cars.confirmDelete"
+  [busy]="isDeleting()"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+></app-confirm-delete>

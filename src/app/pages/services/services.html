@@ -213,3 +213,12 @@
     <app-view-services [item]="viewedItem" (closeModal)="closeModals()"></app-view-services>
   }
 </app-modal>
+
+<app-confirm-delete
+  [visible]="!!pendingDelete()"
+  [name]="pendingDelete() ? itemName(pendingDelete()!) : ''"
+  message="services.confirmDelete"
+  [busy]="isDeleting()"
+  (confirm)="confirmDelete()"
+  (cancel)="cancelDelete()"
+></app-confirm-delete>
