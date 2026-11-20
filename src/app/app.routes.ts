@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 import { Auth } from './pages/auth/auth';
-import { adminOnlyGuard, authGuard } from './account/auth.guard';
+import { adminOnlyGuard, authGuard, guestGuard } from './account/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     component: Auth,
+    canActivate: [guestGuard],
     children: [
       {
         path: '',

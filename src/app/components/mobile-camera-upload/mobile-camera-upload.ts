@@ -3,7 +3,6 @@ import {
   Component,
   computed,
   ElementRef,
-  HostListener,
   inject,
   ViewChild,
 } from '@angular/core';
@@ -13,7 +12,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { MEDIA_SERVICE_URL, PRODUCT_URL } from '../../shared/constants/urls';
 import { Property, PropertyMedia } from '../../shared/models/properties';
-import { AuthService } from '../../account/auth.service';
 import { UploadedFilesMobile } from '../add-edit-property-models/uploaded-files-mobile';
 import { ProductStateService } from '../../shared/services/product/state/product-state.service';
 import { Common } from '../../shared/common';
@@ -51,7 +49,6 @@ export class MobileCameraUpload {
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
-  private authService = inject(AuthService);
   private router = inject(Router);
   private sseService = inject(SseService);
   private listingKind = inject(ListingKindService);
@@ -154,7 +151,9 @@ export class MobileCameraUpload {
           this.cdr.detectChanges();
         },
         error: (error) => {
-          this.toast.error(error.message || error, this.i18n.t('upload.uploadError'), { timeOut: 15000 });
+          this.toast.error(error.message || error, this.i18n.t('upload.uploadError'), {
+            timeOut: 15000,
+          });
         },
       });
   }
@@ -245,12 +244,5 @@ export class MobileCameraUpload {
   closeTab() {
     this.stream?.getTracks().forEach((track) => track.stop());
     this.router.navigate(['/mobile/done']);
-  }
-  @HostListener('window:beforeunload')
-  onBeforeUnload() {
-    this.authService.clearStorage();
-  }
-  ngOnDestroy() {
-    this.authService.clearStorage();
   }
 }

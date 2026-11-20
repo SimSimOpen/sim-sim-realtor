@@ -63,7 +63,12 @@ export class SsoService {
     // The loader stays up until the target page is in place, lazy chunk included.
     this.router.events
       .pipe(
-        filter((e) => e instanceof NavigationEnd || e instanceof NavigationCancel || e instanceof NavigationError),
+        filter(
+          (e) =>
+            e instanceof NavigationEnd ||
+            e instanceof NavigationCancel ||
+            e instanceof NavigationError,
+        ),
         take(1),
       )
       .subscribe(() => this.pending.set(false));

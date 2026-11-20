@@ -32,13 +32,16 @@ export class Login {
       .authenticate(this.loginForm.value.username, this.loginForm.value.password)
       .subscribe({
         next: (response) => {
-          this.authService.storeToken(response.token);
+          this.authService.storeToken(response.token, response.refreshToken);
           this.authService.setUsername(response.username);
           this.authService.setUserData(response);
           this.common.navigateTo('/dashboard');
         },
         error: (error) => {
-          this.toastr.error(this.i18n.t('auth.invalidCredentials'), this.i18n.t('auth.loginFailed'));
+          this.toastr.error(
+            this.i18n.t('auth.invalidCredentials'),
+            this.i18n.t('auth.loginFailed'),
+          );
         },
       });
   }
